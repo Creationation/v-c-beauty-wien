@@ -194,7 +194,7 @@ export default function Booking() {
         {/* Service Selection */}
         {step === "service" && (
           <div className="anim-fade-up delay-2">
-            <div className="section-label">\u2728 W\u00e4hle deinen Service</div>
+            <div className="section-label">✨ Wähle deinen Service</div>
             {services.map((cat, ci) => (
               <div key={ci} className="mb-4">
                 <div
