@@ -279,14 +279,74 @@ export default function Booking() {
                 )}
               </div>
             ))}
-            {/* Continue button */}
+            {/* Summary + Continue */}
             {services.length > 0 && (
-              <button
-                className="btn-rose mt-2 anim-fade-up"
-                onClick={goNext}
-              >
-                Weiter mit {services.length} {services.length === 1 ? "Service" : "Services"} →
-              </button>
+              <div className="mt-4 anim-fade-up">
+                <div
+                  className="rounded-2xl p-4 mb-3"
+                  style={{ background: "var(--blush)", boxShadow: "var(--shadow-sm)" }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12px] font-semibold uppercase tracking-wide" style={{ color: "var(--txt3)" }}>
+                      Zusammenfassung
+                    </span>
+                    <span className="text-[12px] font-medium" style={{ color: "var(--txt2)" }}>
+                      {services.length} {services.length === 1 ? "Service" : "Services"}
+                    </span>
+                  </div>
+                  {services.map((s, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between py-1.5"
+                      style={{ borderBottom: i < services.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none" }}
+                    >
+                      <span className="text-[13px] flex items-center gap-1.5">
+                        <span>{s.icon}</span> {s.name}
+                      </span>
+                      <span className="text-[13px] font-semibold">{s.price}</span>
+                    </div>
+                  ))}
+                  {(() => {
+                    const numericPrices = services
+                      .map((s) => {
+                        const match = s.price.match(/(\d+)/);
+                        return match ? parseInt(match[1], 10) : null;
+                      })
+                      .filter((p): p is number => p !== null);
+                    const hasAllPrices = numericPrices.length === services.length;
+                    const hasAbPrefix = services.some((s) => s.price.toLowerCase().startsWith("ab"));
+                    if (hasAllPrices && services.length > 1) {
+                      const total = numericPrices.reduce((a, b) => a + b, 0);
+                      return (
+                        <div
+                          className="flex items-center justify-between pt-2.5 mt-1.5"
+                          style={{ borderTop: "1.5px solid var(--rose-deep)" }}
+                        >
+                          <span className="text-[14px] font-semibold">Geschätzt gesamt</span>
+                          <span className="font-display text-[18px] font-bold" style={{ color: "var(--rose-deep)" }}>
+                            {hasAbPrefix ? "ab " : ""}
+                            {total}€
+                          </span>
+                        </div>
+                      );
+                    }
+                    if (!hasAllPrices && services.length > 1) {
+                      return (
+                        <div className="pt-2 mt-1.5 text-[12px]" style={{ color: "var(--txt3)", borderTop: "1.5px solid var(--rose-deep)" }}>
+                          Gesamtpreis auf Anfrage
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
+                <button
+                  className="btn-rose"
+                  onClick={goNext}
+                >
+                  Weiter mit {services.length} {services.length === 1 ? "Service" : "Services"} →
+                </button>
+              </div>
             )}
           </div>
         )}
