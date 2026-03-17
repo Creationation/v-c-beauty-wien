@@ -386,7 +386,7 @@ export default function Booking() {
               <WhatsAppIcon size={20} /> Termin via WhatsApp buchen
             </button>
             <p className="text-center text-[11px] mt-3" style={{ color: "var(--txt3)" }}>
-              Du wirst direkt zu WhatsApp weitergeleitet \ud83d\udcac
+              Du wirst direkt zu WhatsApp weitergeleitet 💬
             </p>
           </div>
         )}

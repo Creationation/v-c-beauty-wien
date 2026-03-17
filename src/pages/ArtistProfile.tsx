@@ -197,7 +197,7 @@ export default function ArtistProfile() {
             </div>
             <div>
               <h4 className="text-sm font-medium">WhatsApp</h4>
-              <p className="text-xs" style={{ color: "var(--txt3)" }}>Schnell &amp; direkt f\u00fcr Termine</p>
+              <p className="text-xs" style={{ color: "var(--txt3)" }}>Schnell &amp; direkt für Termine</p>
             </div>
           </div>
           <div

@@ -80,7 +80,7 @@ export default function Confirmation() {
           📅 Neuen Termin buchen
         </button>
         <button className="btn-outline" onClick={handleGoHome}>
-          \ud83c\udfe0 Zur\u00fcck zum Start
+          🏠 Zurück zum Start
         </button>
       </div>
     </div>
