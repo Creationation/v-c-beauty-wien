@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Check, Clock, ChevronDown, Star } from "lucide-react";
 import { useBooking } from "@/hooks/useBooking";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { ARTISTS } from "@/data/artists";
 import { SERVICES } from "@/data/services";
 import {
