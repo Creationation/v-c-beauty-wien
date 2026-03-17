@@ -68,7 +68,7 @@ export default function Booking() {
   const handleWhatsApp = () => {
     const url = buildWhatsAppUrl({
       artist: currentArtist || null,
-      service,
+      services,
       date,
       time,
       name: form.name,
