@@ -3,7 +3,9 @@ import type { Artist } from "@/data/artists";
 
 interface BookingData {
   artist: Artist | null;
-  service: ServiceItem | null;
+  services: ServiceItem[];
+  /** @deprecated kept for compat */
+  service?: ServiceItem | null;
   date: Date | null;
   time: string | null;
   name: string;
@@ -13,11 +15,17 @@ interface BookingData {
 }
 
 export function buildWhatsAppUrl(data: BookingData): string {
+  const svcList = data.services.length > 0 ? data.services : data.service ? [data.service] : [];
+
+  const serviceLines = svcList.map((s) => `   • ${s.name} (${s.duration}, ${s.price})`);
+
   const lines = [
     `Hallo ${data.artist?.name || ""}! 💕`,
     "",
     "Termin-Anfrage:",
-    `✨ ${data.service?.name || ""}`,
+    ...(serviceLines.length > 0
+      ? [`✨ Gewählte Services:`, ...serviceLines]
+      : []),
     data.date
       ? `📅 ${data.date.toLocaleDateString("de-AT", {
           weekday: "long",
