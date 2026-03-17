@@ -375,7 +375,7 @@ export default function Booking() {
             </div>
             <div className="mb-6">
               <label className="block text-[11px] font-semibold tracking-wide uppercase mb-1.5" style={{ color: "var(--txt3)" }}>Anmerkungen</label>
-              <textarea className="beauty-input resize-none" style={{ minHeight: 80 }} placeholder="W\u00fcnsche, Allergien, besondere Hinweise..." value={form.notes} onChange={(e) => booking.setForm({ ...form, notes: e.target.value })} />
+              <textarea className="beauty-input resize-none" style={{ minHeight: 80 }} placeholder="Wünsche, Allergien, besondere Hinweise..." value={form.notes} onChange={(e) => booking.setForm({ ...form, notes: e.target.value })} />
             </div>
             <button
               className="btn-whatsapp"
