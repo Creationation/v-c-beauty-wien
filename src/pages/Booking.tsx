@@ -51,7 +51,7 @@ export default function Booking() {
 
   const currentIdx = steps.indexOf(step);
   const currentArtist = artist || (artistId ? ARTISTS.find((a) => a.id === artistId) : null);
-  const services = SERVICES[currentArtist?.id || ""] || [];
+  const artistServices = SERVICES[currentArtist?.id || ""] || [];
   const dim = daysInMonth(year, month);
   const fd = firstDayOfMonth(year, month);
 

@@ -56,10 +56,10 @@ export default function Confirmation() {
         <div className="bg-white rounded-3xl p-5 text-left mb-6" style={{ boxShadow: "var(--shadow-sm)" }}>
           {[
             { label: "Expertin", value: artist.name },
-            { label: "Service", value: service.name },
+            { label: "Services", value: services.map((s) => s.name).join(", ") },
             { label: "Datum", value: date ? formatDateShort(date) : "—" },
             { label: "Uhrzeit", value: time || "—" },
-            { label: "Preis", value: service.price },
+            { label: "Preis", value: services.map((s) => s.price).join(" + ") },
             ...(form.name ? [{ label: "Name", value: form.name }] : []),
           ].map((row, i, arr) => (
             <div
