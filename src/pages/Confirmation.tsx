@@ -77,7 +77,7 @@ export default function Confirmation() {
           <WhatsAppIcon size={20} /> Via WhatsApp bestätigen
         </button>
         <button className="btn-rose mb-2.5" onClick={handleNewBooking}>
-          \ud83d\udcc5 Neuen Termin buchen
+          📅 Neuen Termin buchen
         </button>
         <button className="btn-outline" onClick={handleGoHome}>
           \ud83c\udfe0 Zur\u00fcck zum Start
