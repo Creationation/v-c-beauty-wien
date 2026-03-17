@@ -86,11 +86,48 @@ export default function Booking() {
     else navigate("/");
   };
 
+  // When entering "form" step, require auth
   const goNext = () => {
-    if (currentIdx < steps.length - 1) setStep(steps[currentIdx + 1]);
+    const nextIdx = currentIdx + 1;
+    if (nextIdx < steps.length) {
+      const nextStep = steps[nextIdx];
+      if (nextStep === "form" && !user) {
+        // Save booking state to localStorage before redirecting
+        const pending = {
+          artistId: currentArtist?.id,
+          services,
+          date: date?.toISOString(),
+          time,
+          form,
+        };
+        localStorage.setItem("pendingBooking", JSON.stringify(pending));
+        const returnPath = artistId ? `/book/${artistId}` : "/book";
+        navigate(`/auth?returnTo=${encodeURIComponent(returnPath)}`);
+        return;
+      }
+      setStep(nextStep);
+    }
   };
 
-  const handleWhatsApp = () => {
+  const handleWhatsApp = async () => {
+    // Save booking to database
+    if (user) {
+      setSaving(true);
+      await supabase.from("bookings").insert({
+        user_id: user.id,
+        artist_id: currentArtist?.id || "",
+        services: services as any,
+        booking_date: date?.toISOString().split("T")[0] || null,
+        booking_time: time,
+        customer_name: form.name,
+        customer_phone: form.phone,
+        customer_email: form.email || user.email,
+        notes: form.notes,
+        status: "pending",
+      });
+      setSaving(false);
+    }
+
     const url = buildWhatsAppUrl({
       artist: currentArtist || null,
       services,
