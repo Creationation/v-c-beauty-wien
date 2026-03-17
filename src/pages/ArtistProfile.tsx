@@ -91,7 +91,7 @@ export default function ArtistProfile() {
             className={`beauty-tab ${tab === t ? "active" : ""}`}
             onClick={() => setTab(t)}
           >
-            {t === "services" ? "\u2728 Services" : t === "reviews" ? "\ud83d\udcac Bewertungen" : "\ud83d\udcf1 Kontakt"}
+            {t === "services" ? "✨ Services" : t === "reviews" ? "💬 Bewertungen" : "📱 Kontakt"}
           </button>
         ))}
       </div>
