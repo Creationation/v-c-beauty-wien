@@ -57,8 +57,8 @@ export default function Confirmation() {
           {[
             { label: "Expertin", value: artist.name },
             { label: "Service", value: service.name },
-            { label: "Datum", value: date ? formatDateShort(date) : "\u2014" },
-            { label: "Uhrzeit", value: time || "\u2014" },
+            { label: "Datum", value: date ? formatDateShort(date) : "—" },
+            { label: "Uhrzeit", value: time || "—" },
             { label: "Preis", value: service.price },
             ...(form.name ? [{ label: "Name", value: form.name }] : []),
           ].map((row, i, arr) => (
