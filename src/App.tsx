@@ -5,6 +5,8 @@ import Home from "@/pages/Home";
 import ArtistProfile from "@/pages/ArtistProfile";
 import Booking from "@/pages/Booking";
 import Confirmation from "@/pages/Confirmation";
+import Admin from "@/pages/Admin";
+import AdminLogin from "@/pages/AdminLogin";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -19,6 +21,8 @@ const App = () => (
           <Route path="/book" element={<Booking />} />
           <Route path="/book/:artistId" element={<Booking />} />
           <Route path="/confirm" element={<Confirmation />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

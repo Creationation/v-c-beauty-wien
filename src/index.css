@@ -607,3 +607,88 @@
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
+
+/* ═══════════════════════════════════════════════
+   BOTTOM NAV
+   ═══════════════════════════════════════════════ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  background: rgba(253, 248, 244, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--cream2);
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+}
+.bottom-nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--txt3);
+  transition: all 0.2s;
+}
+.bottom-nav-btn.active {
+  color: var(--rose-deep);
+}
+.bottom-nav-btn:active {
+  transform: scale(0.92);
+}
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR HIDE
+   ═══════════════════════════════════════════════ */
+.scrollbar-none { scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* ═══════════════════════════════════════════════
+   SHAKE ANIMATION (admin login error)
+   ═══════════════════════════════════════════════ */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-8px); }
+  40%       { transform: translateX(8px); }
+  60%       { transform: translateX(-6px); }
+  80%       { transform: translateX(6px); }
+}
+.anim-shake {
+  animation: shake 0.45s ease-out;
+}
+
+/* ═══════════════════════════════════════════════
+   PULSE (available indicator)
+   ═══════════════════════════════════════════════ */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════
+   ADMIN overrides
+   ═══════════════════════════════════════════════ */
+.beauty-input[type="password"] {
+  letter-spacing: 0.2em;
+}
+.beauty-input[type="password"]::placeholder {
+  letter-spacing: 0;
+}
+
+/* Divider in stats bar */
+.divide-x > * + * {
+  border-left: 1px solid var(--cream2);
+}

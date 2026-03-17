@@ -4,6 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { ARTISTS } from "@/data/artists";
 import { REVIEWS } from "@/data/reviews";
 import { openGutscheinWhatsApp } from "@/utils/whatsapp";
+import BottomNav from "@/components/BottomNav";
+import StatsBar from "@/components/StatsBar";
+import HowItWorks from "@/components/HowItWorks";
+import BeforeAfterGallery from "@/components/BeforeAfterGallery";
+import TrendingServices from "@/components/TrendingServices";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -17,7 +22,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="app-shell">
+    <div className="app-shell pb-20">
       {/* Instagram Dialog */}
       {showInstaDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-5" onClick={() => setShowInstaDialog(false)}>
@@ -105,6 +110,12 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Stats */}
+      <StatsBar />
+
+      {/* Trending Services */}
+      <TrendingServices />
+
       {/* Artists */}
       <div className="px-5 pb-6">
         <div className="section-label anim-fade-up delay-3">Unsere Expertinnen</div>
@@ -158,6 +169,12 @@ export default function Home() {
         <p className="text-xs opacity-90 font-light">Das perfekte Geschenk. Schenke Schönheit &amp; Wohlbefinden</p>
       </div>
 
+      {/* Before/After Gallery */}
+      <BeforeAfterGallery />
+
+      {/* How It Works */}
+      <HowItWorks />
+
       {/* Reviews */}
       <div className="px-5 pb-2">
         <div className="section-label">Was unsere Kundinnen sagen</div>
@@ -208,20 +225,8 @@ export default function Home() {
         <MapPin size={12} /> Wien, Österreich
       </div>
 
-      {/* Sticky CTA */}
-      {showSticky && (
-        <div
-          className="fixed bottom-0 left-0 right-0 z-40 p-4 anim-fade-up"
-          style={{ background: "linear-gradient(to top, var(--cream) 80%, transparent)" }}
-        >
-          <button
-            className="btn-rose w-full"
-            onClick={() => navigate("/book")}
-          >
-            ✨ Jetzt Termin buchen
-          </button>
-        </div>
-      )}
+      {/* Bottom Nav */}
+      <BottomNav />
     </div>
   );
 }
