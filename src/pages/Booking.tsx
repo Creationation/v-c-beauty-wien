@@ -116,30 +116,38 @@ export default function Booking() {
           ))}
         </div>
 
-        {step !== "artist" && (currentArtist || service) && (
+        {step !== "artist" && (currentArtist || services.length > 0) && (
           <div
-            className="bg-white rounded-2xl p-4 mb-5 flex items-center gap-3.5 anim-fade-up"
+            className="bg-white rounded-2xl p-4 mb-5 anim-fade-up"
             style={{ boxShadow: "var(--shadow-sm)" }}
           >
-            {service ? (
-              <>
-                <span className="text-[28px]">{service.icon}</span>
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-[15px] font-medium mb-0.5 truncate">{service.name}</h4>
-                  <p className="text-xs" style={{ color: "var(--txt3)" }}>
-                    {service.duration} · {service.price}
-                    {currentArtist && ` · ${currentArtist.name}`}
+            {services.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                {services.map((s, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <span className="text-[22px]">{s.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-[14px] font-medium truncate">{s.name}</h4>
+                      <p className="text-[11px]" style={{ color: "var(--txt3)" }}>
+                        {s.duration} · {s.price}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {currentArtist && (
+                  <p className="text-[11px] mt-1" style={{ color: "var(--txt3)" }}>
+                    mit {currentArtist.name}
                   </p>
-                </div>
-              </>
+                )}
+              </div>
             ) : currentArtist ? (
-              <>
+              <div className="flex items-center gap-3.5">
                 <span className="text-[28px]">{currentArtist.emoji}</span>
                 <div>
                   <h4 className="text-[15px] font-medium mb-0.5">{currentArtist.name}</h4>
                   <p className="text-xs" style={{ color: "var(--txt3)" }}>{currentArtist.role}</p>
                 </div>
-              </>
+              </div>
             ) : null}
           </div>
         )}
