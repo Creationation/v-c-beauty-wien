@@ -60,7 +60,17 @@ export default function Home() {
       )}
 
       {/* Hero */}
-      <div className="hero-section">
+      <div className="hero-section relative overflow-hidden">
+        {/* Background Video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-20 -z-10"
+          src="/videos/hero-bg.mp4"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[var(--cream)]/60 via-transparent to-[var(--cream)]" />
         <div className="flex items-center justify-between mb-7 relative anim-fade-up">
           <div className="font-display text-[22px] font-semibold tracking-tight" style={{ color: "var(--txt)" }}>
             Vego <span style={{ color: "var(--rose-deep)" }}>Beauty</span>
