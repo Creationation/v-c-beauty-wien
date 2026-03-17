@@ -1,0 +1,190 @@
+import { Star, ArrowLeft, ChevronDown, Clock, Heart, Check, MapPin, Mail } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ARTISTS } from "@/data/artists";
+import { REVIEWS } from "@/data/reviews";
+import { openWhatsApp } from "@/utils/whatsapp";
+
+export default function Home() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="app-shell">
+      {/* Hero */}
+      <div className="hero-section">
+        <div className="flex items-center justify-between mb-7 relative anim-fade-up">
+          <div className="font-display text-[22px] font-semibold tracking-tight" style={{ color: "var(--txt)" }}>
+            V <span style={{ color: "var(--rose-deep)" }}>&</span> C
+          </div>
+          <button
+            onClick={() => openWhatsApp()}
+            className="px-[18px] py-2 bg-white border-[1.5px] rounded-full text-xs font-medium cursor-pointer transition-all duration-300 hover:bg-[var(--blush)]"
+            style={{ borderColor: "var(--blush)", color: "var(--rose-deep)" }}
+          >
+            Termin buchen
+          </button>
+        </div>
+        <h1 className="font-display text-[38px] font-normal leading-[1.1] mb-3 anim-fade-up delay-1 relative">
+          Deine Schönheit,
+          <br />
+          <em className="italic font-medium" style={{ color: "var(--rose-deep)" }}>
+            perfektioniert
+          </em>
+        </h1>
+        <p className="text-sm leading-relaxed max-w-[320px] mb-5 anim-fade-up delay-2" style={{ color: "var(--txt2)" }}>
+          Permanent Make-up, Hairstyling, Braut Make-up & mehr — zwei Expertinnen, ein Ziel: dich strahlen lassen.
+        </p>
+        <div className="flex flex-wrap gap-2 anim-fade-up delay-3">
+          {["🌸 Permanent Makeup", "💄 Pro Makeup", "💇‍♀️ Hairstyling", "✨ Lash Lifting"].map((tag) => (
+            <span
+              key={tag}
+              className="px-3.5 py-1.5 bg-white border rounded-full text-[11px] font-medium flex items-center gap-1.5"
+              style={{ borderColor: "var(--cream2)", color: "var(--txt2)", boxShadow: "var(--shadow-sm)" }}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Artists */}
+      <div className="px-5 pb-6">
+        <div className="section-label anim-fade-up delay-3">Unsere Expertinnen</div>
+        <div className="flex gap-3">
+          {ARTISTS.map((artist, i) => (
+            <div
+              key={artist.id}
+              className={`beauty-card flex-1 p-5 pt-0 relative overflow-hidden anim-fade-up delay-${i + 4}`}
+              onClick={() => navigate(`/artist/${artist.id}`)}
+            >
+              <div
+                className="h-1 rounded-t-3xl -mx-[calc(1.25rem+1.5px)] -mt-px mb-5"
+                style={{
+                  background:
+                    artist.id === "victoria"
+                      ? "linear-gradient(90deg, var(--blush-deep), var(--blush))"
+                      : "linear-gradient(90deg, var(--gold), var(--gold-soft))",
+                }}
+              />
+              <span className="text-4xl block mb-3 anim-float">{artist.emoji}</span>
+              <h3 className="font-display text-xl font-medium mb-0.5">{artist.name}</h3>
+              <p className="text-[11px] leading-snug" style={{ color: "var(--txt2)" }}>
+                {artist.role}
+              </p>
+              <div className="flex items-center gap-1 mt-2.5 text-xs font-medium" style={{ color: "var(--gold)" }}>
+                <Star size={13} fill="currentColor" strokeWidth={0} />
+                {artist.rating}
+                <span className="text-[11px] font-normal" style={{ color: "var(--txt3)" }}>
+                  ({artist.reviews} Bewertungen)
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-3 gap-2.5 px-5 pb-6 anim-fade-up delay-5">
+        <div className="quick-action" onClick={() => openWhatsApp()}>
+          <span className="text-2xl mb-2 block">📅</span>
+          <span className="text-[11px] font-medium" style={{ color: "var(--txt2)" }}>Termin buchen</span>
+        </div>
+        <div className="quick-action" onClick={() => navigate("/artist/victoria")}>
+          <span className="text-2xl mb-2 block">💋</span>
+          <span className="text-[11px] font-medium" style={{ color: "var(--txt2)" }}>Preisliste</span>
+        </div>
+        <div className="quick-action" onClick={() => openWhatsApp()}>
+          <span className="text-2xl mb-2 block">🎁</span>
+          <span className="text-[11px] font-medium" style={{ color: "var(--txt2)" }}>Gutschein</span>
+        </div>
+      </div>
+
+      {/* Promo Banner */}
+      <div className="promo-banner anim-fade-up delay-6" onClick={() => openWhatsApp()}>
+        <h3 className="font-display text-xl font-medium mb-1">Geschenkgutschein 🎀</h3>
+        <p className="text-xs opacity-90 font-light">Das perfekte Geschenk — Schenke Schönheit & Wohlbefinden</p>
+      </div>
+
+      {/* Reviews */}
+      <div className="px-5 pb-2">
+        <div className="section-label">Was unsere Kundinnen sagen</div>
+      </div>
+      <div className="reviews-scroll anim-fade-up delay-7 mb-6">
+        {REVIEWS.map((review, i) => (
+          <div key={i} className="review-card">
+            <div className="flex gap-0.5 mb-2" style={{ color: "var(--gold)" }}>
+              {[...Array(review.rating)].map((_, j) => (
+                <Star key={j} size={14} fill="currentColor" strokeWidth={0} />
+              ))}
+            </div>
+            <div className="text-[13px] italic leading-relaxed mb-2.5" style={{ color: "var(--txt2)" }}>
+              "{review.text}"
+            </div>
+            <div className="text-xs font-semibold">{review.name}</div>
+            <div className="text-[11px]" style={{ color: "var(--txt3)" }}>
+              {review.service}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Divider */}
+      <div className="h-px mx-5 mb-6" style={{ background: "var(--cream2)" }} />
+
+      {/* Contact */}
+      <div className="px-5 pb-10">
+        <div className="section-label">Kontakt</div>
+        <div className="contact-card anim-fade-up delay-7" onClick={() => openWhatsApp()}>
+          <div
+            className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: "rgba(37, 211, 102, 0.1)", color: "var(--whatsapp)" }}
+          >
+            <WhatsAppIcon size={22} />
+          </div>
+          <div>
+            <h4 className="text-sm font-medium">WhatsApp</h4>
+            <p className="text-xs" style={{ color: "var(--txt3)" }}>
+              Schreib uns direkt 💬
+            </p>
+          </div>
+        </div>
+        <div className="contact-card anim-fade-up delay-8">
+          <div
+            className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: "rgba(225, 48, 108, 0.08)", color: "#E1306C" }}
+          >
+            <InstagramIcon size={20} />
+          </div>
+          <div>
+            <h4 className="text-sm font-medium">Instagram</h4>
+            <p className="text-xs" style={{ color: "var(--txt3)" }}>
+              @dr.permanent_v · @cbeautyvienna
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="text-center pb-8 text-[11px] flex items-center justify-center gap-1" style={{ color: "var(--txt3)" }}>
+        <MapPin size={12} /> Wien, Österreich
+      </div>
+    </div>
+  );
+}
+
+function WhatsAppIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+    </svg>
+  );
+}
+
+function InstagramIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
