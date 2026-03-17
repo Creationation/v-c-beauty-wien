@@ -199,11 +199,14 @@ export default function Booking() {
           </div>
         )}
 
-        {/* Service Selection */}
+        {/* Service Selection — multi-select */}
         {step === "service" && (
           <div className="anim-fade-up delay-2">
-            <div className="section-label">✨ Wähle deinen Service</div>
-            {services.map((cat, ci) => (
+            <div className="section-label">✨ Wähle deine Services</div>
+            <p className="text-[12px] mb-4 -mt-1" style={{ color: "var(--txt3)" }}>
+              Du kannst einen oder mehrere Services auswählen
+            </p>
+            {artistServices.map((cat, ci) => (
               <div key={ci} className="mb-4">
                 <div
                   className="flex items-center gap-2.5 p-3 px-4 bg-white rounded-2xl cursor-pointer transition-all duration-300 border-[1.5px] border-transparent hover:border-[var(--blush)] mb-2"
@@ -231,42 +234,60 @@ export default function Booking() {
                 </div>
                 {expandedCats[ci] !== false && (
                   <div className="flex flex-col gap-2">
-                    {cat.items.map((item, ii) => (
-                      <div
-                        key={ii}
-                        className="service-item cursor-pointer anim-fade-up"
-                        style={{ animationDelay: `${ii * 0.04}s` }}
-                        onClick={() => {
-                          booking.setService(item);
-                          goNext();
-                        }}
-                      >
-                        <div className="flex justify-between items-start gap-2">
-                          <div className="text-sm font-medium flex items-center gap-1.5 flex-1">
-                            <span className="text-lg mr-1">{item.icon}</span>
-                            {item.name}
-                            {item.popular && <span className="popular-badge">Beliebt</span>}
+                    {cat.items.map((item, ii) => {
+                      const isSelected = services.some((s) => s.name === item.name);
+                      return (
+                        <div
+                          key={ii}
+                          className="service-item cursor-pointer anim-fade-up"
+                          style={{
+                            animationDelay: `${ii * 0.04}s`,
+                            borderColor: isSelected ? "var(--rose-deep)" : undefined,
+                            background: isSelected ? "var(--blush)" : undefined,
+                          }}
+                          onClick={() => booking.toggleService(item)}
+                        >
+                          <div className="flex justify-between items-start gap-2">
+                            <div className="text-sm font-medium flex items-center gap-1.5 flex-1">
+                              {isSelected && (
+                                <span className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--rose-deep)" }}>
+                                  <Check size={12} color="white" />
+                                </span>
+                              )}
+                              <span className="text-lg mr-1">{item.icon}</span>
+                              {item.name}
+                              {item.popular && <span className="popular-badge">Beliebt</span>}
+                            </div>
+                            <div className="font-display text-[17px] font-semibold whitespace-nowrap">
+                              {item.price}
+                            </div>
                           </div>
-                          <div className="font-display text-[17px] font-semibold whitespace-nowrap">
-                            {item.price}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2.5 mt-1">
-                          <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--txt3)" }}>
-                            <Clock size={12} /> {item.duration}
-                          </span>
-                          {item.desc && (
-                            <span className="text-xs font-light" style={{ color: "var(--txt2)" }}>
-                              {item.desc}
+                          <div className="flex items-center gap-2.5 mt-1">
+                            <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--txt3)" }}>
+                              <Clock size={12} /> {item.duration}
                             </span>
-                          )}
+                            {item.desc && (
+                              <span className="text-xs font-light" style={{ color: "var(--txt2)" }}>
+                                {item.desc}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
             ))}
+            {/* Continue button */}
+            {services.length > 0 && (
+              <button
+                className="btn-rose mt-2 anim-fade-up"
+                onClick={goNext}
+              >
+                Weiter mit {services.length} {services.length === 1 ? "Service" : "Services"} →
+              </button>
+            )}
           </div>
         )}
 
