@@ -530,11 +530,11 @@ export default function Booking() {
             </div>
             <button
               className="btn-whatsapp"
-              disabled={!form.name || !form.phone}
+              disabled={!form.name || !form.phone || saving}
               onClick={handleWhatsApp}
-              style={{ opacity: !form.name || !form.phone ? 0.5 : 1 }}
+              style={{ opacity: !form.name || !form.phone || saving ? 0.5 : 1 }}
             >
-              <WhatsAppIcon size={20} /> Termin via WhatsApp buchen
+              <WhatsAppIcon size={20} /> {saving ? "Wird gespeichert..." : "Termin via WhatsApp buchen"}
             </button>
             <p className="text-center text-[11px] mt-3" style={{ color: "var(--txt3)" }}>
               Du wirst direkt zu WhatsApp weitergeleitet 💬
