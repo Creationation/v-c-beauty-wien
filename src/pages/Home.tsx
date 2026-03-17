@@ -194,7 +194,7 @@ export default function Home() {
       </div>
 
       <div className="text-center pb-8 text-[11px] flex items-center justify-center gap-1" style={{ color: "var(--txt3)" }}>
-        <MapPin size={12} /> Wien, \u00d6sterreich
+        <MapPin size={12} /> Wien, Österreich
       </div>
 
       {/* Sticky CTA */}
