@@ -143,8 +143,8 @@ export default function Home() {
 
       {/* Promo Banner */}
       <div className="promo-banner anim-fade-up delay-6" onClick={() => openGutscheinWhatsApp()}>
-        <h3 className="font-display text-xl font-medium mb-1">Geschenkgutschein \ud83c\udf80</h3>
-        <p className="text-xs opacity-90 font-light">Das perfekte Geschenk \u2014 Schenke Sch\u00f6nheit &amp; Wohlbefinden</p>
+        <h3 className="font-display text-xl font-medium mb-1">Geschenkgutschein 🎀</h3>
+        <p className="text-xs opacity-90 font-light">Das perfekte Geschenk — Schenke Schönheit &amp; Wohlbefinden</p>
       </div>
 
       {/* Reviews */}
