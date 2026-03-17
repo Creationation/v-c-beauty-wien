@@ -80,7 +80,7 @@ export default function ArtistProfile() {
           ))}
         </div>
         <button className="btn-rose mt-4" onClick={handleBookNow}>
-          \ud83d\udcc5 Termin buchen
+          📅 Termin buchen
         </button>
       </div>
 
