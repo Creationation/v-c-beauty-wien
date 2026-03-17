@@ -17,7 +17,7 @@ export default function Confirmation() {
   const handleWhatsApp = () => {
     const url = buildWhatsAppUrl({
       artist,
-      service,
+      services,
       date,
       time,
       name: form.name,
