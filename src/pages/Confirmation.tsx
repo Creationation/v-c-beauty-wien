@@ -49,7 +49,7 @@ export default function Confirmation() {
           Deine Anfrage wurde gespeichert.
         </p>
         <p className="text-sm font-light leading-relaxed mb-7" style={{ color: "var(--txt2)" }}>
-          Best\u00e4tige jetzt via WhatsApp und {artist.name} meldet sich bald bei dir!
+          Bestätige jetzt via WhatsApp und {artist.name} meldet sich bald bei dir!
         </p>
 
         {/* Summary */}
