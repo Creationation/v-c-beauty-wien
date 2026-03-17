@@ -70,7 +70,7 @@ export const SERVICES: Record<string, ServiceCategory[]> = {
       category: "Lash & Brow Lifting",
       emoji: "👁️",
       items: [
-        { name: "Lash Lifting", duration: "45–60 Min.", price: "auf Anfrage", desc: "Mehr Ausdruck — ohne tägliches Styling", popular: true, icon: "✨" },
+        { name: "Lash Lifting", duration: "45–60 Min.", price: "auf Anfrage", desc: "Mehr Ausdruck, ohne tägliches Styling", popular: true, icon: "✨" },
         { name: "Brow Lifting", duration: "30–45 Min.", price: "auf Anfrage", desc: "Natürlich angehobene Brauen", icon: "🌟" },
         { name: "Lash & Brow Kombi", duration: "1–1,5 Std.", price: "auf Anfrage", desc: "Beides zum Vorteilspreis", icon: "💖" },
       ],

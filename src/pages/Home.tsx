@@ -179,7 +179,7 @@ export default function Home() {
           </div>
           <div>
             <h4 className="text-sm font-medium">Termin buchen</h4>
-            <p className="text-xs" style={{ color: "var(--txt3)" }}>Via WhatsApp — schnell &amp; direkt 💬</p>
+            <p className="text-xs" style={{ color: "var(--txt3)" }}>Via WhatsApp, schnell &amp; direkt 💬</p>
           </div>
         </div>
         <div className="contact-card anim-fade-up delay-8" onClick={() => setShowInstaDialog(true)}>
