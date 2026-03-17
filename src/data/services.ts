@@ -19,7 +19,7 @@ export const SERVICES: Record<string, ServiceCategory[]> = {
       category: "Permanent Make-up",
       emoji: "💋",
       items: [
-        { name: "Lip Blushing", duration: "2–3 Std.", price: "ab 280€", desc: "Natürliche Lippenfarbe — sanft & langanhaltend", popular: true, icon: "👄" },
+        { name: "Lip Blushing", duration: "2–3 Std.", price: "ab 280€", desc: "Natürliche Lippenfarbe, sanft & langanhaltend", popular: true, icon: "👄" },
         { name: "Powder Brows", duration: "2–3 Std.", price: "ab 250€", desc: "Pudrige, natürlich wirkende Augenbrauen", popular: true, icon: "✨" },
         { name: "Eyeliner", duration: "1,5–2 Std.", price: "ab 200€", desc: "Dezenter oder intensiver permanenter Eyeliner", icon: "👁️" },
         { name: "Lip Auffrischung", duration: "1,5 Std.", price: "ab 150€", desc: "Touch-up für bestehende Behandlung", icon: "💕" },
