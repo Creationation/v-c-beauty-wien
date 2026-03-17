@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Check, Clock, ChevronDown, Star } from "lucide-react";
 import { useBooking } from "@/hooks/useBooking";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { ARTISTS } from "@/data/artists";
 import { SERVICES } from "@/data/services";
 import {
@@ -28,11 +30,34 @@ export default function Booking() {
   const navigate = useNavigate();
   const { artistId } = useParams();
   const booking = useBooking();
+  const { user } = useAuth();
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
   const [expandedCats, setExpandedCats] = useState<Record<number, boolean>>({ 0: true });
+  const [saving, setSaving] = useState(false);
   const today = new Date();
   const { artist, services, date, time, form } = booking;
+
+  // Restore pending booking after login
+  useEffect(() => {
+    if (user) {
+      const pending = localStorage.getItem("pendingBooking");
+      if (pending) {
+        try {
+          const data = JSON.parse(pending);
+          if (data.artistId) {
+            const a = ARTISTS.find((x) => x.id === data.artistId);
+            if (a) booking.setArtist(a);
+          }
+          if (data.services) data.services.forEach((s: any) => booking.toggleService(s));
+          if (data.date) booking.setDate(new Date(data.date));
+          if (data.time) booking.setTime(data.time);
+          if (data.form) booking.setForm(data.form);
+          localStorage.removeItem("pendingBooking");
+        } catch {}
+      }
+    }
+  }, [user]);
 
   const steps: Step[] = (() => {
     if (!artistId) return ["artist", "service", "date", "time", "form"];
@@ -61,11 +86,48 @@ export default function Booking() {
     else navigate("/");
   };
 
+  // When entering "form" step, require auth
   const goNext = () => {
-    if (currentIdx < steps.length - 1) setStep(steps[currentIdx + 1]);
+    const nextIdx = currentIdx + 1;
+    if (nextIdx < steps.length) {
+      const nextStep = steps[nextIdx];
+      if (nextStep === "form" && !user) {
+        // Save booking state to localStorage before redirecting
+        const pending = {
+          artistId: currentArtist?.id,
+          services,
+          date: date?.toISOString(),
+          time,
+          form,
+        };
+        localStorage.setItem("pendingBooking", JSON.stringify(pending));
+        const returnPath = artistId ? `/book/${artistId}` : "/book";
+        navigate(`/auth?returnTo=${encodeURIComponent(returnPath)}`);
+        return;
+      }
+      setStep(nextStep);
+    }
   };
 
-  const handleWhatsApp = () => {
+  const handleWhatsApp = async () => {
+    // Save booking to database
+    if (user) {
+      setSaving(true);
+      await supabase.from("bookings").insert({
+        user_id: user.id,
+        artist_id: currentArtist?.id || "",
+        services: services as any,
+        booking_date: date?.toISOString().split("T")[0] || null,
+        booking_time: time,
+        customer_name: form.name,
+        customer_phone: form.phone,
+        customer_email: form.email || user.email,
+        notes: form.notes,
+        status: "pending",
+      });
+      setSaving(false);
+    }
+
     const url = buildWhatsAppUrl({
       artist: currentArtist || null,
       services,
@@ -468,11 +530,11 @@ export default function Booking() {
             </div>
             <button
               className="btn-whatsapp"
-              disabled={!form.name || !form.phone}
+              disabled={!form.name || !form.phone || saving}
               onClick={handleWhatsApp}
-              style={{ opacity: !form.name || !form.phone ? 0.5 : 1 }}
+              style={{ opacity: !form.name || !form.phone || saving ? 0.5 : 1 }}
             >
-              <WhatsAppIcon size={20} /> Termin via WhatsApp buchen
+              <WhatsAppIcon size={20} /> {saving ? "Wird gespeichert..." : "Termin via WhatsApp buchen"}
             </button>
             <p className="text-center text-[11px] mt-3" style={{ color: "var(--txt3)" }}>
               Du wirst direkt zu WhatsApp weitergeleitet 💬

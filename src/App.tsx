@@ -5,6 +5,7 @@ import Home from "@/pages/Home";
 import ArtistProfile from "@/pages/ArtistProfile";
 import Booking from "@/pages/Booking";
 import Confirmation from "@/pages/Confirmation";
+import Auth from "@/pages/Auth";
 import Admin from "@/pages/Admin";
 import AdminLogin from "@/pages/AdminLogin";
 import NotFound from "@/pages/NotFound";
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/book" element={<Booking />} />
           <Route path="/book/:artistId" element={<Booking />} />
           <Route path="/confirm" element={<Confirmation />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="*" element={<NotFound />} />
