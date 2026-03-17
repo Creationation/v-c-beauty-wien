@@ -88,7 +88,7 @@ export default function Booking() {
           className="flex items-center gap-1.5 bg-transparent border-none text-[13px] cursor-pointer transition-colors"
           style={{ color: "var(--txt2)", fontFamily: "var(--font-body)" }}
         >
-          <ArrowLeft size={18} /> Zur\u00fcck
+          <ArrowLeft size={18} /> Zurück
         </button>
       </div>
 
