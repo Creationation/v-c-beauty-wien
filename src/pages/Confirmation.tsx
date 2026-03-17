@@ -7,9 +7,9 @@ import { formatDateShort } from "@/utils/dates";
 export default function Confirmation() {
   const navigate = useNavigate();
   const booking = useBooking();
-  const { artist, service, date, time, form } = booking;
+  const { artist, services, date, time, form } = booking;
 
-  if (!artist || !service) {
+  if (!artist || services.length === 0) {
     navigate("/");
     return null;
   }
