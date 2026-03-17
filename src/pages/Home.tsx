@@ -84,15 +84,15 @@ export default function Home() {
             Termin buchen
           </button>
         </div>
-        <h1 className="font-display text-[38px] font-normal leading-[1.1] mb-3 anim-fade-up delay-1 relative">
+        <h1 className="font-display text-[38px] font-normal leading-[1.1] mb-3 anim-fade-up delay-1 relative z-[2]">
           Deine Schönheit,
           <br />
           <em className="italic font-medium" style={{ color: "var(--rose-deep)" }}>perfektioniert</em>
         </h1>
-        <p className="text-sm leading-relaxed max-w-[320px] mb-5 anim-fade-up delay-2" style={{ color: "var(--txt2)" }}>
+        <p className="text-sm leading-relaxed max-w-[320px] mb-5 anim-fade-up delay-2 relative z-[2]" style={{ color: "var(--txt2)" }}>
           Permanent Make-up, Hairstyling, Braut Make-up &amp; mehr. Zwei Expertinnen, ein Ziel: dich strahlen lassen.
         </p>
-        <div className="flex flex-wrap gap-2 anim-fade-up delay-3">
+        <div className="flex flex-wrap gap-2 anim-fade-up delay-3 relative z-[2]">
           {["🌸 Permanent Makeup", "💄 Pro Makeup", "💇‍♀️ Hairstyling", "✨ Lash Lifting"].map((tag) => (
             <span
               key={tag}
