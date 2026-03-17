@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Star, ArrowLeft, ChevronDown, Clock, Heart, MapPin, Mail } from "lucide-react";
+import { Star, ArrowLeft, ChevronDown, Clock, Heart, Mail } from "lucide-react";
 import { ARTISTS } from "@/data/artists";
 import { SERVICES } from "@/data/services";
 import { REVIEWS } from "@/data/reviews";
 import { useBooking } from "@/hooks/useBooking";
-import { openWhatsApp } from "@/utils/whatsapp";
 
 export default function ArtistProfile() {
   const { id } = useParams<{ id: string }>();
@@ -20,28 +19,33 @@ export default function ArtistProfile() {
 
   if (!artist) return null;
 
-  const toggleCategory = (i: number) => setExpandedCats((prev) => ({ ...prev, [i]: !prev[i] }));
+  const toggleCategory = (i: number) =>
+    setExpandedCats((prev) => ({ ...prev, [i]: !prev[i] }));
 
-  const handleServiceClick = (service: typeof SERVICES.victoria[0]["items"][0], catIndex: number, itemIndex: number) => {
+  const handleServiceClick = (service: typeof SERVICES.victoria[0]["items"][0]) => {
     booking.setArtist(artist);
     booking.setService(service);
     navigate(`/book/${artist.id}`);
   };
 
+  const handleBookNow = () => {
+    booking.setArtist(artist);
+    booking.setService(null);
+    navigate(`/book/${artist.id}`);
+  };
+
   return (
     <div className="app-shell">
-      {/* Back */}
       <div className="flex items-center gap-2 px-5 pt-4 pb-2">
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-1.5 bg-transparent border-none text-[13px] cursor-pointer transition-colors"
           style={{ color: "var(--txt2)", fontFamily: "var(--font-body)" }}
         >
-          <ArrowLeft size={18} /> Zurück
+          <ArrowLeft size={18} /> Zur\u00fcck
         </button>
       </div>
 
-      {/* Profile Header */}
       <div className="px-6 pb-5 anim-fade-up">
         <div className="flex items-center gap-4 mb-3.5">
           <div
@@ -52,9 +56,7 @@ export default function ArtistProfile() {
           </div>
           <div>
             <h2 className="font-display text-[28px] font-medium">{artist.name}</h2>
-            <div className="text-[13px]" style={{ color: "var(--txt2)" }}>
-              {artist.role}
-            </div>
+            <div className="text-[13px]" style={{ color: "var(--txt2)" }}>{artist.role}</div>
             <div className="flex items-center gap-1 mt-1 text-xs font-medium" style={{ color: "var(--gold)" }}>
               <Star size={13} fill="currentColor" strokeWidth={0} />
               {artist.rating}
@@ -77,9 +79,11 @@ export default function ArtistProfile() {
             <span key={l} className="lang-badge">{l}</span>
           ))}
         </div>
+        <button className="btn-rose mt-4" onClick={handleBookNow}>
+          \ud83d\udcc5 Termin buchen
+        </button>
       </div>
 
-      {/* Tabs */}
       <div className="beauty-tabs">
         {(["services", "reviews", "contact"] as const).map((t) => (
           <button
@@ -87,17 +91,16 @@ export default function ArtistProfile() {
             className={`beauty-tab ${tab === t ? "active" : ""}`}
             onClick={() => setTab(t)}
           >
-            {t === "services" ? "✨ Services" : t === "reviews" ? "💬 Bewertungen" : "📱 Kontakt"}
+            {t === "services" ? "\u2728 Services" : t === "reviews" ? "\ud83d\udcac Bewertungen" : "\ud83d\udcf1 Kontakt"}
           </button>
         ))}
       </div>
 
-      {/* Services Tab */}
+      {/* Services */}
       {tab === "services" && (
         <div className="px-5 pb-24">
           {services.map((cat, ci) => (
             <div key={ci} className="mb-5 anim-fade-up" style={{ animationDelay: `${ci * 0.07}s` }}>
-              {/* Category header */}
               <div
                 className="flex items-center gap-2.5 p-3 px-4 bg-white rounded-2xl cursor-pointer transition-all duration-300 border-[1.5px] border-transparent hover:border-[var(--blush)]"
                 style={{ boxShadow: "var(--shadow-sm)" }}
@@ -105,10 +108,7 @@ export default function ArtistProfile() {
               >
                 <span className="text-xl">{cat.emoji}</span>
                 <span className="flex-1 font-display text-lg font-medium">{cat.category}</span>
-                <span
-                  className="text-[10px] font-medium px-2.5 py-0.5 rounded-full"
-                  style={{ color: "var(--txt3)", background: "var(--cream2)" }}
-                >
+                <span className="text-[10px] font-medium px-2.5 py-0.5 rounded-full" style={{ color: "var(--txt3)", background: "var(--cream2)" }}>
                   {cat.items.length}
                 </span>
                 <span
@@ -118,8 +118,6 @@ export default function ArtistProfile() {
                   <ChevronDown size={16} />
                 </span>
               </div>
-
-              {/* Items */}
               {expandedCats[ci] && (
                 <div className="flex flex-col gap-2 pt-2.5">
                   {cat.items.map((item, ii) => (
@@ -127,7 +125,7 @@ export default function ArtistProfile() {
                       key={ii}
                       className="service-item anim-fade-up"
                       style={{ animationDelay: `${ii * 0.04}s` }}
-                      onClick={() => handleServiceClick(item, ci, ii)}
+                      onClick={() => handleServiceClick(item)}
                     >
                       <button
                         className={`fav-btn ${booking.favorites.includes(item.name) ? "fav-active" : ""}`}
@@ -151,9 +149,7 @@ export default function ArtistProfile() {
                           <Clock size={12} /> {item.duration}
                         </span>
                         {item.desc && (
-                          <span className="text-xs font-light" style={{ color: "var(--txt2)" }}>
-                            {item.desc}
-                          </span>
+                          <span className="text-xs font-light" style={{ color: "var(--txt2)" }}>{item.desc}</span>
                         )}
                       </div>
                     </div>
@@ -165,7 +161,7 @@ export default function ArtistProfile() {
         </div>
       )}
 
-      {/* Reviews Tab */}
+      {/* Reviews */}
       {tab === "reviews" && (
         <div className="px-5 pb-10">
           {artistReviews.map((review, i) => (
@@ -180,67 +176,58 @@ export default function ArtistProfile() {
                 ))}
               </div>
               <div className="text-[13px] italic leading-relaxed mb-2.5" style={{ color: "var(--txt2)" }}>
-                "{review.text}"
+                &ldquo;{review.text}&rdquo;
               </div>
               <div className="text-xs font-semibold">{review.name}</div>
-              <div className="text-[11px]" style={{ color: "var(--txt3)" }}>
-                {review.service}
-              </div>
+              <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{review.service}</div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Contact Tab */}
+      {/* Contact */}
       {tab === "contact" && (
         <div className="px-5 pb-10">
-          <div className="contact-card anim-fade-up delay-1" onClick={() => openWhatsApp()}>
-            <div
-              className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: "rgba(37, 211, 102, 0.1)", color: "var(--whatsapp)" }}
-            >
+          <div
+            className="contact-card anim-fade-up delay-1"
+            onClick={() => window.open(`https://wa.me/${artist.whatsapp}`, "_blank")}
+          >
+            <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(37, 211, 102, 0.1)", color: "var(--whatsapp)" }}>
               <WhatsAppIcon size={22} />
             </div>
             <div>
               <h4 className="text-sm font-medium">WhatsApp</h4>
-              <p className="text-xs" style={{ color: "var(--txt3)" }}>
-                Schnell & direkt für Termine
-              </p>
+              <p className="text-xs" style={{ color: "var(--txt3)" }}>Schnell &amp; direkt f\u00fcr Termine</p>
             </div>
           </div>
           <div
             className="contact-card anim-fade-up delay-2"
             onClick={() => window.open(artist.instagram, "_blank")}
           >
-            <div
-              className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: "rgba(225, 48, 108, 0.08)", color: "#E1306C" }}
-            >
+            <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(225, 48, 108, 0.08)", color: "#E1306C" }}>
               <InstagramIcon size={20} />
             </div>
             <div>
               <h4 className="text-sm font-medium">Instagram</h4>
-              <p className="text-xs" style={{ color: "var(--txt3)" }}>
-                {artist.handle}
-              </p>
+              <p className="text-xs" style={{ color: "var(--txt3)" }}>{artist.handle}</p>
             </div>
           </div>
           {id === "cindy" && (
             <div className="contact-card anim-fade-up delay-3">
-              <div
-                className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(201, 169, 110, 0.12)", color: "var(--gold)" }}
-              >
+              <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201, 169, 110, 0.12)", color: "var(--gold)" }}>
                 <Mail size={20} />
               </div>
               <div>
                 <h4 className="text-sm font-medium">E-Mail</h4>
-                <p className="text-xs" style={{ color: "var(--txt3)" }}>
-                  cbeautyvienna@gmail.com
-                </p>
+                <p className="text-xs" style={{ color: "var(--txt3)" }}>cbeautyvienna@gmail.com</p>
               </div>
             </div>
           )}
+          <div className="mt-5">
+            <button className="btn-whatsapp" onClick={handleBookNow}>
+              <WhatsAppIcon size={18} /> Termin buchen
+            </button>
+          </div>
         </div>
       )}
     </div>

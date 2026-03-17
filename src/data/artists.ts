@@ -7,6 +7,7 @@ export interface Artist {
   languages: string[];
   bio: string;
   instagram: string;
+  whatsapp: string;
   specialties: string[];
   rating: number;
   reviews: number;
@@ -23,6 +24,7 @@ export const ARTISTS: Artist[] = [
     languages: ["EN", "DE", "UA", "RU"],
     bio: "Spezialistin für Permanent Make-up mit modernsten Techniken. Zertifizierte Pigmente, sterile Instrumente, natürliche Ergebnisse.",
     instagram: "https://instagram.com/dr.permanent_v",
+    whatsapp: "436601234567",
     specialties: ["Lip Blushing", "Powder Brows", "Eyeliner", "Sugaring"],
     rating: 4.9,
     reviews: 127,
@@ -37,6 +39,7 @@ export const ARTISTS: Artist[] = [
     languages: ["DE", "EN"],
     bio: "Zertifizierte Hair & Makeup Artist. Braut Make-up, Events, Film & Werbung, Lash & Brow Lifting, Workshops.",
     instagram: "https://instagram.com/cbeautyvienna",
+    whatsapp: "436649876543",
     specialties: ["Bridal", "Hairstyling", "Lash Lifting", "Coaching"],
     rating: 5.0,
     reviews: 89,

@@ -5,44 +5,42 @@ import type { ServiceItem } from "@/data/services";
 interface BookingState {
   artist: Artist | null;
   service: ServiceItem | null;
-  step: number;
   date: Date | null;
   time: string | null;
-  form: { name: string; phone: string; notes: string };
+  form: { name: string; phone: string; email: string; notes: string };
   favorites: string[];
 }
 
 interface BookingContextType extends BookingState {
   setArtist: (a: Artist | null) => void;
   setService: (s: ServiceItem | null) => void;
-  setStep: (n: number) => void;
   setDate: (d: Date | null) => void;
   setTime: (t: string | null) => void;
-  setForm: (f: { name: string; phone: string; notes: string }) => void;
+  setForm: (f: { name: string; phone: string; email: string; notes: string }) => void;
   toggleFavorite: (name: string) => void;
   reset: () => void;
 }
 
 const BookingContext = createContext<BookingContextType | null>(null);
 
-const initialForm = { name: "", phone: "", notes: "" };
+const initialForm = { name: "", phone: "", email: "", notes: "" };
 
 export function BookingProvider({ children }: { children: ReactNode }) {
   const [artist, setArtist] = useState<Artist | null>(null);
   const [service, setService] = useState<ServiceItem | null>(null);
-  const [step, setStep] = useState(0);
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [form, setForm] = useState(initialForm);
   const [favorites, setFavorites] = useState<string[]>([]);
 
   const toggleFavorite = (name: string) =>
-    setFavorites((f) => (f.includes(name) ? f.filter((x) => x !== name) : [...f, name]));
+    setFavorites((f) =>
+      f.includes(name) ? f.filter((x) => x !== name) : [...f, name]
+    );
 
   const reset = () => {
     setArtist(null);
     setService(null);
-    setStep(0);
     setDate(null);
     setTime(null);
     setForm(initialForm);
@@ -50,7 +48,21 @@ export function BookingProvider({ children }: { children: ReactNode }) {
 
   return (
     <BookingContext.Provider
-      value={{ artist, service, step, date, time, form, favorites, setArtist, setService, setStep, setDate, setTime, setForm, toggleFavorite, reset }}
+      value={{
+        artist,
+        service,
+        date,
+        time,
+        form,
+        favorites,
+        setArtist,
+        setService,
+        setDate,
+        setTime,
+        setForm,
+        toggleFavorite,
+        reset,
+      }}
     >
       {children}
     </BookingContext.Provider>

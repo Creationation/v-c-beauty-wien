@@ -22,9 +22,15 @@ export default function Confirmation() {
       time,
       name: form.name,
       phone: form.phone,
+      email: form.email,
       notes: form.notes,
     });
     window.open(url, "_blank");
+  };
+
+  const handleNewBooking = () => {
+    booking.reset();
+    navigate("/book");
   };
 
   const handleGoHome = () => {
@@ -38,41 +44,43 @@ export default function Confirmation() {
         <div className="confirm-icon anim-bounce-in">
           <Check size={28} />
         </div>
-        <h2 className="font-display text-[30px] font-medium mb-2">Anfrage gesendet! 🌸</h2>
+        <h2 className="font-display text-[30px] font-medium mb-2">Anfrage gesendet! \ud83c\udf38</h2>
+        <p className="text-sm font-light leading-relaxed mb-2" style={{ color: "var(--txt2)" }}>
+          Deine Anfrage wurde gespeichert.
+        </p>
         <p className="text-sm font-light leading-relaxed mb-7" style={{ color: "var(--txt2)" }}>
-          {artist.name} wird sich bald bei dir melden, um den Termin zu bestätigen.
+          Best\u00e4tige jetzt via WhatsApp und {artist.name} meldet sich bald bei dir!
         </p>
 
-        {/* Summary Card */}
-        <div
-          className="bg-white rounded-3xl p-5 text-left mb-6"
-          style={{ boxShadow: "var(--shadow-sm)" }}
-        >
+        {/* Summary */}
+        <div className="bg-white rounded-3xl p-5 text-left mb-6" style={{ boxShadow: "var(--shadow-sm)" }}>
           {[
             { label: "Expertin", value: artist.name },
             { label: "Service", value: service.name },
-            { label: "Datum", value: date ? formatDateShort(date) : "—" },
-            { label: "Uhrzeit", value: time || "—" },
+            { label: "Datum", value: date ? formatDateShort(date) : "\u2014" },
+            { label: "Uhrzeit", value: time || "\u2014" },
             { label: "Preis", value: service.price },
+            ...(form.name ? [{ label: "Name", value: form.name }] : []),
           ].map((row, i, arr) => (
             <div
               key={row.label}
               className="flex justify-between py-2.5"
               style={{ borderBottom: i < arr.length - 1 ? "1px solid var(--cream2)" : "none" }}
             >
-              <span className="text-[13px]" style={{ color: "var(--txt3)" }}>
-                {row.label}
-              </span>
+              <span className="text-[13px]" style={{ color: "var(--txt3)" }}>{row.label}</span>
               <span className="text-[13px] font-semibold text-right">{row.value}</span>
             </div>
           ))}
         </div>
 
-        <button className="btn-whatsapp mb-2.5" onClick={handleWhatsApp}>
-          <WhatsAppIcon size={20} /> Via WhatsApp bestätigen
+        <button className="btn-whatsapp mb-3" onClick={handleWhatsApp}>
+          <WhatsAppIcon size={20} /> Via WhatsApp best\u00e4tigen
+        </button>
+        <button className="btn-rose mb-2.5" onClick={handleNewBooking}>
+          \ud83d\udcc5 Neuen Termin buchen
         </button>
         <button className="btn-outline" onClick={handleGoHome}>
-          🏠 Zurück zum Start
+          \ud83c\udfe0 Zur\u00fcck zum Start
         </button>
       </div>
     </div>

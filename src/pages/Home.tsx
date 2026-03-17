@@ -1,17 +1,24 @@
-import { useState } from "react";
-import { Star, ArrowLeft, ChevronDown, Clock, Heart, Check, MapPin, Mail } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Star, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ARTISTS } from "@/data/artists";
 import { REVIEWS } from "@/data/reviews";
-import { openWhatsApp } from "@/utils/whatsapp";
+import { openGutscheinWhatsApp } from "@/utils/whatsapp";
 
 export default function Home() {
   const navigate = useNavigate();
   const [showInstaDialog, setShowInstaDialog] = useState(false);
+  const [showSticky, setShowSticky] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowSticky(window.scrollY > 200);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <div className="app-shell">
-      {/* Instagram Choice Dialog */}
+      {/* Instagram Dialog */}
       {showInstaDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-5" onClick={() => setShowInstaDialog(false)}>
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
@@ -20,28 +27,22 @@ export default function Home() {
             style={{ boxShadow: "var(--shadow-lg)" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="font-display text-xl font-medium text-center mb-1">Instagram öffnen</h3>
-            <p className="text-xs text-center mb-5" style={{ color: "var(--txt3)" }}>Welches Profil möchtest du besuchen?</p>
+            <h3 className="font-display text-xl font-medium text-center mb-1">Instagram \u00f6ffnen</h3>
+            <p className="text-xs text-center mb-5" style={{ color: "var(--txt3)" }}>Welches Profil m\u00f6chtest du besuchen?</p>
             <div className="flex flex-col gap-2.5">
               {ARTISTS.map((artist) => (
                 <button
                   key={artist.id}
                   className="flex items-center gap-3.5 p-4 rounded-2xl border-[1.5px] border-transparent bg-[var(--cream)] cursor-pointer transition-all duration-300 hover:border-[var(--blush-deep)] hover:-translate-y-0.5"
                   style={{ boxShadow: "var(--shadow-sm)" }}
-                  onClick={() => {
-                    window.open(artist.instagram, "_blank");
-                    setShowInstaDialog(false);
-                  }}
+                  onClick={() => { window.open(artist.instagram, "_blank"); setShowInstaDialog(false); }}
                 >
                   <span className="text-3xl anim-float">{artist.emoji}</span>
                   <div className="text-left flex-1">
                     <div className="font-display text-base font-medium">{artist.name}</div>
                     <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{artist.handle}</div>
                   </div>
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ background: "rgba(225, 48, 108, 0.08)", color: "#E1306C" }}
-                  >
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(225, 48, 108, 0.08)", color: "#E1306C" }}>
                     <InstagramIcon size={16} />
                   </div>
                 </button>
@@ -57,6 +58,7 @@ export default function Home() {
           </div>
         </div>
       )}
+
       {/* Hero */}
       <div className="hero-section">
         <div className="flex items-center justify-between mb-7 relative anim-fade-up">
@@ -64,7 +66,7 @@ export default function Home() {
             Vego <span style={{ color: "var(--rose-deep)" }}>Beauty</span>
           </div>
           <button
-            onClick={() => openWhatsApp()}
+            onClick={() => navigate("/book")}
             className="px-[18px] py-2 bg-white border-[1.5px] rounded-full text-xs font-medium cursor-pointer transition-all duration-300 hover:bg-[var(--blush)]"
             style={{ borderColor: "var(--blush)", color: "var(--rose-deep)" }}
           >
@@ -72,17 +74,15 @@ export default function Home() {
           </button>
         </div>
         <h1 className="font-display text-[38px] font-normal leading-[1.1] mb-3 anim-fade-up delay-1 relative">
-          Deine Schönheit,
+          Deine Sch\u00f6nheit,
           <br />
-          <em className="italic font-medium" style={{ color: "var(--rose-deep)" }}>
-            perfektioniert
-          </em>
+          <em className="italic font-medium" style={{ color: "var(--rose-deep)" }}>perfektioniert</em>
         </h1>
         <p className="text-sm leading-relaxed max-w-[320px] mb-5 anim-fade-up delay-2" style={{ color: "var(--txt2)" }}>
-          Permanent Make-up, Hairstyling, Braut Make-up & mehr — zwei Expertinnen, ein Ziel: dich strahlen lassen.
+          Permanent Make-up, Hairstyling, Braut Make-up &amp; mehr \u2014 zwei Expertinnen, ein Ziel: dich strahlen lassen.
         </p>
         <div className="flex flex-wrap gap-2 anim-fade-up delay-3">
-          {["🌸 Permanent Makeup", "💄 Pro Makeup", "💇‍♀️ Hairstyling", "✨ Lash Lifting"].map((tag) => (
+          {["\ud83c\udf38 Permanent Makeup", "\ud83d\udc84 Pro Makeup", "\ud83d\udc87\u200d\u2640\ufe0f Hairstyling", "\u2728 Lash Lifting"].map((tag) => (
             <span
               key={tag}
               className="px-3.5 py-1.5 bg-white border rounded-full text-[11px] font-medium flex items-center gap-1.5"
@@ -107,23 +107,18 @@ export default function Home() {
               <div
                 className="h-1 rounded-t-3xl -mx-[calc(1.25rem+1.5px)] -mt-px mb-5"
                 style={{
-                  background:
-                    artist.id === "victoria"
-                      ? "linear-gradient(90deg, var(--blush-deep), var(--blush))"
-                      : "linear-gradient(90deg, var(--gold), var(--gold-soft))",
+                  background: artist.id === "victoria"
+                    ? "linear-gradient(90deg, var(--blush-deep), var(--blush))"
+                    : "linear-gradient(90deg, var(--gold), var(--gold-soft))",
                 }}
               />
               <span className="text-4xl block mb-3 anim-float">{artist.emoji}</span>
               <h3 className="font-display text-xl font-medium mb-0.5">{artist.name}</h3>
-              <p className="text-[11px] leading-snug" style={{ color: "var(--txt2)" }}>
-                {artist.role}
-              </p>
+              <p className="text-[11px] leading-snug" style={{ color: "var(--txt2)" }}>{artist.role}</p>
               <div className="flex items-center gap-1 mt-2.5 text-xs font-medium" style={{ color: "var(--gold)" }}>
                 <Star size={13} fill="currentColor" strokeWidth={0} />
                 {artist.rating}
-                <span className="text-[11px] font-normal" style={{ color: "var(--txt3)" }}>
-                  ({artist.reviews} Bewertungen)
-                </span>
+                <span className="text-[11px] font-normal" style={{ color: "var(--txt3)" }}>({artist.reviews})</span>
               </div>
             </div>
           ))}
@@ -132,24 +127,24 @@ export default function Home() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-3 gap-2.5 px-5 pb-6 anim-fade-up delay-5">
-        <div className="quick-action" onClick={() => openWhatsApp()}>
-          <span className="text-2xl mb-2 block">📅</span>
+        <div className="quick-action" onClick={() => navigate("/book")}>
+          <span className="text-2xl mb-2 block">\ud83d\udcc5</span>
           <span className="text-[11px] font-medium" style={{ color: "var(--txt2)" }}>Termin buchen</span>
         </div>
         <div className="quick-action" onClick={() => navigate("/artist/victoria")}>
-          <span className="text-2xl mb-2 block">💋</span>
+          <span className="text-2xl mb-2 block">\ud83d\udc8b</span>
           <span className="text-[11px] font-medium" style={{ color: "var(--txt2)" }}>Preisliste</span>
         </div>
-        <div className="quick-action" onClick={() => openWhatsApp()}>
-          <span className="text-2xl mb-2 block">🎁</span>
+        <div className="quick-action" onClick={() => openGutscheinWhatsApp()}>
+          <span className="text-2xl mb-2 block">\ud83c\udf81</span>
           <span className="text-[11px] font-medium" style={{ color: "var(--txt2)" }}>Gutschein</span>
         </div>
       </div>
 
       {/* Promo Banner */}
-      <div className="promo-banner anim-fade-up delay-6" onClick={() => openWhatsApp()}>
-        <h3 className="font-display text-xl font-medium mb-1">Geschenkgutschein 🎀</h3>
-        <p className="text-xs opacity-90 font-light">Das perfekte Geschenk — Schenke Schönheit & Wohlbefinden</p>
+      <div className="promo-banner anim-fade-up delay-6" onClick={() => openGutscheinWhatsApp()}>
+        <h3 className="font-display text-xl font-medium mb-1">Geschenkgutschein \ud83c\udf80</h3>
+        <p className="text-xs opacity-90 font-light">Das perfekte Geschenk \u2014 Schenke Sch\u00f6nheit &amp; Wohlbefinden</p>
       </div>
 
       {/* Reviews */}
@@ -165,56 +160,57 @@ export default function Home() {
               ))}
             </div>
             <div className="text-[13px] italic leading-relaxed mb-2.5" style={{ color: "var(--txt2)" }}>
-              "{review.text}"
+              &ldquo;{review.text}&rdquo;
             </div>
             <div className="text-xs font-semibold">{review.name}</div>
-            <div className="text-[11px]" style={{ color: "var(--txt3)" }}>
-              {review.service}
-            </div>
+            <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{review.service}</div>
           </div>
         ))}
       </div>
 
-      {/* Divider */}
       <div className="h-px mx-5 mb-6" style={{ background: "var(--cream2)" }} />
 
       {/* Contact */}
       <div className="px-5 pb-10">
         <div className="section-label">Kontakt</div>
-        <div className="contact-card anim-fade-up delay-7" onClick={() => openWhatsApp()}>
-          <div
-            className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ background: "rgba(37, 211, 102, 0.1)", color: "var(--whatsapp)" }}
-          >
+        <div className="contact-card anim-fade-up delay-7" onClick={() => navigate("/book")}>
+          <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(37, 211, 102, 0.1)", color: "var(--whatsapp)" }}>
             <WhatsAppIcon size={22} />
           </div>
           <div>
-            <h4 className="text-sm font-medium">WhatsApp</h4>
-            <p className="text-xs" style={{ color: "var(--txt3)" }}>
-              Schreib uns direkt 💬
-            </p>
+            <h4 className="text-sm font-medium">Termin buchen</h4>
+            <p className="text-xs" style={{ color: "var(--txt3)" }}>Via WhatsApp \u2014 schnell &amp; direkt \ud83d\udcac</p>
           </div>
         </div>
         <div className="contact-card anim-fade-up delay-8" onClick={() => setShowInstaDialog(true)}>
-          <div
-            className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ background: "rgba(225, 48, 108, 0.08)", color: "#E1306C" }}
-          >
+          <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(225, 48, 108, 0.08)", color: "#E1306C" }}>
             <InstagramIcon size={20} />
           </div>
           <div>
             <h4 className="text-sm font-medium">Instagram</h4>
-            <p className="text-xs" style={{ color: "var(--txt3)" }}>
-              @dr.permanent_v · @cbeautyvienna
-            </p>
+            <p className="text-xs" style={{ color: "var(--txt3)" }}>@dr.permanent_v \u00b7 @cbeautyvienna</p>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
       <div className="text-center pb-8 text-[11px] flex items-center justify-center gap-1" style={{ color: "var(--txt3)" }}>
-        <MapPin size={12} /> Wien, Österreich
+        <MapPin size={12} /> Wien, \u00d6sterreich
       </div>
+
+      {/* Sticky CTA */}
+      {showSticky && (
+        <div
+          className="fixed bottom-0 left-0 right-0 z-40 p-4 anim-fade-up"
+          style={{ background: "linear-gradient(to top, var(--cream) 80%, transparent)" }}
+        >
+          <button
+            className="btn-rose w-full"
+            onClick={() => navigate("/book")}
+          >
+            \u2728 Jetzt Termin buchen
+          </button>
+        </div>
+      )}
     </div>
   );
 }
