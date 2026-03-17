@@ -195,7 +195,7 @@ export default function Home() {
             </p>
           </div>
         </div>
-        <div className="contact-card anim-fade-up delay-8">
+        <div className="contact-card anim-fade-up delay-8" onClick={() => setShowInstaDialog(true)}>
           <div
             className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
             style={{ background: "rgba(225, 48, 108, 0.08)", color: "#E1306C" }}
