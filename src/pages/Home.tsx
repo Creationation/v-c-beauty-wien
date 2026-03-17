@@ -72,7 +72,7 @@ export default function Home() {
           src="/videos/hero-bg.mp4"
         />
         <div className="absolute inset-0 z-[1]" style={{ background: "linear-gradient(to bottom, rgba(253,248,244,0.5) 0%, rgba(253,248,244,0.3) 50%, rgba(253,248,244,0.95) 100%)" }} />
-        <div className="flex items-center justify-between mb-7 relative anim-fade-up">
+        <div className="flex items-center justify-between mb-7 relative z-[2] anim-fade-up">
           <div className="font-display text-[22px] font-semibold tracking-tight" style={{ color: "var(--txt)" }}>
             Vego <span style={{ color: "var(--rose-deep)" }}>Beauty</span>
           </div>
