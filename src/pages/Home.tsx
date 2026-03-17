@@ -27,8 +27,8 @@ export default function Home() {
             style={{ boxShadow: "var(--shadow-lg)" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="font-display text-xl font-medium text-center mb-1">Instagram \u00f6ffnen</h3>
-            <p className="text-xs text-center mb-5" style={{ color: "var(--txt3)" }}>Welches Profil m\u00f6chtest du besuchen?</p>
+            <h3 className="font-display text-xl font-medium text-center mb-1">Instagram öffnen</h3>
+            <p className="text-xs text-center mb-5" style={{ color: "var(--txt3)" }}>Welches Profil möchtest du besuchen?</p>
             <div className="flex flex-col gap-2.5">
               {ARTISTS.map((artist) => (
                 <button
