@@ -51,7 +51,7 @@ export const SERVICES: Record<string, ServiceCategory[]> = {
       emoji: "💄",
       items: [
         { name: "Braut Make-up", duration: "1,5–2 Std.", price: "auf Anfrage", desc: "Individuell für deinen großen Tag", popular: true, icon: "👰" },
-        { name: "Tages Make-up", duration: "45–60 Min.", price: "auf Anfrage", desc: "Natürlich & elegant — für Alltag & Anlässe", icon: "🌞" },
+        { name: "Tages Make-up", duration: "45–60 Min.", price: "auf Anfrage", desc: "Natürlich & elegant, für Alltag & Anlässe", icon: "🌞" },
         { name: "Abend Make-up", duration: "60 Min.", price: "auf Anfrage", desc: "Glamourös für Events und Partys", icon: "🌙" },
         { name: "Film & Werbung", duration: "variabel", price: "auf Anfrage", desc: "Professionell für Kamera und Licht", icon: "🎬" },
         { name: "Event Make-up", duration: "60 Min.", price: "auf Anfrage", desc: "Kreative Looks für besondere Anlässe", icon: "🎉" },
