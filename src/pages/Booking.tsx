@@ -265,7 +265,7 @@ export default function Booking() {
         {/* Date */}
         {step === "date" && (
           <div className="anim-fade-up delay-2">
-            <div className="section-label">\ud83d\udcc5 W\u00e4hle dein Datum</div>
+            <div className="section-label">📅 Wähle dein Datum</div>
             <div className="flex items-center justify-between mb-3.5">
               <div className="font-display text-xl font-medium">
                 {MONTHS[month]} {year}
