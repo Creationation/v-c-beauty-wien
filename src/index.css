@@ -67,8 +67,12 @@
     background: var(--cream);
     color: var(--txt);
     font-family: var(--font-body);
+    font-variant-numeric: lining-nums tabular-nums;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  .font-display {
+    font-variant-numeric: lining-nums;
   }
 }
 
