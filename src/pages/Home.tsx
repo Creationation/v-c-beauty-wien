@@ -82,7 +82,7 @@ export default function Home() {
           Permanent Make-up, Hairstyling, Braut Make-up &amp; mehr — zwei Expertinnen, ein Ziel: dich strahlen lassen.
         </p>
         <div className="flex flex-wrap gap-2 anim-fade-up delay-3">
-          {["\ud83c\udf38 Permanent Makeup", "\ud83d\udc84 Pro Makeup", "\ud83d\udc87\u200d\u2640\ufe0f Hairstyling", "\u2728 Lash Lifting"].map((tag) => (
+          {["🌸 Permanent Makeup", "💄 Pro Makeup", "💇‍♀️ Hairstyling", "✨ Lash Lifting"].map((tag) => (
             <span
               key={tag}
               className="px-3.5 py-1.5 bg-white border rounded-full text-[11px] font-medium flex items-center gap-1.5"
