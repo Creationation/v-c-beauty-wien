@@ -7,9 +7,9 @@ import { formatDateShort } from "@/utils/dates";
 export default function Confirmation() {
   const navigate = useNavigate();
   const booking = useBooking();
-  const { artist, service, date, time, form } = booking;
+  const { artist, services, date, time, form } = booking;
 
-  if (!artist || !service) {
+  if (!artist || services.length === 0) {
     navigate("/");
     return null;
   }
@@ -17,7 +17,7 @@ export default function Confirmation() {
   const handleWhatsApp = () => {
     const url = buildWhatsAppUrl({
       artist,
-      service,
+      services,
       date,
       time,
       name: form.name,
@@ -56,10 +56,10 @@ export default function Confirmation() {
         <div className="bg-white rounded-3xl p-5 text-left mb-6" style={{ boxShadow: "var(--shadow-sm)" }}>
           {[
             { label: "Expertin", value: artist.name },
-            { label: "Service", value: service.name },
+            { label: "Services", value: services.map((s) => s.name).join(", ") },
             { label: "Datum", value: date ? formatDateShort(date) : "—" },
             { label: "Uhrzeit", value: time || "—" },
-            { label: "Preis", value: service.price },
+            { label: "Preis", value: services.map((s) => s.price).join(" + ") },
             ...(form.name ? [{ label: "Name", value: form.name }] : []),
           ].map((row, i, arr) => (
             <div

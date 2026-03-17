@@ -4,7 +4,7 @@ import type { ServiceItem } from "@/data/services";
 
 interface BookingState {
   artist: Artist | null;
-  service: ServiceItem | null;
+  services: ServiceItem[];
   date: Date | null;
   time: string | null;
   form: { name: string; phone: string; email: string; notes: string };
@@ -12,8 +12,12 @@ interface BookingState {
 }
 
 interface BookingContextType extends BookingState {
+  /** @deprecated use services + toggleService */
+  service: ServiceItem | null;
   setArtist: (a: Artist | null) => void;
+  /** @deprecated use toggleService */
   setService: (s: ServiceItem | null) => void;
+  toggleService: (s: ServiceItem) => void;
   setDate: (d: Date | null) => void;
   setTime: (t: string | null) => void;
   setForm: (f: { name: string; phone: string; email: string; notes: string }) => void;
@@ -27,11 +31,23 @@ const initialForm = { name: "", phone: "", email: "", notes: "" };
 
 export function BookingProvider({ children }: { children: ReactNode }) {
   const [artist, setArtist] = useState<Artist | null>(null);
-  const [service, setService] = useState<ServiceItem | null>(null);
+  const [services, setServices] = useState<ServiceItem[]>([]);
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [form, setForm] = useState(initialForm);
   const [favorites, setFavorites] = useState<string[]>([]);
+
+  const toggleService = (s: ServiceItem) =>
+    setServices((prev) =>
+      prev.some((x) => x.name === s.name)
+        ? prev.filter((x) => x.name !== s.name)
+        : [...prev, s]
+    );
+
+  const setService = (s: ServiceItem | null) => {
+    if (s) setServices([s]);
+    else setServices([]);
+  };
 
   const toggleFavorite = (name: string) =>
     setFavorites((f) =>
@@ -40,7 +56,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
 
   const reset = () => {
     setArtist(null);
-    setService(null);
+    setServices([]);
     setDate(null);
     setTime(null);
     setForm(initialForm);
@@ -50,13 +66,15 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     <BookingContext.Provider
       value={{
         artist,
-        service,
+        services,
+        service: services[0] || null,
         date,
         time,
         form,
         favorites,
         setArtist,
         setService,
+        toggleService,
         setDate,
         setTime,
         setForm,
