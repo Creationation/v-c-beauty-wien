@@ -79,7 +79,7 @@ export default function Home() {
           <em className="italic font-medium" style={{ color: "var(--rose-deep)" }}>perfektioniert</em>
         </h1>
         <p className="text-sm leading-relaxed max-w-[320px] mb-5 anim-fade-up delay-2" style={{ color: "var(--txt2)" }}>
-          Permanent Make-up, Hairstyling, Braut Make-up &amp; mehr \u2014 zwei Expertinnen, ein Ziel: dich strahlen lassen.
+          Permanent Make-up, Hairstyling, Braut Make-up &amp; mehr — zwei Expertinnen, ein Ziel: dich strahlen lassen.
         </p>
         <div className="flex flex-wrap gap-2 anim-fade-up delay-3">
           {["\ud83c\udf38 Permanent Makeup", "\ud83d\udc84 Pro Makeup", "\ud83d\udc87\u200d\u2640\ufe0f Hairstyling", "\u2728 Lash Lifting"].map((tag) => (
