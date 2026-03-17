@@ -67,10 +67,11 @@ export default function Home() {
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-20 -z-10"
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          style={{ opacity: 0.18 }}
           src="/videos/hero-bg.mp4"
         />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[var(--cream)]/60 via-transparent to-[var(--cream)]" />
+        <div className="absolute inset-0 z-[1]" style={{ background: "linear-gradient(to bottom, rgba(253,248,244,0.5) 0%, rgba(253,248,244,0.3) 50%, rgba(253,248,244,0.95) 100%)" }} />
         <div className="flex items-center justify-between mb-7 relative anim-fade-up">
           <div className="font-display text-[22px] font-semibold tracking-tight" style={{ color: "var(--txt)" }}>
             Vego <span style={{ color: "var(--rose-deep)" }}>Beauty</span>
