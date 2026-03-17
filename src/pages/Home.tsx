@@ -27,8 +27,8 @@ export default function Home() {
             style={{ boxShadow: "var(--shadow-lg)" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="font-display text-xl font-medium text-center mb-1">Instagram \u00f6ffnen</h3>
-            <p className="text-xs text-center mb-5" style={{ color: "var(--txt3)" }}>Welches Profil m\u00f6chtest du besuchen?</p>
+            <h3 className="font-display text-xl font-medium text-center mb-1">Instagram öffnen</h3>
+            <p className="text-xs text-center mb-5" style={{ color: "var(--txt3)" }}>Welches Profil möchtest du besuchen?</p>
             <div className="flex flex-col gap-2.5">
               {ARTISTS.map((artist) => (
                 <button
@@ -74,15 +74,15 @@ export default function Home() {
           </button>
         </div>
         <h1 className="font-display text-[38px] font-normal leading-[1.1] mb-3 anim-fade-up delay-1 relative">
-          Deine Sch\u00f6nheit,
+          Deine Schönheit,
           <br />
           <em className="italic font-medium" style={{ color: "var(--rose-deep)" }}>perfektioniert</em>
         </h1>
         <p className="text-sm leading-relaxed max-w-[320px] mb-5 anim-fade-up delay-2" style={{ color: "var(--txt2)" }}>
-          Permanent Make-up, Hairstyling, Braut Make-up &amp; mehr \u2014 zwei Expertinnen, ein Ziel: dich strahlen lassen.
+          Permanent Make-up, Hairstyling, Braut Make-up &amp; mehr — zwei Expertinnen, ein Ziel: dich strahlen lassen.
         </p>
         <div className="flex flex-wrap gap-2 anim-fade-up delay-3">
-          {["\ud83c\udf38 Permanent Makeup", "\ud83d\udc84 Pro Makeup", "\ud83d\udc87\u200d\u2640\ufe0f Hairstyling", "\u2728 Lash Lifting"].map((tag) => (
+          {["🌸 Permanent Makeup", "💄 Pro Makeup", "💇‍♀️ Hairstyling", "✨ Lash Lifting"].map((tag) => (
             <span
               key={tag}
               className="px-3.5 py-1.5 bg-white border rounded-full text-[11px] font-medium flex items-center gap-1.5"
@@ -128,23 +128,23 @@ export default function Home() {
       {/* Quick Actions */}
       <div className="grid grid-cols-3 gap-2.5 px-5 pb-6 anim-fade-up delay-5">
         <div className="quick-action" onClick={() => navigate("/book")}>
-          <span className="text-2xl mb-2 block">\ud83d\udcc5</span>
+          <span className="text-2xl mb-2 block">📅</span>
           <span className="text-[11px] font-medium" style={{ color: "var(--txt2)" }}>Termin buchen</span>
         </div>
         <div className="quick-action" onClick={() => navigate("/artist/victoria")}>
-          <span className="text-2xl mb-2 block">\ud83d\udc8b</span>
+          <span className="text-2xl mb-2 block">💋</span>
           <span className="text-[11px] font-medium" style={{ color: "var(--txt2)" }}>Preisliste</span>
         </div>
         <div className="quick-action" onClick={() => openGutscheinWhatsApp()}>
-          <span className="text-2xl mb-2 block">\ud83c\udf81</span>
+          <span className="text-2xl mb-2 block">🎁</span>
           <span className="text-[11px] font-medium" style={{ color: "var(--txt2)" }}>Gutschein</span>
         </div>
       </div>
 
       {/* Promo Banner */}
       <div className="promo-banner anim-fade-up delay-6" onClick={() => openGutscheinWhatsApp()}>
-        <h3 className="font-display text-xl font-medium mb-1">Geschenkgutschein \ud83c\udf80</h3>
-        <p className="text-xs opacity-90 font-light">Das perfekte Geschenk \u2014 Schenke Sch\u00f6nheit &amp; Wohlbefinden</p>
+        <h3 className="font-display text-xl font-medium mb-1">Geschenkgutschein 🎀</h3>
+        <p className="text-xs opacity-90 font-light">Das perfekte Geschenk — Schenke Schönheit &amp; Wohlbefinden</p>
       </div>
 
       {/* Reviews */}
@@ -179,7 +179,7 @@ export default function Home() {
           </div>
           <div>
             <h4 className="text-sm font-medium">Termin buchen</h4>
-            <p className="text-xs" style={{ color: "var(--txt3)" }}>Via WhatsApp \u2014 schnell &amp; direkt \ud83d\udcac</p>
+            <p className="text-xs" style={{ color: "var(--txt3)" }}>Via WhatsApp — schnell &amp; direkt 💬</p>
           </div>
         </div>
         <div className="contact-card anim-fade-up delay-8" onClick={() => setShowInstaDialog(true)}>
@@ -188,13 +188,13 @@ export default function Home() {
           </div>
           <div>
             <h4 className="text-sm font-medium">Instagram</h4>
-            <p className="text-xs" style={{ color: "var(--txt3)" }}>@dr.permanent_v \u00b7 @cbeautyvienna</p>
+            <p className="text-xs" style={{ color: "var(--txt3)" }}>@dr.permanent_v · @cbeautyvienna</p>
           </div>
         </div>
       </div>
 
       <div className="text-center pb-8 text-[11px] flex items-center justify-center gap-1" style={{ color: "var(--txt3)" }}>
-        <MapPin size={12} /> Wien, \u00d6sterreich
+        <MapPin size={12} /> Wien, Österreich
       </div>
 
       {/* Sticky CTA */}
@@ -207,7 +207,7 @@ export default function Home() {
             className="btn-rose w-full"
             onClick={() => navigate("/book")}
           >
-            \u2728 Jetzt Termin buchen
+            ✨ Jetzt Termin buchen
           </button>
         </div>
       )}

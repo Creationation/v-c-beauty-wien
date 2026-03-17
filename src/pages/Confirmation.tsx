@@ -44,12 +44,12 @@ export default function Confirmation() {
         <div className="confirm-icon anim-bounce-in">
           <Check size={28} />
         </div>
-        <h2 className="font-display text-[30px] font-medium mb-2">Anfrage gesendet! \ud83c\udf38</h2>
+        <h2 className="font-display text-[30px] font-medium mb-2">Anfrage gesendet! 🌸</h2>
         <p className="text-sm font-light leading-relaxed mb-2" style={{ color: "var(--txt2)" }}>
           Deine Anfrage wurde gespeichert.
         </p>
         <p className="text-sm font-light leading-relaxed mb-7" style={{ color: "var(--txt2)" }}>
-          Best\u00e4tige jetzt via WhatsApp und {artist.name} meldet sich bald bei dir!
+          Bestätige jetzt via WhatsApp und {artist.name} meldet sich bald bei dir!
         </p>
 
         {/* Summary */}
@@ -57,8 +57,8 @@ export default function Confirmation() {
           {[
             { label: "Expertin", value: artist.name },
             { label: "Service", value: service.name },
-            { label: "Datum", value: date ? formatDateShort(date) : "\u2014" },
-            { label: "Uhrzeit", value: time || "\u2014" },
+            { label: "Datum", value: date ? formatDateShort(date) : "—" },
+            { label: "Uhrzeit", value: time || "—" },
             { label: "Preis", value: service.price },
             ...(form.name ? [{ label: "Name", value: form.name }] : []),
           ].map((row, i, arr) => (
@@ -74,13 +74,13 @@ export default function Confirmation() {
         </div>
 
         <button className="btn-whatsapp mb-3" onClick={handleWhatsApp}>
-          <WhatsAppIcon size={20} /> Via WhatsApp best\u00e4tigen
+          <WhatsAppIcon size={20} /> Via WhatsApp bestätigen
         </button>
         <button className="btn-rose mb-2.5" onClick={handleNewBooking}>
-          \ud83d\udcc5 Neuen Termin buchen
+          📅 Neuen Termin buchen
         </button>
         <button className="btn-outline" onClick={handleGoHome}>
-          \ud83c\udfe0 Zur\u00fcck zum Start
+          🏠 Zurück zum Start
         </button>
       </div>
     </div>

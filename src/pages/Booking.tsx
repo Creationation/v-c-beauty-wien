@@ -88,7 +88,7 @@ export default function Booking() {
           className="flex items-center gap-1.5 bg-transparent border-none text-[13px] cursor-pointer transition-colors"
           style={{ color: "var(--txt2)", fontFamily: "var(--font-body)" }}
         >
-          <ArrowLeft size={18} /> Zur\u00fcck
+          <ArrowLeft size={18} /> Zurück
         </button>
       </div>
 
@@ -127,8 +127,8 @@ export default function Booking() {
                 <div className="flex-1 min-w-0">
                   <h4 className="text-[15px] font-medium mb-0.5 truncate">{service.name}</h4>
                   <p className="text-xs" style={{ color: "var(--txt3)" }}>
-                    {service.duration} \u00b7 {service.price}
-                    {currentArtist && ` \u00b7 ${currentArtist.name}`}
+                    {service.duration} · {service.price}
+                    {currentArtist && ` · ${currentArtist.name}`}
                   </p>
                 </div>
               </>
@@ -147,7 +147,7 @@ export default function Booking() {
         {/* Artist Selection */}
         {step === "artist" && (
           <div className="anim-fade-up delay-2">
-            <div className="section-label">\ud83c\udf38 W\u00e4hle deine Expertin</div>
+            <div className="section-label">🌸 Wähle deine Expertin</div>
             <div className="flex flex-col gap-3">
               {ARTISTS.map((a, i) => (
                 <div
@@ -194,7 +194,7 @@ export default function Booking() {
         {/* Service Selection */}
         {step === "service" && (
           <div className="anim-fade-up delay-2">
-            <div className="section-label">\u2728 W\u00e4hle deinen Service</div>
+            <div className="section-label">✨ Wähle deinen Service</div>
             {services.map((cat, ci) => (
               <div key={ci} className="mb-4">
                 <div
@@ -265,7 +265,7 @@ export default function Booking() {
         {/* Date */}
         {step === "date" && (
           <div className="anim-fade-up delay-2">
-            <div className="section-label">\ud83d\udcc5 W\u00e4hle dein Datum</div>
+            <div className="section-label">📅 Wähle dein Datum</div>
             <div className="flex items-center justify-between mb-3.5">
               <div className="font-display text-xl font-medium">
                 {MONTHS[month]} {year}
@@ -331,7 +331,7 @@ export default function Booking() {
         {/* Time */}
         {step === "time" && (
           <div className="anim-fade-up">
-            <div className="section-label">\ud83d\udd50 W\u00e4hle deine Uhrzeit</div>
+            <div className="section-label">🕐 Wähle deine Uhrzeit</div>
             {date && (
               <p className="text-[13px] mb-4" style={{ color: "var(--txt2)" }}>
                 {formatDateLong(date)}
@@ -360,7 +360,7 @@ export default function Booking() {
         {/* Form */}
         {step === "form" && (
           <div className="anim-fade-up">
-            <div className="section-label">\ud83d\udcdd Deine Angaben</div>
+            <div className="section-label">📝 Deine Angaben</div>
             <div className="mb-4">
               <label className="block text-[11px] font-semibold tracking-wide uppercase mb-1.5" style={{ color: "var(--txt3)" }}>Name *</label>
               <input className="beauty-input" placeholder="Vor- und Nachname" value={form.name} onChange={(e) => booking.setForm({ ...form, name: e.target.value })} />
@@ -375,7 +375,7 @@ export default function Booking() {
             </div>
             <div className="mb-6">
               <label className="block text-[11px] font-semibold tracking-wide uppercase mb-1.5" style={{ color: "var(--txt3)" }}>Anmerkungen</label>
-              <textarea className="beauty-input resize-none" style={{ minHeight: 80 }} placeholder="W\u00fcnsche, Allergien, besondere Hinweise..." value={form.notes} onChange={(e) => booking.setForm({ ...form, notes: e.target.value })} />
+              <textarea className="beauty-input resize-none" style={{ minHeight: 80 }} placeholder="Wünsche, Allergien, besondere Hinweise..." value={form.notes} onChange={(e) => booking.setForm({ ...form, notes: e.target.value })} />
             </div>
             <button
               className="btn-whatsapp"
@@ -386,7 +386,7 @@ export default function Booking() {
               <WhatsAppIcon size={20} /> Termin via WhatsApp buchen
             </button>
             <p className="text-center text-[11px] mt-3" style={{ color: "var(--txt3)" }}>
-              Du wirst direkt zu WhatsApp weitergeleitet \ud83d\udcac
+              Du wirst direkt zu WhatsApp weitergeleitet 💬
             </p>
           </div>
         )}

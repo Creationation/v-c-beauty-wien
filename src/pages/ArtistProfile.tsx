@@ -42,7 +42,7 @@ export default function ArtistProfile() {
           className="flex items-center gap-1.5 bg-transparent border-none text-[13px] cursor-pointer transition-colors"
           style={{ color: "var(--txt2)", fontFamily: "var(--font-body)" }}
         >
-          <ArrowLeft size={18} /> Zur\u00fcck
+          <ArrowLeft size={18} /> Zurück
         </button>
       </div>
 
@@ -80,7 +80,7 @@ export default function ArtistProfile() {
           ))}
         </div>
         <button className="btn-rose mt-4" onClick={handleBookNow}>
-          \ud83d\udcc5 Termin buchen
+          📅 Termin buchen
         </button>
       </div>
 
@@ -91,7 +91,7 @@ export default function ArtistProfile() {
             className={`beauty-tab ${tab === t ? "active" : ""}`}
             onClick={() => setTab(t)}
           >
-            {t === "services" ? "\u2728 Services" : t === "reviews" ? "\ud83d\udcac Bewertungen" : "\ud83d\udcf1 Kontakt"}
+            {t === "services" ? "✨ Services" : t === "reviews" ? "💬 Bewertungen" : "📱 Kontakt"}
           </button>
         ))}
       </div>
@@ -197,7 +197,7 @@ export default function ArtistProfile() {
             </div>
             <div>
               <h4 className="text-sm font-medium">WhatsApp</h4>
-              <p className="text-xs" style={{ color: "var(--txt3)" }}>Schnell &amp; direkt f\u00fcr Termine</p>
+              <p className="text-xs" style={{ color: "var(--txt3)" }}>Schnell &amp; direkt für Termine</p>
             </div>
           </div>
           <div
