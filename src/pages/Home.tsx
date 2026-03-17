@@ -61,7 +61,7 @@ export default function Home() {
       <div className="hero-section">
         <div className="flex items-center justify-between mb-7 relative anim-fade-up">
           <div className="font-display text-[22px] font-semibold tracking-tight" style={{ color: "var(--txt)" }}>
-            V <span style={{ color: "var(--rose-deep)" }}>&</span> C
+            Vego <span style={{ color: "var(--rose-deep)" }}>Beauty</span>
           </div>
           <button
             onClick={() => openWhatsApp()}
