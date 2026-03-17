@@ -36,7 +36,7 @@ export default function Booking() {
 
   const steps: Step[] = (() => {
     if (!artistId) return ["artist", "service", "date", "time", "form"];
-    if (service) return ["date", "time", "form"];
+    if (services.length > 0) return ["service", "date", "time", "form"];
     return ["service", "date", "time", "form"];
   })();
 
