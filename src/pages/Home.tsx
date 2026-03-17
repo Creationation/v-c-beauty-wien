@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Star, ArrowLeft, ChevronDown, Clock, Heart, Check, MapPin, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ARTISTS } from "@/data/artists";
@@ -6,9 +7,56 @@ import { openWhatsApp } from "@/utils/whatsapp";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [showInstaDialog, setShowInstaDialog] = useState(false);
 
   return (
     <div className="app-shell">
+      {/* Instagram Choice Dialog */}
+      {showInstaDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-5" onClick={() => setShowInstaDialog(false)}>
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+          <div
+            className="relative bg-white rounded-3xl p-6 w-full max-w-[360px] anim-fade-up"
+            style={{ boxShadow: "var(--shadow-lg)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-display text-xl font-medium text-center mb-1">Instagram öffnen</h3>
+            <p className="text-xs text-center mb-5" style={{ color: "var(--txt3)" }}>Welches Profil möchtest du besuchen?</p>
+            <div className="flex flex-col gap-2.5">
+              {ARTISTS.map((artist) => (
+                <button
+                  key={artist.id}
+                  className="flex items-center gap-3.5 p-4 rounded-2xl border-[1.5px] border-transparent bg-[var(--cream)] cursor-pointer transition-all duration-300 hover:border-[var(--blush-deep)] hover:-translate-y-0.5"
+                  style={{ boxShadow: "var(--shadow-sm)" }}
+                  onClick={() => {
+                    window.open(artist.instagram, "_blank");
+                    setShowInstaDialog(false);
+                  }}
+                >
+                  <span className="text-3xl anim-float">{artist.emoji}</span>
+                  <div className="text-left flex-1">
+                    <div className="font-display text-base font-medium">{artist.name}</div>
+                    <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{artist.handle}</div>
+                  </div>
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ background: "rgba(225, 48, 108, 0.08)", color: "#E1306C" }}
+                  >
+                    <InstagramIcon size={16} />
+                  </div>
+                </button>
+              ))}
+            </div>
+            <button
+              className="mt-4 w-full text-xs font-medium py-2.5 rounded-full border-none bg-transparent cursor-pointer"
+              style={{ color: "var(--txt3)" }}
+              onClick={() => setShowInstaDialog(false)}
+            >
+              Abbrechen
+            </button>
+          </div>
+        </div>
+      )}
       {/* Hero */}
       <div className="hero-section">
         <div className="flex items-center justify-between mb-7 relative anim-fade-up">
@@ -147,7 +195,7 @@ export default function Home() {
             </p>
           </div>
         </div>
-        <div className="contact-card anim-fade-up delay-8">
+        <div className="contact-card anim-fade-up delay-8" onClick={() => setShowInstaDialog(true)}>
           <div
             className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
             style={{ background: "rgba(225, 48, 108, 0.08)", color: "#E1306C" }}
