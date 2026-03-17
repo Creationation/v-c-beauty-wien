@@ -127,8 +127,8 @@ export default function Booking() {
                 <div className="flex-1 min-w-0">
                   <h4 className="text-[15px] font-medium mb-0.5 truncate">{service.name}</h4>
                   <p className="text-xs" style={{ color: "var(--txt3)" }}>
-                    {service.duration} \u00b7 {service.price}
-                    {currentArtist && ` \u00b7 ${currentArtist.name}`}
+                    {service.duration} · {service.price}
+                    {currentArtist && ` · ${currentArtist.name}`}
                   </p>
                 </div>
               </>
