@@ -207,7 +207,7 @@ export default function Home() {
             className="btn-rose w-full"
             onClick={() => navigate("/book")}
           >
-            \u2728 Jetzt Termin buchen
+            ✨ Jetzt Termin buchen
           </button>
         </div>
       )}
