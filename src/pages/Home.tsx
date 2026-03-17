@@ -188,7 +188,7 @@ export default function Home() {
           </div>
           <div>
             <h4 className="text-sm font-medium">Instagram</h4>
-            <p className="text-xs" style={{ color: "var(--txt3)" }}>@dr.permanent_v \u00b7 @cbeautyvienna</p>
+            <p className="text-xs" style={{ color: "var(--txt3)" }}>@dr.permanent_v · @cbeautyvienna</p>
           </div>
         </div>
       </div>
