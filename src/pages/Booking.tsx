@@ -331,7 +331,7 @@ export default function Booking() {
         {/* Time */}
         {step === "time" && (
           <div className="anim-fade-up">
-            <div className="section-label">\ud83d\udd50 W\u00e4hle deine Uhrzeit</div>
+            <div className="section-label">🕐 Wähle deine Uhrzeit</div>
             {date && (
               <p className="text-[13px] mb-4" style={{ color: "var(--txt2)" }}>
                 {formatDateLong(date)}
