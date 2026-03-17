@@ -44,7 +44,7 @@ export default function Confirmation() {
         <div className="confirm-icon anim-bounce-in">
           <Check size={28} />
         </div>
-        <h2 className="font-display text-[30px] font-medium mb-2">Anfrage gesendet! \ud83c\udf38</h2>
+        <h2 className="font-display text-[30px] font-medium mb-2">Anfrage gesendet! 🌸</h2>
         <p className="text-sm font-light leading-relaxed mb-2" style={{ color: "var(--txt2)" }}>
           Deine Anfrage wurde gespeichert.
         </p>
