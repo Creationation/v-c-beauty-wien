@@ -128,15 +128,15 @@ export default function Home() {
       {/* Quick Actions */}
       <div className="grid grid-cols-3 gap-2.5 px-5 pb-6 anim-fade-up delay-5">
         <div className="quick-action" onClick={() => navigate("/book")}>
-          <span className="text-2xl mb-2 block">\ud83d\udcc5</span>
+          <span className="text-2xl mb-2 block">📅</span>
           <span className="text-[11px] font-medium" style={{ color: "var(--txt2)" }}>Termin buchen</span>
         </div>
         <div className="quick-action" onClick={() => navigate("/artist/victoria")}>
-          <span className="text-2xl mb-2 block">\ud83d\udc8b</span>
+          <span className="text-2xl mb-2 block">💋</span>
           <span className="text-[11px] font-medium" style={{ color: "var(--txt2)" }}>Preisliste</span>
         </div>
         <div className="quick-action" onClick={() => openGutscheinWhatsApp()}>
-          <span className="text-2xl mb-2 block">\ud83c\udf81</span>
+          <span className="text-2xl mb-2 block">🎁</span>
           <span className="text-[11px] font-medium" style={{ color: "var(--txt2)" }}>Gutschein</span>
         </div>
       </div>
