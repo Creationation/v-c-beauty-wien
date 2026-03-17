@@ -46,7 +46,7 @@ export default function StatsBar() {
     return () => obs.disconnect();
   }, []);
   return (
-    <div ref={ref} className="mx-5 mb-6 bg-white rounded-2xl py-5 px-4 grid grid-cols-3 divide-x" style={{ boxShadow: "var(--shadow-sm)", divideColor: "var(--cream2)" }}>
+    <div ref={ref} className="mx-5 mb-6 bg-white rounded-2xl py-5 px-4 grid grid-cols-3 divide-x divide-[var(--cream2)]" style={{ boxShadow: "var(--shadow-sm)" }}>
       {STATS.map((s) => (
         <StatItem key={s.label} {...s} active={active} />
       ))}
