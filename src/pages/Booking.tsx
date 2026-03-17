@@ -360,7 +360,7 @@ export default function Booking() {
         {/* Form */}
         {step === "form" && (
           <div className="anim-fade-up">
-            <div className="section-label">\ud83d\udcdd Deine Angaben</div>
+            <div className="section-label">📝 Deine Angaben</div>
             <div className="mb-4">
               <label className="block text-[11px] font-semibold tracking-wide uppercase mb-1.5" style={{ color: "var(--txt3)" }}>Name *</label>
               <input className="beauty-input" placeholder="Vor- und Nachname" value={form.name} onChange={(e) => booking.setForm({ ...form, name: e.target.value })} />
