@@ -147,7 +147,7 @@ export default function Booking() {
         {/* Artist Selection */}
         {step === "artist" && (
           <div className="anim-fade-up delay-2">
-            <div className="section-label">\ud83c\udf38 W\u00e4hle deine Expertin</div>
+            <div className="section-label">🌸 Wähle deine Expertin</div>
             <div className="flex flex-col gap-3">
               {ARTISTS.map((a, i) => (
                 <div
