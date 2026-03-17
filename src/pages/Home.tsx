@@ -74,7 +74,7 @@ export default function Home() {
           </button>
         </div>
         <h1 className="font-display text-[38px] font-normal leading-[1.1] mb-3 anim-fade-up delay-1 relative">
-          Deine Sch\u00f6nheit,
+          Deine Schönheit,
           <br />
           <em className="italic font-medium" style={{ color: "var(--rose-deep)" }}>perfektioniert</em>
         </h1>
