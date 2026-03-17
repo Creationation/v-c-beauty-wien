@@ -32,7 +32,7 @@ export default function Booking() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [expandedCats, setExpandedCats] = useState<Record<number, boolean>>({ 0: true });
   const today = new Date();
-  const { artist, service, date, time, form } = booking;
+  const { artist, services, date, time, form } = booking;
 
   const steps: Step[] = (() => {
     if (!artistId) return ["artist", "service", "date", "time", "form"];
