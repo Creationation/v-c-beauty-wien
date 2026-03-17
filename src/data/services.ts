@@ -19,7 +19,7 @@ export const SERVICES: Record<string, ServiceCategory[]> = {
       category: "Permanent Make-up",
       emoji: "💋",
       items: [
-        { name: "Lip Blushing", duration: "2–3 Std.", price: "ab 280€", desc: "Natürliche Lippenfarbe — sanft & langanhaltend", popular: true, icon: "👄" },
+        { name: "Lip Blushing", duration: "2–3 Std.", price: "ab 280€", desc: "Natürliche Lippenfarbe, sanft & langanhaltend", popular: true, icon: "👄" },
         { name: "Powder Brows", duration: "2–3 Std.", price: "ab 250€", desc: "Pudrige, natürlich wirkende Augenbrauen", popular: true, icon: "✨" },
         { name: "Eyeliner", duration: "1,5–2 Std.", price: "ab 200€", desc: "Dezenter oder intensiver permanenter Eyeliner", icon: "👁️" },
         { name: "Lip Auffrischung", duration: "1,5 Std.", price: "ab 150€", desc: "Touch-up für bestehende Behandlung", icon: "💕" },
@@ -51,7 +51,7 @@ export const SERVICES: Record<string, ServiceCategory[]> = {
       emoji: "💄",
       items: [
         { name: "Braut Make-up", duration: "1,5–2 Std.", price: "auf Anfrage", desc: "Individuell für deinen großen Tag", popular: true, icon: "👰" },
-        { name: "Tages Make-up", duration: "45–60 Min.", price: "auf Anfrage", desc: "Natürlich & elegant — für Alltag & Anlässe", icon: "🌞" },
+        { name: "Tages Make-up", duration: "45–60 Min.", price: "auf Anfrage", desc: "Natürlich & elegant, für Alltag & Anlässe", icon: "🌞" },
         { name: "Abend Make-up", duration: "60 Min.", price: "auf Anfrage", desc: "Glamourös für Events und Partys", icon: "🌙" },
         { name: "Film & Werbung", duration: "variabel", price: "auf Anfrage", desc: "Professionell für Kamera und Licht", icon: "🎬" },
         { name: "Event Make-up", duration: "60 Min.", price: "auf Anfrage", desc: "Kreative Looks für besondere Anlässe", icon: "🎉" },
@@ -70,7 +70,7 @@ export const SERVICES: Record<string, ServiceCategory[]> = {
       category: "Lash & Brow Lifting",
       emoji: "👁️",
       items: [
-        { name: "Lash Lifting", duration: "45–60 Min.", price: "auf Anfrage", desc: "Mehr Ausdruck — ohne tägliches Styling", popular: true, icon: "✨" },
+        { name: "Lash Lifting", duration: "45–60 Min.", price: "auf Anfrage", desc: "Mehr Ausdruck, ohne tägliches Styling", popular: true, icon: "✨" },
         { name: "Brow Lifting", duration: "30–45 Min.", price: "auf Anfrage", desc: "Natürlich angehobene Brauen", icon: "🌟" },
         { name: "Lash & Brow Kombi", duration: "1–1,5 Std.", price: "auf Anfrage", desc: "Beides zum Vorteilspreis", icon: "💖" },
       ],

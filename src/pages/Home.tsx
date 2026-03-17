@@ -79,7 +79,7 @@ export default function Home() {
           <em className="italic font-medium" style={{ color: "var(--rose-deep)" }}>perfektioniert</em>
         </h1>
         <p className="text-sm leading-relaxed max-w-[320px] mb-5 anim-fade-up delay-2" style={{ color: "var(--txt2)" }}>
-          Permanent Make-up, Hairstyling, Braut Make-up &amp; mehr — zwei Expertinnen, ein Ziel: dich strahlen lassen.
+          Permanent Make-up, Hairstyling, Braut Make-up &amp; mehr. Zwei Expertinnen, ein Ziel: dich strahlen lassen.
         </p>
         <div className="flex flex-wrap gap-2 anim-fade-up delay-3">
           {["🌸 Permanent Makeup", "💄 Pro Makeup", "💇‍♀️ Hairstyling", "✨ Lash Lifting"].map((tag) => (
@@ -144,7 +144,7 @@ export default function Home() {
       {/* Promo Banner */}
       <div className="promo-banner anim-fade-up delay-6" onClick={() => openGutscheinWhatsApp()}>
         <h3 className="font-display text-xl font-medium mb-1">Geschenkgutschein 🎀</h3>
-        <p className="text-xs opacity-90 font-light">Das perfekte Geschenk — Schenke Schönheit &amp; Wohlbefinden</p>
+        <p className="text-xs opacity-90 font-light">Das perfekte Geschenk. Schenke Schönheit &amp; Wohlbefinden</p>
       </div>
 
       {/* Reviews */}
@@ -179,7 +179,7 @@ export default function Home() {
           </div>
           <div>
             <h4 className="text-sm font-medium">Termin buchen</h4>
-            <p className="text-xs" style={{ color: "var(--txt3)" }}>Via WhatsApp — schnell &amp; direkt 💬</p>
+            <p className="text-xs" style={{ color: "var(--txt3)" }}>Via WhatsApp, schnell &amp; direkt 💬</p>
           </div>
         </div>
         <div className="contact-card anim-fade-up delay-8" onClick={() => setShowInstaDialog(true)}>
