@@ -30,11 +30,34 @@ export default function Booking() {
   const navigate = useNavigate();
   const { artistId } = useParams();
   const booking = useBooking();
+  const { user } = useAuth();
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
   const [expandedCats, setExpandedCats] = useState<Record<number, boolean>>({ 0: true });
+  const [saving, setSaving] = useState(false);
   const today = new Date();
   const { artist, services, date, time, form } = booking;
+
+  // Restore pending booking after login
+  useEffect(() => {
+    if (user) {
+      const pending = localStorage.getItem("pendingBooking");
+      if (pending) {
+        try {
+          const data = JSON.parse(pending);
+          if (data.artistId) {
+            const a = ARTISTS.find((x) => x.id === data.artistId);
+            if (a) booking.setArtist(a);
+          }
+          if (data.services) data.services.forEach((s: any) => booking.toggleService(s));
+          if (data.date) booking.setDate(new Date(data.date));
+          if (data.time) booking.setTime(data.time);
+          if (data.form) booking.setForm(data.form);
+          localStorage.removeItem("pendingBooking");
+        } catch {}
+      }
+    }
+  }, [user]);
 
   const steps: Step[] = (() => {
     if (!artistId) return ["artist", "service", "date", "time", "form"];
