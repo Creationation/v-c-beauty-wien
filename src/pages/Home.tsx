@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Star, ArrowLeft, ChevronDown, Clock, Heart, Check, MapPin, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ARTISTS } from "@/data/artists";
