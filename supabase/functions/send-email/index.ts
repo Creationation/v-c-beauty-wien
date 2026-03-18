@@ -36,7 +36,7 @@ serve(async (req) => {
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: "Vego Beauty <onboarding@resend.dev>", to: [appt.client_email], subject, html }),
+      body: JSON.stringify({ from: "Vego Beauty <Info@ugcpanel.app>", to: [appt.client_email], subject, html }),
     });
     const rd = await resendRes.json();
     if (!resendRes.ok) return new Response(JSON.stringify({ error: rd }), { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
