@@ -542,15 +542,15 @@ export default function Booking() {
               <textarea className="beauty-input resize-none" style={{ minHeight: 80 }} placeholder="Wünsche, Allergien, besondere Hinweise..." value={form.notes} onChange={(e) => booking.setForm({ ...form, notes: e.target.value })} />
             </div>
             <button
-              className="btn-whatsapp"
+              className="btn-rose"
               disabled={!form.name || !form.phone || saving}
-              onClick={handleWhatsApp}
+              onClick={handleSubmit}
               style={{ opacity: !form.name || !form.phone || saving ? 0.5 : 1 }}
             >
-              <WhatsAppIcon size={20} /> {saving ? "Wird gespeichert..." : "Termin via WhatsApp buchen"}
+              {saving ? "Wird gespeichert..." : "✨ Termin verbindlich buchen"}
             </button>
             <p className="text-center text-[11px] mt-3" style={{ color: "var(--txt3)" }}>
-              Du wirst direkt zu WhatsApp weitergeleitet 💬
+              Dein Termin wird direkt in der App verwaltet 📅
             </p>
           </div>
         )}
