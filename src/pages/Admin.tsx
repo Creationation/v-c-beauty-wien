@@ -738,3 +738,108 @@ function VacationManager() {
     </div>
   );
 }
+
+function TeamTab() {
+  const { members, toggle, add, remove, refetch } = useTeamMembers();
+  const [showAdd, setShowAdd] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newRole, setNewRole] = useState("");
+  const [newEmoji, setNewEmoji] = useState("🌟");
+  const [newHandle, setNewHandle] = useState("");
+
+  const handleAdd = async () => {
+    if (!newName.trim()) return;
+    await add({ name: newName.trim(), role: newRole.trim(), emoji: newEmoji, handle: newHandle.trim() });
+    setNewName(""); setNewRole(""); setNewEmoji("🌟"); setNewHandle(""); setShowAdd(false);
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="section-label mb-0">Team ({members.length})</div>
+        <button onClick={() => setShowAdd(!showAdd)}
+          className="flex items-center gap-1 text-[11px] px-3 py-1.5 rounded-full border cursor-pointer bg-transparent"
+          style={{ borderColor: "var(--cream2)", color: "var(--rose-deep)", fontFamily: "var(--font-body)" }}>
+          <Plus size={11} /> Hinzufügen
+        </button>
+      </div>
+
+      {showAdd && (
+        <div className="beauty-card p-4 mb-4">
+          <div className="text-[13px] font-medium mb-3">Neues Teammitglied</div>
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <input value={newEmoji} onChange={(e) => setNewEmoji(e.target.value)}
+                className="beauty-input text-center text-lg" style={{ height: "auto", padding: "8px", width: "48px" }}
+                placeholder="🌟" maxLength={2} />
+              <input value={newName} onChange={(e) => setNewName(e.target.value)}
+                className="beauty-input flex-1 text-sm" style={{ height: "auto", padding: "8px 12px" }}
+                placeholder="Name" />
+            </div>
+            <input value={newRole} onChange={(e) => setNewRole(e.target.value)}
+              className="beauty-input text-sm" style={{ height: "auto", padding: "8px 12px" }}
+              placeholder="Rolle (z.B. Makeup Artist)" />
+            <input value={newHandle} onChange={(e) => setNewHandle(e.target.value)}
+              className="beauty-input text-sm" style={{ height: "auto", padding: "8px 12px" }}
+              placeholder="Instagram Handle (optional)" />
+            <div className="flex gap-2">
+              <button onClick={() => setShowAdd(false)}
+                className="flex-1 py-2 rounded-xl text-[12px] font-medium cursor-pointer border bg-transparent"
+                style={{ borderColor: "var(--cream2)", color: "var(--txt3)", fontFamily: "var(--font-body)" }}>
+                Abbrechen
+              </button>
+              <button onClick={handleAdd}
+                className="flex-1 btn-rose text-[12px] py-2">
+                Hinzufügen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-col gap-3">
+        {members.map((m) => (
+          <div key={m.id} className="beauty-card p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-full flex items-center justify-center text-xl border-[2px] border-white flex-shrink-0"
+                style={{ background: "var(--blush)", boxShadow: "var(--shadow-sm)" }}>
+                {m.emoji}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <div className="font-medium text-sm">{m.name}</div>
+                  {m.is_fixed && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--blush)", color: "var(--rose-deep)" }}>Fest</span>
+                  )}
+                </div>
+                <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{m.role}</div>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button onClick={() => toggle(m.id, !m.is_active)}
+                  className="relative w-10 h-[22px] rounded-full cursor-pointer border-none transition-colors duration-200"
+                  style={{ background: m.is_active ? "#2d8a4e" : "var(--cream2)" }}>
+                  <div className="absolute top-[2px] w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-transform duration-200"
+                    style={{ left: m.is_active ? "20px" : "2px" }} />
+                </button>
+                {!m.is_fixed && (
+                  <button onClick={() => { if (confirm(`${m.name} entfernen?`)) remove(m.id); }}
+                    className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer border-none"
+                    style={{ background: "rgba(196,114,127,0.1)", color: "#C4727F" }}>
+                    <Trash2 size={12} />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {members.length === 0 && (
+        <div className="text-center py-10" style={{ color: "var(--txt3)" }}>
+          <div className="text-4xl mb-3">👥</div>
+          <p className="text-sm">Keine Teammitglieder</p>
+        </div>
+      )}
+    </div>
+  );
+}
