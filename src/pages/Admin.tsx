@@ -46,7 +46,7 @@ export default function Admin() {
   const { user, loading, signOut } = useAuth();
   const [tab, setTab] = useState<AdminTab>("dashboard");
   const [menuOpen, setMenuOpen] = useState(false);
-  const { data: appointments, updateStatus, remove } = useAppointments();
+  const { data: appointments, updateStatus, remove, clearAll } = useAppointments();
 
   // Redirect non-admin users
   useEffect(() => {
