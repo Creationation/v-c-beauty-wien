@@ -8,7 +8,6 @@ import Confirmation from "@/pages/Confirmation";
 import Auth from "@/pages/Auth";
 import Settings from "@/pages/Settings";
 import Admin from "@/pages/Admin";
-import AdminLogin from "@/pages/AdminLogin";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
