@@ -189,7 +189,7 @@ export default function Admin() {
                       <div className="flex items-start justify-between mb-2">
                         <div>
                           <div className="font-medium text-sm">{a.client_name}</div>
-                          <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{a.service} \u00b7 {a.artist_name}</div>
+                          <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{a.service} · {a.artist_name}</div>
                         </div>
                         <div className="text-right">
                           <div className="font-display font-medium text-sm" style={{ color: "var(--rose-deep)" }}>{a.appointment_time}</div>
