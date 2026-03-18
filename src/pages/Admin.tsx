@@ -240,14 +240,16 @@ export default function Admin() {
 
         {/* ── TERMINE ── */}
         {tab === "termine" && (
-          <TermineTab appointments={appointments} onStatus={updateStatus} onDelete={remove} onClearAll={clearAll} />
+          <div className="animate-fade-in">
+            <TermineTab appointments={appointments} onStatus={updateStatus} onDelete={remove} onClearAll={clearAll} />
+          </div>
         )}
 
         {/* ── SERVICES ── */}
-        {tab === "services" && <ServicesTab />}
+        {tab === "services" && <div className="animate-fade-in"><ServicesTab /></div>}
 
         {/* ── SETTINGS ── */}
-        {tab === "einstellungen" && <SettingsTab />}
+        {tab === "einstellungen" && <div className="animate-fade-in"><SettingsTab /></div>}
       </div>
     </div>
   );
