@@ -249,7 +249,7 @@ export default function Admin() {
 
         {/* ── TERMINE ── */}
         {tab === "termine" && (
-          <TermineTab appointments={appointments} onStatus={updateStatus} onDelete={remove} />
+          <TermineTab appointments={appointments} onStatus={updateStatus} onDelete={remove} onClearAll={clearAll} />
         )}
 
         {/* ── SERVICES ── */}
