@@ -38,7 +38,7 @@ function SettingsMenu({
   signOut: () => Promise<void>;
   navigate: ReturnType<typeof useNavigate>;
 }) {
-  const isAdmin = user.email?.endsWith(`@${ADMIN_EMAIL_DOMAIN}`) ?? false;
+  const isAdmin = user.email === ADMIN_EMAIL;
 
   const handleLogout = async () => {
     await signOut();
