@@ -209,8 +209,8 @@ export default function Home() {
             <WhatsAppIcon size={22} />
           </div>
           <div>
-            <h4 className="text-sm font-medium">Termin buchen</h4>
-            <p className="text-xs" style={{ color: "var(--txt3)" }}>Via WhatsApp, schnell &amp; direkt 💬</p>
+            <h4 className="text-sm font-medium">Fragen? Schreib uns</h4>
+            <p className="text-xs" style={{ color: "var(--txt3)" }}>Via WhatsApp erreichbar 💬</p>
           </div>
         </div>
         <div className="contact-card anim-fade-up delay-8" onClick={() => setShowInstaDialog(true)}>
