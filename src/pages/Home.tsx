@@ -73,8 +73,9 @@ export default function Home() {
           loop
           playsInline
           className="absolute inset-0 w-full h-full object-cover z-0"
-          style={{ opacity: 0.32 }}
+          style={{ opacity: 0.32, pointerEvents: "none" }}
           src="/videos/hero-bg.mp4"
+          preload="none"
         />
         <div className="absolute inset-0 z-[1]" style={{ background: "linear-gradient(to bottom, rgba(253,248,244,0.5) 0%, rgba(253,248,244,0.3) 50%, rgba(253,248,244,0.95) 100%)" }} />
         <div className="flex items-center justify-between mb-7 relative z-[2] anim-fade-up">
