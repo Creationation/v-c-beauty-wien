@@ -251,6 +251,7 @@ export default function Admin() {
             updateStatus={updateStatus} remove={remove} />
         )}
 
+        {tab === "team" && <TeamTab />}
         {tab === "services" && <ServicesTab />}
         {tab === "notifications" && <NotificationsTab settings={notifSettings} onSave={saveNotif.mutate} appointments={appointments} />}
 
