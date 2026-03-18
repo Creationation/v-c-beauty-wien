@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, CalendarDays, Sparkles, Settings,
   LogOut, Check, X, Clock, ChevronRight, Phone, MessageSquare,
-  Edit3, Save, Trash2, AlertCircle, TrendingUp, Users, Euro
+  Edit3, Save, Trash2, AlertCircle, TrendingUp, Users, Euro,
+  Menu, Home, ArrowLeft
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { MOCK_APPOINTMENTS, type Appointment, type AppointmentStatus } from "@/data/appointments";
@@ -43,6 +44,7 @@ export default function Admin() {
   const navigate = useNavigate();
   const { user, loading, signOut } = useAuth();
   const [tab, setTab] = useState<AdminTab>("dashboard");
+  const [menuOpen, setMenuOpen] = useState(false);
   const { data: appointments, updateStatus, remove } = useAppointments();
 
   // Redirect non-admin users
@@ -86,14 +88,76 @@ export default function Admin() {
 
   return (
     <div className="app-shell">
+      {/* Burger Menu Overlay */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          <div
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            onClick={() => setMenuOpen(false)}
+          />
+          <div
+            className="relative w-[280px] h-full flex flex-col py-6 px-5 anim-fade-up"
+            style={{ background: "var(--cream)", boxShadow: "var(--shadow-lg)" }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <span className="font-display text-lg font-semibold">Menü</span>
+              <button
+                onClick={() => setMenuOpen(false)}
+                className="bg-transparent border-none cursor-pointer"
+                style={{ color: "var(--txt2)" }}
+              >
+                <X size={22} />
+              </button>
+            </div>
+
+            <nav className="flex flex-col gap-1 flex-1">
+              {[
+                { icon: Home, label: "Startseite", action: () => navigate("/") },
+                { icon: CalendarDays, label: "Buchungen", action: () => navigate("/book") },
+                { icon: Users, label: "Team", action: () => navigate("/team") },
+                { icon: Settings, label: "Einstellungen", action: () => navigate("/settings") },
+              ].map(({ icon: Icon, label, action }) => (
+                <button
+                  key={label}
+                  onClick={() => { action(); setMenuOpen(false); }}
+                  className="flex items-center gap-3 px-3 py-3 rounded-xl bg-transparent border-none cursor-pointer text-left transition-colors hover:opacity-80"
+                  style={{ color: "var(--txt)", fontFamily: "var(--font-body)" }}
+                >
+                  <Icon size={18} style={{ color: "var(--rose-deep)" }} />
+                  <span className="text-[14px] font-medium">{label}</span>
+                </button>
+              ))}
+            </nav>
+
+            <button
+              onClick={() => { logout(); setMenuOpen(false); }}
+              className="flex items-center gap-3 px-3 py-3 rounded-xl bg-transparent border-none cursor-pointer"
+              style={{ color: "var(--destructive, #e53e3e)", fontFamily: "var(--font-body)" }}
+            >
+              <LogOut size={18} />
+              <span className="text-[14px] font-medium">Abmelden</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div
         className="flex items-center justify-between px-5 pt-4 pb-4 sticky top-0 z-30"
         style={{ background: "var(--cream)", borderBottom: "1px solid var(--cream2)" }}
       >
-        <div>
-          <div className="font-display text-xl font-semibold">Admin Panel</div>
-          <div className="text-[11px]" style={{ color: "var(--txt3)" }}>Vego Beauty Studio</div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setMenuOpen(true)}
+            className="bg-transparent border-none cursor-pointer p-1"
+            style={{ color: "var(--txt)" }}
+          >
+            <Menu size={22} />
+          </button>
+          <div>
+            <div className="font-display text-xl font-semibold">Admin Panel</div>
+            <div className="text-[11px]" style={{ color: "var(--txt3)" }}>Vego Beauty Studio</div>
+          </div>
         </div>
         <button
           onClick={logout}
