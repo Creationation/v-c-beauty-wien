@@ -182,7 +182,7 @@ export default function Admin() {
             </div>
             {todayAppts.length > 0 ? (
               <>
-                <div className="section-label">Heute\u2019s Termine</div>
+                <div className="section-label">Heutige Termine</div>
                 <div className="flex flex-col gap-3">
                   {todayAppts.map((a) => (
                     <div key={a.id} className="beauty-card p-4">
