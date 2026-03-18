@@ -10,6 +10,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { SERVICES } from "@/data/services";
+import { useTeamMembers, TeamMember } from "@/hooks/useTeamMembers";
 import type { Appointment, AppointmentStatus, NotificationSettings } from "@/data/appointments";
 
 const ADMIN_EMAIL = "creationation.at@gmail.com";
