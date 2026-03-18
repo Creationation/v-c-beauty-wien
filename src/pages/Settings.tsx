@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, Eye, EyeOff, LogOut, Shield, User,
-  ChevronRight, CalendarDays
+  ArrowLeft, Eye, EyeOff, LogOut, Shield, User, Pencil,
+  ChevronRight, CalendarDays, Check
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
 
