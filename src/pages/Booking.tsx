@@ -554,21 +554,27 @@ export default function Booking() {
               </p>
             )}
             <div className="grid grid-cols-4 gap-2 mb-4">
-              {TIMES.map((t) => (
-                <div
-                  key={t}
-                  className={`time-slot relative ${time === t ? "time-selected" : ""}`}
-                  onClick={() => { booking.setTime(t); goNext(); }}
-                >
-                  {t}
-                  {POPULAR_TIMES.includes(t) && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full" style={{ background: "var(--rose-deep)" }} />
-                  )}
-                </div>
-              ))}
+              {TIMES.map((t) => {
+                const isBooked = bookedSlots.includes(t);
+                return (
+                  <div
+                    key={t}
+                    className={`time-slot relative ${time === t ? "time-selected" : ""} ${isBooked ? "cal-off" : ""}`}
+                    onClick={() => { if (!isBooked) { booking.setTime(t); goNext(); } }}
+                    style={isBooked ? { opacity: 0.4, textDecoration: "line-through", cursor: "not-allowed" } : {}}
+                    title={isBooked ? "Bereits gebucht" : undefined}
+                  >
+                    {t}
+                    {!isBooked && POPULAR_TIMES.includes(t) && (
+                      <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full" style={{ background: "var(--rose-deep)" }} />
+                    )}
+                  </div>
+                );
+              })}
             </div>
             <p className="text-[11px] flex items-center gap-1.5" style={{ color: "var(--txt3)" }}>
               <span className="w-2 h-2 rounded-full inline-block" style={{ background: "var(--rose-deep)" }} /> Beliebt
+              <span className="ml-3" style={{ textDecoration: "line-through" }}>00:00</span> = Belegt
             </p>
           </div>
         )}
