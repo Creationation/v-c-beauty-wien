@@ -26,6 +26,9 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Never cache OAuth redirects
+  if (event.request.url.includes('/~oauth')) return;
+
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(() => caches.match(OFFLINE_URL))
