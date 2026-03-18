@@ -14,7 +14,7 @@ import {
   firstDayOfMonth,
   formatDateLong,
 } from "@/utils/dates";
-import { buildWhatsAppUrl } from "@/utils/whatsapp";
+
 
 type Step = "artist" | "service" | "date" | "time" | "form";
 const POPULAR_TIMES = ["10:00", "14:00", "16:00"];
@@ -109,7 +109,7 @@ export default function Booking() {
     }
   };
 
-  const handleWhatsApp = async () => {
+  const handleSubmit = async () => {
     setSaving(true);
     // Save booking to database (authenticated users)
     if (user) {
@@ -127,7 +127,7 @@ export default function Booking() {
       });
     }
 
-    // Save to appointments table (anon, for notification system)
+    // Save to appointments table (for notification system)
     const serviceNames = services.map((s: any) => s.name).join(", ");
     const servicePrices = services.map((s: any) => s.price).join(", ");
     const { data: appt } = await supabase.from("appointments" as any).insert({
@@ -152,18 +152,6 @@ export default function Booking() {
     }
 
     setSaving(false);
-
-    const url = buildWhatsAppUrl({
-      artist: currentArtist || null,
-      services,
-      date,
-      time,
-      name: form.name,
-      phone: form.phone,
-      email: form.email,
-      notes: form.notes,
-    });
-    window.open(url, "_blank");
     navigate("/confirm");
   };
 
@@ -554,15 +542,15 @@ export default function Booking() {
               <textarea className="beauty-input resize-none" style={{ minHeight: 80 }} placeholder="Wünsche, Allergien, besondere Hinweise..." value={form.notes} onChange={(e) => booking.setForm({ ...form, notes: e.target.value })} />
             </div>
             <button
-              className="btn-whatsapp"
+              className="btn-rose"
               disabled={!form.name || !form.phone || saving}
-              onClick={handleWhatsApp}
+              onClick={handleSubmit}
               style={{ opacity: !form.name || !form.phone || saving ? 0.5 : 1 }}
             >
-              <WhatsAppIcon size={20} /> {saving ? "Wird gespeichert..." : "Termin via WhatsApp buchen"}
+              {saving ? "Wird gespeichert..." : "✨ Termin verbindlich buchen"}
             </button>
             <p className="text-center text-[11px] mt-3" style={{ color: "var(--txt3)" }}>
-              Du wirst direkt zu WhatsApp weitergeleitet 💬
+              Dein Termin wird direkt in der App verwaltet 📅
             </p>
           </div>
         )}
