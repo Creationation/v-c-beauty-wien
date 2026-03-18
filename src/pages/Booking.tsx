@@ -147,7 +147,7 @@ export default function Booking() {
     // Send confirmation email if email provided
     if (form.email && appt) {
       supabase.functions.invoke("send-email", {
-        body: { type: "confirmation", appointment_id: appt.id },
+        body: { type: "confirmation", appointment_id: (appt as any).id },
       }).catch(() => {});
     }
 
