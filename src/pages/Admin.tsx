@@ -37,7 +37,8 @@ function useAppointments() {
   const updateStatus = (id: string, status: AppointmentStatus) =>
     save(data.map((a) => (a.id === id ? { ...a, status } : a)));
   const remove = (id: string) => save(data.filter((a) => a.id !== id));
-  return { data, updateStatus, remove };
+  const clearAll = () => { setData([]); localStorage.removeItem("admin_appointments"); };
+  return { data, updateStatus, remove, clearAll };
 }
 
 export default function Admin() {
@@ -45,7 +46,7 @@ export default function Admin() {
   const { user, loading, signOut } = useAuth();
   const [tab, setTab] = useState<AdminTab>("dashboard");
   const [menuOpen, setMenuOpen] = useState(false);
-  const { data: appointments, updateStatus, remove } = useAppointments();
+  const { data: appointments, updateStatus, remove, clearAll } = useAppointments();
 
   // Redirect non-admin users
   useEffect(() => {
@@ -248,7 +249,7 @@ export default function Admin() {
 
         {/* ── TERMINE ── */}
         {tab === "termine" && (
-          <TermineTab appointments={appointments} onStatus={updateStatus} onDelete={remove} />
+          <TermineTab appointments={appointments} onStatus={updateStatus} onDelete={remove} onClearAll={clearAll} />
         )}
 
         {/* ── SERVICES ── */}
@@ -289,9 +290,9 @@ function AppointmentCard({
             </div>
             <div className="text-[12px]" style={{ color: "var(--txt2)" }}>{appt.service}</div>
             <div className="flex items-center gap-3 mt-1.5 text-[11px]" style={{ color: "var(--txt3)" }}>
-              <span>{appt.artist === "victoria" ? "\ud83c\udf38 Victoria" : "\u2728 Cindy"}</span>
-              <span>\ud83d\udd50 {appt.time}</span>
-              <span>\ud83d\udcb0 {appt.price}</span>
+              <span>🌸 {appt.artist === "victoria" ? "Victoria" : "✨ Cindy"}</span>
+              <span>🕐 {appt.time}</span>
+              <span>💰 {appt.price}</span>
             </div>
           </div>
           <ChevronRight size={16} style={{ color: "var(--txt3)", transform: open ? "rotate(90deg)" : "rotate(0)", transition: "transform 0.2s" }} />
@@ -354,14 +355,17 @@ function AppointmentCard({
 
 /* ── Termine Tab ── */
 function TermineTab({
-  appointments, onStatus, onDelete
+  appointments, onStatus, onDelete, onClearAll
 }: {
   appointments: Appointment[];
   onStatus: (id: string, s: AppointmentStatus) => void;
   onDelete: (id: string) => void;
+  onClearAll: () => void;
 }) {
   const [filter, setFilter] = useState<"all" | AppointmentStatus>("all");
   const [artistFilter, setArtistFilter] = useState<"all" | "victoria" | "cindy">("all");
+  const [deleteStep, setDeleteStep] = useState(0); // 0=hidden, 1=first, 2=second, 3=type confirm
+  const [deleteInput, setDeleteInput] = useState("");
 
   const filtered = appointments.filter((a) => {
     if (filter !== "all" && a.status !== filter) return false;
@@ -372,8 +376,110 @@ function TermineTab({
   const counts: Record<string, number> = { all: appointments.length };
   appointments.forEach((a) => { counts[a.status] = (counts[a.status] || 0) + 1; });
 
+  const handleConfirmDelete = () => {
+    if (deleteInput === "Delete") {
+      onClearAll();
+      setDeleteStep(0);
+      setDeleteInput("");
+    }
+  };
+
   return (
     <div>
+      {/* Delete all confirmation overlay */}
+      {deleteStep > 0 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => { setDeleteStep(0); setDeleteInput(""); }} />
+          <div className="relative w-full max-w-[340px] bg-white rounded-2xl p-6 text-center" style={{ boxShadow: "var(--shadow-lg)" }}>
+            {deleteStep === 1 && (
+              <>
+                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(196,114,127,0.1)" }}>
+                  <AlertCircle size={28} style={{ color: "var(--rose-deep)" }} />
+                </div>
+                <h3 className="font-display text-lg font-semibold mb-2">Alle Termine löschen?</h3>
+                <p className="text-[13px] mb-5" style={{ color: "var(--txt3)" }}>
+                  Damit werden alle {appointments.length} Termine unwiderruflich gelöscht.
+                </p>
+                <div className="flex gap-2">
+                  <button onClick={() => { setDeleteStep(0); }} className="flex-1 py-2.5 rounded-xl text-[13px] font-medium border-[1.5px] bg-transparent cursor-pointer" style={{ borderColor: "var(--cream2)", color: "var(--txt2)", fontFamily: "var(--font-body)" }}>
+                    Abbrechen
+                  </button>
+                  <button onClick={() => setDeleteStep(2)} className="flex-1 py-2.5 rounded-xl text-[13px] font-medium border-none cursor-pointer text-white" style={{ background: "var(--rose-deep)", fontFamily: "var(--font-body)" }}>
+                    Ja, weiter
+                  </button>
+                </div>
+              </>
+            )}
+            {deleteStep === 2 && (
+              <>
+                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(229,62,62,0.1)" }}>
+                  <Trash2 size={28} style={{ color: "#e53e3e" }} />
+                </div>
+                <h3 className="font-display text-lg font-semibold mb-2">Bist du wirklich sicher?</h3>
+                <p className="text-[13px] mb-5" style={{ color: "var(--txt3)" }}>
+                  Diese Aktion kann nicht rückgängig gemacht werden!
+                </p>
+                <div className="flex gap-2">
+                  <button onClick={() => { setDeleteStep(0); }} className="flex-1 py-2.5 rounded-xl text-[13px] font-medium border-[1.5px] bg-transparent cursor-pointer" style={{ borderColor: "var(--cream2)", color: "var(--txt2)", fontFamily: "var(--font-body)" }}>
+                    Abbrechen
+                  </button>
+                  <button onClick={() => setDeleteStep(3)} className="flex-1 py-2.5 rounded-xl text-[13px] font-medium border-none cursor-pointer text-white" style={{ background: "#e53e3e", fontFamily: "var(--font-body)" }}>
+                    Ja, löschen
+                  </button>
+                </div>
+              </>
+            )}
+            {deleteStep === 3 && (
+              <>
+                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(229,62,62,0.15)" }}>
+                  <Trash2 size={28} style={{ color: "#e53e3e" }} />
+                </div>
+                <h3 className="font-display text-lg font-semibold mb-2">Letzte Bestätigung</h3>
+                <p className="text-[13px] mb-4" style={{ color: "var(--txt3)" }}>
+                  Tippe <strong style={{ color: "#e53e3e" }}>Delete</strong> ein, um zu bestätigen.
+                </p>
+                <input
+                  className="beauty-input text-center mb-4"
+                  placeholder="Delete"
+                  value={deleteInput}
+                  onChange={(e) => setDeleteInput(e.target.value)}
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <button onClick={() => { setDeleteStep(0); setDeleteInput(""); }} className="flex-1 py-2.5 rounded-xl text-[13px] font-medium border-[1.5px] bg-transparent cursor-pointer" style={{ borderColor: "var(--cream2)", color: "var(--txt2)", fontFamily: "var(--font-body)" }}>
+                    Abbrechen
+                  </button>
+                  <button
+                    onClick={handleConfirmDelete}
+                    disabled={deleteInput !== "Delete"}
+                    className="flex-1 py-2.5 rounded-xl text-[13px] font-medium border-none cursor-pointer text-white transition-opacity"
+                    style={{ background: "#e53e3e", fontFamily: "var(--font-body)", opacity: deleteInput === "Delete" ? 1 : 0.4 }}
+                  >
+                    Endgültig löschen
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Header with delete all icon */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-[13px] font-semibold" style={{ color: "var(--txt2)" }}>
+          {appointments.length} Termine
+        </div>
+        {appointments.length > 0 && (
+          <button
+            onClick={() => setDeleteStep(1)}
+            className="flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-full border-none cursor-pointer"
+            style={{ background: "rgba(229,62,62,0.08)", color: "#e53e3e", fontFamily: "var(--font-body)" }}
+          >
+            <Trash2 size={13} /> Alle löschen
+          </button>
+        )}
+      </div>
+
       {/* Artist filter */}
       <div className="flex gap-2 mb-3 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
         {(["all", "victoria", "cindy"] as const).map((a) => (
@@ -388,7 +494,7 @@ function TermineTab({
               borderColor: artistFilter === a ? "var(--txt)" : "var(--cream2)",
             }}
           >
-            {a === "all" ? "Alle" : a === "victoria" ? "\ud83c\udf38 Victoria" : "\u2728 Cindy"}
+            {a === "all" ? "Alle" : a === "victoria" ? "🌸 Victoria" : "✨ Cindy"}
           </button>
         ))}
       </div>
@@ -458,7 +564,7 @@ function ServicesTab() {
     <div>
       {(["victoria", "cindy"] as const).map((artistId) => (
         <div key={artistId} className="mb-6">
-          <div className="section-label">{artistId === "victoria" ? "\ud83c\udf38 Victoria" : "\u2728 Cindy"}</div>
+          <div className="section-label">{artistId === "victoria" ? "🌸 Victoria" : "✨ Cindy"}</div>
           {SERVICES[artistId].map((cat, ci) => (
             <div key={ci} className="mb-4">
               <div className="text-[12px] font-semibold mb-2 flex items-center gap-2" style={{ color: "var(--txt2)" }}>

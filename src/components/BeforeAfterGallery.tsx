@@ -5,9 +5,9 @@ const GALLERY = [
     artist: "Victoria",
     beforeBg: "linear-gradient(135deg, #e8d5c4 0%, #c9a98a 100%)",
     afterBg:  "linear-gradient(135deg, #E8A0B4 0%, #C4727F 100%)",
-    beforeLabel: "Nat\u00fcrliche Lippen",
-    afterLabel:  "Lip Blushing \u2728",
-    icon: "\ud83d\udc44",
+    beforeLabel: "Natürliche Lippen",
+    afterLabel:  "Lip Blushing ✨",
+    icon: "👄",
   },
   {
     service: "Powder Brows",
@@ -15,8 +15,8 @@ const GALLERY = [
     beforeBg: "linear-gradient(135deg, #e0d4c8 0%, #b8a090 100%)",
     afterBg:  "linear-gradient(135deg, #C9A96E 0%, #8B6914 100%)",
     beforeLabel: "Helle Brauen",
-    afterLabel:  "Powder Brows \ud83c\udf1f",
-    icon: "\ud83d\udc41\ufe0f",
+    afterLabel:  "Powder Brows 🌟",
+    icon: "👁️",
   },
   {
     service: "Lash Lifting",
@@ -24,8 +24,8 @@ const GALLERY = [
     beforeBg: "linear-gradient(135deg, #ddd0c8 0%, #a89080 100%)",
     afterBg:  "linear-gradient(135deg, #B8879B 0%, #7a4060 100%)",
     beforeLabel: "Normale Wimpern",
-    afterLabel:  "Lash Lifting \ud83e\udea2",
-    icon: "\u2728",
+    afterLabel:  "Lash Lifting 🪢",
+    icon: "✨",
   },
   {
     service: "Braut Make-up",
@@ -33,8 +33,8 @@ const GALLERY = [
     beforeBg: "linear-gradient(135deg, #f0e8e0 0%, #c8b0a0 100%)",
     afterBg:  "linear-gradient(135deg, #f9c5d1 0%, #e07090 100%)",
     beforeLabel: "Ohne Make-up",
-    afterLabel:  "Braut Look \ud83d\udc70",
-    icon: "\ud83d\udc8d",
+    afterLabel:  "Braut Look 👰",
+    icon: "💍",
   },
 ];
 
