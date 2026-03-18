@@ -95,6 +95,7 @@ export default function Admin() {
   const navigate = useNavigate();
   const { user, loading, signOut } = useAuth();
   const [tab, setTab] = useState<AdminTab>("dashboard");
+  const [menuOpen, setMenuOpen] = useState(false);
   const { data: appointments, isLoading, refetch, updateStatus, remove, resetAll } = useAppointments();
   const { data: notifSettings, save: saveNotif } = useNotificationSettings();
 
