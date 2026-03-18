@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string | null
+          artist_id: string
+          artist_name: string
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          confirmation_sent: boolean | null
+          created_at: string
+          id: string
+          notes: string | null
+          notify_24h: boolean | null
+          notify_2h: boolean | null
+          reminder_24h_sent: boolean | null
+          reminder_2h_sent: boolean | null
+          service: string
+          service_price: string | null
+          status: string
+        }
+        Insert: {
+          appointment_date?: string
+          appointment_time?: string | null
+          artist_id?: string
+          artist_name?: string
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          confirmation_sent?: boolean | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          notify_24h?: boolean | null
+          notify_2h?: boolean | null
+          reminder_24h_sent?: boolean | null
+          reminder_2h_sent?: boolean | null
+          service?: string
+          service_price?: string | null
+          status?: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string | null
+          artist_id?: string
+          artist_name?: string
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          confirmation_sent?: boolean | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          notify_24h?: boolean | null
+          notify_2h?: boolean | null
+          reminder_24h_sent?: boolean | null
+          reminder_2h_sent?: boolean | null
+          service?: string
+          service_price?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           artist_id: string
@@ -59,6 +122,39 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      notification_settings: {
+        Row: {
+          artist_cindy_email: string | null
+          artist_victoria_email: string | null
+          email_24h_enabled: boolean | null
+          email_2h_enabled: boolean | null
+          email_confirmation_enabled: boolean | null
+          id: number
+          resend_api_key: string | null
+          studio_email: string | null
+        }
+        Insert: {
+          artist_cindy_email?: string | null
+          artist_victoria_email?: string | null
+          email_24h_enabled?: boolean | null
+          email_2h_enabled?: boolean | null
+          email_confirmation_enabled?: boolean | null
+          id?: number
+          resend_api_key?: string | null
+          studio_email?: string | null
+        }
+        Update: {
+          artist_cindy_email?: string | null
+          artist_victoria_email?: string | null
+          email_24h_enabled?: boolean | null
+          email_2h_enabled?: boolean | null
+          email_confirmation_enabled?: boolean | null
+          id?: number
+          resend_api_key?: string | null
+          studio_email?: string | null
         }
         Relationships: []
       }
