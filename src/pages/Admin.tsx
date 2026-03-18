@@ -6,9 +6,12 @@ import {
   LogOut, Check, X, Clock, ChevronRight, Phone, MessageSquare,
   Edit3, Save, Trash2, AlertCircle, TrendingUp, Users, Euro
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { MOCK_APPOINTMENTS, type Appointment, type AppointmentStatus } from "@/data/appointments";
 import { SERVICES } from "@/data/services";
 import type { ServiceItem } from "@/data/services";
+
+const ADMIN_EMAIL = "creationation.at@gmail.com";
 
 type AdminTab = "dashboard" | "termine" | "services" | "einstellungen";
 
@@ -38,17 +41,29 @@ function useAppointments() {
 
 export default function Admin() {
   const navigate = useNavigate();
+  const { user, loading, signOut } = useAuth();
   const [tab, setTab] = useState<AdminTab>("dashboard");
   const { data: appointments, updateStatus, remove } = useAppointments();
 
+  // Redirect non-admin users
   useEffect(() => {
-    if (!localStorage.getItem("admin_auth")) navigate("/admin/login");
-  }, []);
+    if (!loading && (!user || user.email?.toLowerCase() !== ADMIN_EMAIL)) {
+      navigate("/settings", { replace: true });
+    }
+  }, [user, loading, navigate]);
 
-  const logout = () => {
-    localStorage.removeItem("admin_auth");
-    navigate("/admin/login");
+  const logout = async () => {
+    await signOut();
+    navigate("/settings");
   };
+
+  if (loading || !user || user.email?.toLowerCase() !== ADMIN_EMAIL) {
+    return (
+      <div className="app-shell flex items-center justify-center min-h-screen">
+        <div className="text-sm" style={{ color: "var(--txt3)" }}>Laden...</div>
+      </div>
+    );
+  }
 
   const today = new Date().toISOString().slice(0, 10);
   const todayAppts = appointments.filter((a) => a.date === today);
