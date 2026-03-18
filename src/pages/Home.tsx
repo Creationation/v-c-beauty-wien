@@ -233,7 +233,7 @@ export default function Home() {
         >
           <button
             onClick={() => navigate("/book")}
-            className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white border-none cursor-pointer transition-transform hover:scale-105"
+            className="flex items-center gap-2.5 px-8 py-3.5 rounded-full text-[14px] font-medium text-white border-none cursor-pointer transition-transform hover:scale-105 whitespace-nowrap"
             style={{
               background: "linear-gradient(135deg, var(--rose-deep), #e07090)",
               boxShadow: "0 8px 24px rgba(196, 114, 127, 0.4)",
