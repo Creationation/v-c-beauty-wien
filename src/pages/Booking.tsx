@@ -38,6 +38,18 @@ export default function Booking() {
   const today = new Date();
   const { artist, services, date, time, form } = booking;
 
+  // Pre-fill form with user data when available
+  useEffect(() => {
+    if (user && !form.email) {
+      booking.setForm({
+        ...form,
+        email: user.email || "",
+        name: user.user_metadata?.full_name || user.user_metadata?.name || form.name,
+        phone: user.user_metadata?.phone || form.phone,
+      });
+    }
+  }, [user]);
+
   // Restore pending booking after login
   useEffect(() => {
     if (user) {
