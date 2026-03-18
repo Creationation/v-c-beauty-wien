@@ -336,3 +336,106 @@ function AuthForm({
     </div>
   );
 }
+
+const APPT_STATUS: Record<string, { label: string; color: string; bg: string }> = {
+  pending:   { label: "Ausstehend",    color: "#C4727F", bg: "rgba(196,114,127,0.1)" },
+  confirmed: { label: "Best\u00E4tigt", color: "#2d8a4e", bg: "rgba(45,138,78,0.1)" },
+  completed: { label: "Abgeschlossen", color: "#C9A96E", bg: "rgba(201,169,110,0.1)" },
+  cancelled: { label: "Abgesagt",      color: "#999",    bg: "rgba(0,0,0,0.06)" },
+};
+
+function MeineTermine({ userEmail }: { userEmail: string }) {
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!userEmail) return;
+    supabase
+      .from("appointments" as any)
+      .select("*")
+      .eq("client_email", userEmail)
+      .order("appointment_date", { ascending: false })
+      .order("appointment_time", { ascending: false })
+      .then(({ data }) => {
+        setAppointments((data as any) || []);
+        setLoading(false);
+      });
+  }, [userEmail]);
+
+  return (
+    <div className="mx-5 mb-3">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between p-4 rounded-2xl cursor-pointer border-none"
+        style={{ background: "var(--cream)", boxShadow: "var(--shadow-sm)", fontFamily: "var(--font-body)" }}
+      >
+        <div className="flex items-center gap-3">
+          <CalendarDays size={18} style={{ color: "var(--txt2)" }} />
+          <span className="text-[14px] font-medium" style={{ color: "var(--txt)" }}>Meine Termine</span>
+          {appointments.length > 0 && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
+              style={{ background: "var(--blush)", color: "var(--rose-deep)" }}>
+              {appointments.length}
+            </span>
+          )}
+        </div>
+        <ChevronDown size={16} style={{
+          color: "var(--txt3)",
+          transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
+          transition: "transform 0.2s ease",
+        }} />
+      </button>
+
+      {expanded && (
+        <div className="mt-2 flex flex-col gap-2">
+          {loading ? (
+            <div className="text-center py-6 text-[12px]" style={{ color: "var(--txt3)" }}>Laden...</div>
+          ) : appointments.length === 0 ? (
+            <div className="text-center py-6">
+              <div className="text-3xl mb-2">📭</div>
+              <p className="text-[12px]" style={{ color: "var(--txt3)" }}>Noch keine Termine</p>
+              <button onClick={() => navigate("/book")}
+                className="btn-rose text-[12px] mt-3 px-6 py-2">
+                Jetzt buchen
+              </button>
+            </div>
+          ) : (
+            appointments.map((a: any) => {
+              const cfg = APPT_STATUS[a.status] || APPT_STATUS.pending;
+              const dateObj = new Date(a.appointment_date + "T00:00:00");
+              const isPast = dateObj < new Date(new Date().toISOString().split("T")[0] + "T00:00:00");
+              return (
+                <div key={a.id} className="beauty-card p-4" style={{ opacity: isPast && a.status !== "pending" ? 0.7 : 1 }}>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-[13px]">{a.service}</div>
+                      <div className="text-[11px] mt-0.5" style={{ color: "var(--txt3)" }}>
+                        {a.artist_name}
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-1.5 text-[11px]" style={{ color: "var(--rose-deep)" }}>
+                        <Clock size={11} />
+                        {dateObj.toLocaleDateString("de-AT", { weekday: "short", day: "numeric", month: "long" })}
+                        {a.appointment_time && ` \u00B7 ${a.appointment_time}`}
+                      </div>
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-medium flex-shrink-0 ml-2"
+                      style={{ color: cfg.color, background: cfg.bg }}>
+                      {cfg.label}
+                    </span>
+                  </div>
+                  {a.service_price && (
+                    <div className="text-[11px] mt-2" style={{ color: "var(--txt3)" }}>
+                      Preis: {a.service_price}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
