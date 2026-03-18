@@ -36,7 +36,7 @@ function useAppointments() {
   });
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: AppointmentStatus }) => {
-      await supabase.from("appointments").update({ status }).eq("id", id);
+      await supabase.from("appointments" as any).update({ status }).eq("id", id);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["appointments"] }),
   });
