@@ -514,23 +514,27 @@ export default function Booking() {
               {Array.from({ length: fd }).map((_, i) => (
                 <div key={`e${i}`} className="cal-day cal-empty" />
               ))}
-              {Array.from({ length: dim }).map((_, i) => {
+                {Array.from({ length: dim }).map((_, i) => {
                 const day = i + 1;
                 const d = new Date(year, month, day);
+                const dStr = d.toISOString().split("T")[0];
                 const past = d < new Date(today.getFullYear(), today.getMonth(), today.getDate());
                 const sun = d.getDay() === 0;
+                const isVacation = vacationDates.includes(dStr);
                 const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
                 const selected = date && day === date.getDate() && month === date.getMonth() && year === date.getFullYear();
+                const disabled = past || sun || isVacation;
                 return (
                   <div
                     key={day}
-                    className={`cal-day ${past || sun ? "cal-off" : ""} ${selected ? "cal-selected" : ""} ${isToday && !selected ? "cal-today" : ""}`}
+                    className={`cal-day ${disabled ? "cal-off" : ""} ${selected ? "cal-selected" : ""} ${isToday && !selected ? "cal-today" : ""}`}
                     onClick={() => {
-                      if (!past && !sun) {
+                      if (!disabled) {
                         booking.setDate(new Date(year, month, day));
                         goNext();
                       }
                     }}
+                    title={isVacation ? "Urlaub" : undefined}
                   >
                     {day}
                   </div>
