@@ -26,26 +26,26 @@ function useAppointments() {
     queryKey: ["appointments"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("appointments")
+        .from("appointments" as any)
         .select("*")
         .order("appointment_date", { ascending: true })
         .order("appointment_time", { ascending: true });
       if (error) throw error;
-      return data as Appointment[];
+      return (data as unknown) as Appointment[];
     },
   });
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: AppointmentStatus }) => {
-      await supabase.from("appointments").update({ status }).eq("id", id);
+      await supabase.from("appointments" as any).update({ status }).eq("id", id);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["appointments"] }),
   });
   const remove = useMutation({
-    mutationFn: async (id: string) => { await supabase.from("appointments").delete().eq("id", id); },
+    mutationFn: async (id: string) => { await supabase.from("appointments" as any).delete().eq("id", id); },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["appointments"] }),
   });
   const resetAll = useMutation({
-    mutationFn: async () => { await supabase.from("appointments").delete().neq("id", "00000000-0000-0000-0000-000000000000"); },
+    mutationFn: async () => { await supabase.from("appointments" as any).delete().neq("id", "00000000-0000-0000-0000-000000000000"); },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["appointments"] }),
   });
   return { data, isLoading, refetch, updateStatus, remove, resetAll };
@@ -56,14 +56,14 @@ function useNotificationSettings() {
   const { data, isLoading } = useQuery<NotificationSettings>({
     queryKey: ["notification_settings"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("notification_settings").select("*").eq("id", 1).single();
+      const { data, error } = await supabase.from("notification_settings" as any).select("*").eq("id", 1 as any).single();
       if (error) throw error;
-      return data as NotificationSettings;
+      return (data as unknown) as NotificationSettings;
     },
   });
   const save = useMutation({
     mutationFn: async (settings: Partial<NotificationSettings>) => {
-      await supabase.from("notification_settings").update(settings).eq("id", 1);
+      await supabase.from("notification_settings" as any).update(settings as any).eq("id", 1 as any);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["notification_settings"] }),
   });

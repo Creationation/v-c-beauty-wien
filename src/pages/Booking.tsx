@@ -130,7 +130,7 @@ export default function Booking() {
     // Save to appointments table (anon, for notification system)
     const serviceNames = services.map((s: any) => s.name).join(", ");
     const servicePrices = services.map((s: any) => s.price).join(", ");
-    const { data: appt } = await supabase.from("appointments").insert({
+    const { data: appt } = await supabase.from("appointments" as any).insert({
       client_name: form.name,
       client_email: form.email || "",
       client_phone: form.phone,
@@ -142,12 +142,12 @@ export default function Booking() {
       appointment_time: time,
       status: "pending",
       notes: form.notes,
-    }).select().single();
+    } as any).select().single();
 
     // Send confirmation email if email provided
     if (form.email && appt) {
       supabase.functions.invoke("send-email", {
-        body: { type: "confirmation", appointment_id: appt.id },
+        body: { type: "confirmation", appointment_id: (appt as any).id },
       }).catch(() => {});
     }
 
