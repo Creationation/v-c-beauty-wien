@@ -564,7 +564,7 @@ function ServicesTab() {
     <div>
       {(["victoria", "cindy"] as const).map((artistId) => (
         <div key={artistId} className="mb-6">
-          <div className="section-label">{artistId === "victoria" ? "\ud83c\udf38 Victoria" : "\u2728 Cindy"}</div>
+          <div className="section-label">{artistId === "victoria" ? "🌸 Victoria" : "✨ Cindy"}</div>
           {SERVICES[artistId].map((cat, ci) => (
             <div key={ci} className="mb-4">
               <div className="text-[12px] font-semibold mb-2 flex items-center gap-2" style={{ color: "var(--txt2)" }}>
