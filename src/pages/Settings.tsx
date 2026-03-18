@@ -135,6 +135,7 @@ function SettingsMenu({
       {/* Menu items */}
       <MeineTermine userEmail={user.email} />
 
+      <div className="mx-5 mt-3 rounded-2xl overflow-hidden" style={{ background: "var(--cream)", boxShadow: "var(--shadow-sm)" }}>
         {isAdmin && (
           <MenuItem
             icon={<Shield size={18} />}
