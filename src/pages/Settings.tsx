@@ -270,7 +270,7 @@ function AuthForm({
         </div>
       </div>
 
-      <BottomNav />
+      
     </div>
   );
 }
