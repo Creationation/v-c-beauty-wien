@@ -134,7 +134,6 @@ export default function Admin() {
     { id: "settings",      label: "Settings",     icon: Settings },
   ];
 
-  const [menuOpen, setMenuOpen] = useState(false);
   const currentTab = TABS.find((t) => t.id === tab);
 
   return (
