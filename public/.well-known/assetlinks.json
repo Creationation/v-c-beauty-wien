@@ -5,9 +5,9 @@
     ],
     "target": {
       "namespace": "android_app",
-      "package_name": "app.vegobeatuy.wien",
+      "package_name": "app.vegobeauty.wien",
       "sha256_cert_fingerprints": [
-        "PLACEHOLDER_REPLACE_AFTER_APK_BUILD"
+        "9B:C8:FC:F9:3D:66:B9:29:0B:C1:C9:AE:97:71:1B:4A:74:AD:F6:A8:C6:D0:5B:C8:41:CE:A3:A7:B0:01:95:93"
       ]
     }
   }
