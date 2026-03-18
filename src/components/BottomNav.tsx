@@ -1,12 +1,12 @@
 
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, CalendarDays, Sparkles, Settings } from "lucide-react";
+import { Home, CalendarDays, Sparkles, Star } from "lucide-react";
 
 const TABS = [
   { label: "Home",   icon: Home,         path: "/" },
   { label: "Buchen", icon: CalendarDays, path: "/book" },
   { label: "Team",   icon: Sparkles,     path: "/team" },
-  { label: "Settings", icon: Settings,   path: "/settings" },
+  { label: "Top",    icon: Star,         path: "/top" },
 ];
 
 export default function BottomNav() {

@@ -1,607 +1,392 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  LayoutDashboard, CalendarDays, Sparkles, Settings,
-  LogOut, Check, X, Clock, ChevronRight, Phone, MessageSquare,
-  Edit3, Save, Trash2, AlertCircle, TrendingUp, Users, Euro,
-  Menu, Home, ArrowLeft
+  LayoutDashboard, CalendarDays, Sparkles, Settings, Bell,
+  LogOut, Check, Phone, Mail, Trash2, Send,
+  Eye, EyeOff, Save, RefreshCw, AlertCircle
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { MOCK_APPOINTMENTS, type Appointment, type AppointmentStatus } from "@/data/appointments";
+import { supabase } from "@/integrations/supabase/client";
 import { SERVICES } from "@/data/services";
-import type { ServiceItem } from "@/data/services";
+import type { Appointment, AppointmentStatus, NotificationSettings } from "@/data/appointments";
 
-const ADMIN_EMAIL = "creationation.at@gmail.com";
-
-type AdminTab = "dashboard" | "termine" | "services" | "einstellungen";
+type AdminTab = "dashboard" | "termine" | "services" | "notifications" | "settings";
 
 const STATUS_CONFIG: Record<AppointmentStatus, { label: string; color: string; bg: string }> = {
-  pending:   { label: "Ausstehend", color: "#C4727F",  bg: "rgba(196,114,127,0.1)" },
-  confirmed: { label: "Best\u00e4tigt",  color: "#2d8a4e",  bg: "rgba(45,138,78,0.1)" },
+  pending:   { label: "Ausstehend",    color: "#C4727F", bg: "rgba(196,114,127,0.1)" },
+  confirmed: { label: "Best\u00e4tigt",     color: "#2d8a4e", bg: "rgba(45,138,78,0.1)" },
   completed: { label: "Abgeschlossen", color: "#C9A96E", bg: "rgba(201,169,110,0.1)" },
-  cancelled: { label: "Abgesagt",   color: "#999",      bg: "rgba(0,0,0,0.06)" },
+  cancelled: { label: "Abgesagt",      color: "#999",    bg: "rgba(0,0,0,0.06)" },
 };
 
 function useAppointments() {
-  const [data, setData] = useState<Appointment[]>(() => {
-    try {
-      const s = localStorage.getItem("admin_appointments");
-      return s ? JSON.parse(s) : MOCK_APPOINTMENTS;
-    } catch { return MOCK_APPOINTMENTS; }
+  const qc = useQueryClient();
+  const { data = [], isLoading, refetch } = useQuery<Appointment[]>({
+    queryKey: ["appointments"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("appointments")
+        .select("*")
+        .order("appointment_date", { ascending: true })
+        .order("appointment_time", { ascending: true });
+      if (error) throw error;
+      return data as Appointment[];
+    },
   });
-  const save = (next: Appointment[]) => {
-    setData(next);
-    localStorage.setItem("admin_appointments", JSON.stringify(next));
+  const updateStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: AppointmentStatus }) => {
+      await supabase.from("appointments").update({ status }).eq("id", id);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["appointments"] }),
+  });
+  const remove = useMutation({
+    mutationFn: async (id: string) => { await supabase.from("appointments").delete().eq("id", id); },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["appointments"] }),
+  });
+  const resetAll = useMutation({
+    mutationFn: async () => { await supabase.from("appointments").delete().neq("id", "00000000-0000-0000-0000-000000000000"); },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["appointments"] }),
+  });
+  return { data, isLoading, refetch, updateStatus, remove, resetAll };
+}
+
+function useNotificationSettings() {
+  const qc = useQueryClient();
+  const { data, isLoading } = useQuery<NotificationSettings>({
+    queryKey: ["notification_settings"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("notification_settings").select("*").eq("id", 1).single();
+      if (error) throw error;
+      return data as NotificationSettings;
+    },
+  });
+  const save = useMutation({
+    mutationFn: async (settings: Partial<NotificationSettings>) => {
+      await supabase.from("notification_settings").update(settings).eq("id", 1);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["notification_settings"] }),
+  });
+  return { data, isLoading, save };
+}
+
+async function sendReminderNow(appt: Appointment, type: "confirmation" | "reminder_24h" | "reminder_2h"): Promise<string> {
+  if (!appt.client_email) return "Keine E-Mail Adresse";
+  const subjects: Record<string, string> = {
+    confirmation: `Terminbest\u00e4tigung \u2014 ${appt.service} mit ${appt.artist_name}`,
+    reminder_24h: `\u23f0 Terminnerung morgen \u2014 ${appt.service} mit ${appt.artist_name}`,
+    reminder_2h:  `\u23f0 Dein Termin in 2 Stunden \u2014 ${appt.service} mit ${appt.artist_name}`,
   };
-  const updateStatus = (id: string, status: AppointmentStatus) =>
-    save(data.map((a) => (a.id === id ? { ...a, status } : a)));
-  const remove = (id: string) => save(data.filter((a) => a.id !== id));
-  const clearAll = () => { setData([]); localStorage.removeItem("admin_appointments"); };
-  return { data, updateStatus, remove, clearAll };
+  const apptDate = new Date(appt.appointment_date).toLocaleDateString("de-AT", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const accentColor = type === "reminder_2h" ? "#E8954A" : "#C97A7A";
+  const greeting = type === "confirmation" ? "Dein Termin wurde erfolgreich angefragt! Bitte best\u00e4tige via WhatsApp." : type === "reminder_24h" ? "dein Termin ist <strong>morgen</strong>! Wir freuen uns auf dich. \ud83c\udf38" : "dein Termin ist <strong>in 2 Stunden</strong>! Wir freuen uns auf dich. \ud83c\udf38";
+  const html = `<!DOCTYPE html><html lang="de"><body style="margin:0;padding:0;background:#f9f5f2;font-family:Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:40px 20px;"><table width="100%" style="max-width:520px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);"><tr><td style="background:linear-gradient(135deg,${accentColor},#f0b090);padding:32px 36px;text-align:center;"><p style="margin:0 0 4px;color:rgba(255,255,255,0.8);font-size:13px;letter-spacing:2px;text-transform:uppercase;">Vego Beauty</p><h1 style="margin:0;color:#fff;font-size:24px;font-weight:400;">${subjects[type]}</h1></td></tr><tr><td style="padding:32px 36px;"><p style="color:#5c4a46;font-size:15px;line-height:1.6;margin:0 0 20px;">Hallo <strong>${appt.client_name}</strong> \ud83d\udc95,<br/>${greeting}</p><table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;"><tr><td style="padding:10px 0;border-bottom:1px solid #f5eeea;"><span style="font-size:18px;margin-right:10px;">\ud83c\udf38</span><span style="color:#8c7b77;font-size:13px;">Expertin</span></td><td style="padding:10px 0;border-bottom:1px solid #f5eeea;text-align:right;"><strong style="color:#3d2b27;font-size:14px;">${appt.artist_name}</strong></td></tr><tr><td style="padding:10px 0;border-bottom:1px solid #f5eeea;"><span style="font-size:18px;margin-right:10px;">\u2728</span><span style="color:#8c7b77;font-size:13px;">Service</span></td><td style="padding:10px 0;border-bottom:1px solid #f5eeea;text-align:right;"><strong style="color:#3d2b27;font-size:14px;">${appt.service}</strong></td></tr><tr><td style="padding:10px 0;border-bottom:1px solid #f5eeea;"><span style="font-size:18px;margin-right:10px;">\ud83d\udcc5</span><span style="color:#8c7b77;font-size:13px;">Datum</span></td><td style="padding:10px 0;border-bottom:1px solid #f5eeea;text-align:right;"><strong style="color:#3d2b27;font-size:14px;">${apptDate}</strong></td></tr><tr><td style="padding:10px 0;"><span style="font-size:18px;margin-right:10px;">\ud83d\udd50</span><span style="color:#8c7b77;font-size:13px;">Uhrzeit</span></td><td style="padding:10px 0;text-align:right;"><strong style="color:#3d2b27;font-size:14px;">${appt.appointment_time} Uhr</strong></td></tr></table></td></tr><tr><td style="padding:20px 36px 32px;text-align:center;border-top:1px solid #f0eae5;"><p style="margin:0;color:#b8a09a;font-size:12px;">Vego Beauty Wien \u00b7 <a href="https://beautyv.lovable.app" style="color:#C97A7A;text-decoration:none;">beautyv.lovable.app</a></p></td></tr></table></td></tr></table></body></html>`;
+  const { error } = await supabase.functions.invoke("send-email", {
+    body: { to: appt.client_email, subject: subjects[type], html, appointmentId: appt.id, type },
+  });
+  if (error) return `Fehler: ${error.message}`;
+  return "Gesendet \u2713";
 }
 
 export default function Admin() {
   const navigate = useNavigate();
-  const { user, loading, signOut } = useAuth();
   const [tab, setTab] = useState<AdminTab>("dashboard");
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { data: appointments, updateStatus, remove, clearAll } = useAppointments();
+  const { data: appointments, isLoading, refetch, updateStatus, remove, resetAll } = useAppointments();
+  const { data: notifSettings, save: saveNotif } = useNotificationSettings();
 
-  // Redirect non-admin users
   useEffect(() => {
-    if (!loading && (!user || user.email?.toLowerCase() !== ADMIN_EMAIL)) {
-      navigate("/settings", { replace: true });
-    }
-  }, [user, loading, navigate]);
+    if (!localStorage.getItem("admin_auth")) navigate("/admin/login");
+  }, []);
 
-  const logout = async () => {
-    await signOut();
-    navigate("/settings");
-  };
-
-  if (loading || !user || user.email?.toLowerCase() !== ADMIN_EMAIL) {
-    return (
-      <div className="app-shell flex items-center justify-center min-h-screen">
-        <div className="text-sm" style={{ color: "var(--txt3)" }}>Laden...</div>
-      </div>
-    );
-  }
+  const logout = () => { localStorage.removeItem("admin_auth"); navigate("/admin/login"); };
 
   const today = new Date().toISOString().slice(0, 10);
-  const todayAppts = appointments.filter((a) => a.date === today);
+  const todayAppts = appointments.filter((a) => a.appointment_date === today);
   const pendingCount = appointments.filter((a) => a.status === "pending").length;
   const confirmedCount = appointments.filter((a) => a.status === "confirmed").length;
-  const totalThisWeek = appointments.filter((a) => {
-    const d = new Date(a.date);
+  const weekAppts = appointments.filter((a) => {
+    const d = new Date(a.appointment_date);
     const now = new Date();
-    const weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay() + 1);
-    const weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
-    return d >= weekStart && d <= weekEnd;
-  }).length;
+    const ws = new Date(now); ws.setDate(now.getDate() - now.getDay() + 1);
+    const we = new Date(ws); we.setDate(ws.getDate() + 6);
+    return d >= ws && d <= we;
+  });
 
   const TABS: { id: AdminTab; label: string; icon: typeof LayoutDashboard }[] = [
-    { id: "dashboard",    label: "Dashboard",    icon: LayoutDashboard },
-    { id: "termine",      label: "Termine",      icon: CalendarDays },
-    { id: "services",     label: "Services",     icon: Sparkles },
-    { id: "einstellungen",label: "Settings",     icon: Settings },
+    { id: "dashboard",     label: "Dashboard",   icon: LayoutDashboard },
+    { id: "termine",       label: "Termine",      icon: CalendarDays },
+    { id: "services",      label: "Services",     icon: Sparkles },
+    { id: "notifications", label: "Emails",       icon: Bell },
+    { id: "settings",      label: "Settings",     icon: Settings },
   ];
 
   return (
     <div className="app-shell">
-      {/* Burger Menu Overlay */}
-      {menuOpen && (
-        <div className="fixed inset-0 z-50 flex" style={{ animation: "fadeIn 0.2s ease-out" }}>
-          <div
-            className="absolute inset-0 bg-black/30 backdrop-blur-sm transition-opacity duration-200"
-            onClick={() => setMenuOpen(false)}
-          />
-          <div
-            className="relative w-[280px] h-full flex flex-col py-6 px-5"
-            style={{ background: "var(--cream)", boxShadow: "var(--shadow-lg)", animation: "slideInLeft 0.3s cubic-bezier(0.16,1,0.3,1)" }}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <span className="font-display text-lg font-semibold">Admin Menü</span>
-              <button
-                onClick={() => setMenuOpen(false)}
-                className="bg-transparent border-none cursor-pointer"
-                style={{ color: "var(--txt2)" }}
-              >
-                <X size={22} />
-              </button>
-            </div>
-
-            <nav className="flex flex-col gap-1 flex-1">
-              {TABS.map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  onClick={() => { setTab(id); setMenuOpen(false); }}
-                  className="flex items-center gap-3 px-3 py-3 rounded-xl border-none cursor-pointer text-left transition-colors"
-                  style={{
-                    background: tab === id ? "rgba(196,114,127,0.1)" : "transparent",
-                    color: tab === id ? "var(--rose-deep)" : "var(--txt)",
-                    fontFamily: "var(--font-body)",
-                  }}
-                >
-                  <Icon size={18} style={{ color: tab === id ? "var(--rose-deep)" : "var(--txt3)" }} />
-                  <span className="text-[14px] font-medium">{label}</span>
-                </button>
-              ))}
-            </nav>
-
-            <div className="flex flex-col gap-2 pt-4" style={{ borderTop: "1px solid var(--cream2)" }}>
-              <button
-                onClick={() => { navigate("/"); setMenuOpen(false); }}
-                className="flex items-center gap-3 px-3 py-3 rounded-xl bg-transparent border-none cursor-pointer"
-                style={{ color: "var(--txt2)", fontFamily: "var(--font-body)" }}
-              >
-                <ArrowLeft size={18} />
-                <span className="text-[14px] font-medium">Zurück zur App</span>
-              </button>
-              <button
-                onClick={() => { logout(); setMenuOpen(false); }}
-                className="flex items-center gap-3 px-3 py-3 rounded-xl bg-transparent border-none cursor-pointer"
-                style={{ color: "var(--destructive, #e53e3e)", fontFamily: "var(--font-body)" }}
-              >
-                <LogOut size={18} />
-                <span className="text-[14px] font-medium">Abmelden</span>
-              </button>
-            </div>
-          </div>
+      <div className="flex items-center justify-between px-5 pt-4 pb-4 sticky top-0 z-30"
+        style={{ background: "var(--cream)", borderBottom: "1px solid var(--cream2)" }}>
+        <div>
+          <div className="font-display text-xl font-semibold">Admin Panel</div>
+          <div className="text-[11px]" style={{ color: "var(--txt3)" }}>Vego Beauty Wien</div>
         </div>
-      )}
-
-      {/* Header */}
-      <div
-        className="flex items-center justify-between px-5 pt-4 pb-4 sticky top-0 z-30"
-        style={{ background: "var(--cream)", borderBottom: "1px solid var(--cream2)" }}
-      >
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setMenuOpen(true)}
-            className="bg-transparent border-none cursor-pointer p-1"
-            style={{ color: "var(--txt)" }}
-          >
-            <Menu size={22} />
-          </button>
-          <div>
-            <div className="font-display text-xl font-semibold">Admin Panel</div>
-            <div className="text-[11px]" style={{ color: "var(--txt3)" }}>Vego Beauty Studio</div>
-          </div>
-        </div>
-        <button
-          onClick={logout}
-          className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-full border-[1.5px] bg-transparent cursor-pointer"
-          style={{ borderColor: "var(--cream2)", color: "var(--txt3)", fontFamily: "var(--font-body)" }}
-        >
+        <button onClick={logout} className="flex items-center gap-1.5 text-[13px] px-3 py-1.5 rounded-full border cursor-pointer bg-transparent"
+          style={{ borderColor: "var(--cream2)", color: "var(--txt3)", fontFamily: "var(--font-body)" }}>
           <LogOut size={14} /> Logout
         </button>
       </div>
 
+      <div className="flex border-b overflow-x-auto scrollbar-none" style={{ borderColor: "var(--cream2)", background: "var(--cream)" }}>
+        {TABS.map(({ id, label, icon: Icon }) => (
+          <button key={id} onClick={() => setTab(id)}
+            className="flex items-center gap-1.5 px-4 py-3 text-[11px] font-medium whitespace-nowrap cursor-pointer bg-transparent"
+            style={{
+              borderBottom: tab === id ? "2px solid var(--rose-deep)" : "2px solid transparent",
+              color: tab === id ? "var(--rose-deep)" : "var(--txt3)",
+              fontFamily: "var(--font-body)",
+            }}>
+            <Icon size={13} /> {label}
+          </button>
+        ))}
+      </div>
 
-
-      <div className="px-5 pb-24">
-
-        {/* ── DASHBOARD ── */}
+      <div className="px-5 py-5 pb-24">
         {tab === "dashboard" && (
-          <div className="animate-fade-in">
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-3 mb-5">
+          <div>
+            <div className="section-label">Heute, {new Date().toLocaleDateString("de-AT", { day: "numeric", month: "long" })}</div>
+            <div className="grid grid-cols-2 gap-3 mb-6">
               {[
-                { icon: CalendarDays, label: "Heute",         value: todayAppts.length,  color: "var(--rose-deep)", bg: "rgba(196,114,127,0.1)" },
-                { icon: Clock,        label: "Ausstehend",    value: pendingCount,        color: "#C9A96E",          bg: "rgba(201,169,110,0.1)" },
-                { icon: TrendingUp,   label: "Diese Woche",   value: totalThisWeek,       color: "#2d8a4e",          bg: "rgba(45,138,78,0.1)" },
-                { icon: Users,        label: "Best\u00e4tigt", value: confirmedCount,     color: "var(--mauve)",     bg: "rgba(184,135,155,0.1)" },
-              ].map(({ icon: Icon, label, value, color, bg }) => (
-                <div key={label} className="bg-white rounded-2xl p-4" style={{ boxShadow: "var(--shadow-sm)" }}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-[11px] font-medium uppercase tracking-wide" style={{ color: "var(--txt3)" }}>{label}</div>
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: bg, color }}>
-                      <Icon size={15} />
-                    </div>
-                  </div>
-                  <div className="font-display text-[32px] font-semibold leading-none" style={{ color }}>{value}</div>
+                { label: "Heute",       value: todayAppts.length,  icon: "\ud83d\udcc5", color: "var(--rose-deep)" },
+                { label: "Ausstehend",  value: pendingCount,       icon: "\u23f3",       color: "#C4727F" },
+                { label: "Diese Woche", value: weekAppts.length,   icon: "\ud83d\udcca", color: "var(--gold)" },
+                { label: "Best\u00e4tigt",   value: confirmedCount,     icon: "\u2705",       color: "#2d8a4e" },
+              ].map(({ label, value, icon, color }) => (
+                <div key={label} className="beauty-card p-4 anim-fade-up">
+                  <div className="text-2xl mb-2">{icon}</div>
+                  <div className="font-display text-3xl font-medium mb-0.5" style={{ color }}>{value}</div>
+                  <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{label}</div>
                 </div>
               ))}
             </div>
-
-            {/* Today's appointments */}
-            <div className="section-label">Heute \u2014 {new Date().toLocaleDateString("de-AT", { weekday: "long", day: "numeric", month: "long" })}</div>
-            {todayAppts.length === 0 ? (
-              <div className="text-center py-8" style={{ color: "var(--txt3)" }}>
-                <CalendarDays size={32} className="mx-auto mb-2 opacity-30" />
+            {todayAppts.length > 0 ? (
+              <>
+                <div className="section-label">Heute\u2019s Termine</div>
+                <div className="flex flex-col gap-3">
+                  {todayAppts.map((a) => (
+                    <div key={a.id} className="beauty-card p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <div className="font-medium text-sm">{a.client_name}</div>
+                          <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{a.service} \u00b7 {a.artist_name}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-display font-medium text-sm" style={{ color: "var(--rose-deep)" }}>{a.appointment_time}</div>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+                            style={{ color: STATUS_CONFIG[a.status as AppointmentStatus]?.color, background: STATUS_CONFIG[a.status as AppointmentStatus]?.bg }}>
+                            {STATUS_CONFIG[a.status as AppointmentStatus]?.label}
+                          </span>
+                        </div>
+                      </div>
+                      {a.client_phone && <div className="flex items-center gap-1.5 text-[11px]" style={{ color: "var(--txt3)" }}><Phone size={11} /> {a.client_phone}</div>}
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-10" style={{ color: "var(--txt3)" }}>
+                <div className="text-4xl mb-3">\ud83c\udf19</div>
                 <p className="text-sm">Keine Termine heute</p>
               </div>
+            )}
+          </div>
+        )}
+
+        {tab === "termine" && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="section-label mb-0">Alle Termine ({appointments.length})</div>
+              <button onClick={() => refetch()} className="flex items-center gap-1 text-[11px] px-3 py-1.5 rounded-full border cursor-pointer bg-transparent"
+                style={{ borderColor: "var(--cream2)", color: "var(--txt3)", fontFamily: "var(--font-body)" }}>
+                <RefreshCw size={11} /> Sync
+              </button>
+            </div>
+            {isLoading ? (
+              <div className="text-center py-10" style={{ color: "var(--txt3)" }}>Laden\u2026</div>
+            ) : appointments.length === 0 ? (
+              <div className="text-center py-10" style={{ color: "var(--txt3)" }}>
+                <div className="text-4xl mb-3">\ud83d\udceb</div>
+                <p className="text-sm">Noch keine Termine</p>
+              </div>
             ) : (
-              <div className="flex flex-col gap-2">
-                {todayAppts.map((a) => (
-                  <AppointmentCard key={a.id} appt={a} onStatus={updateStatus} onDelete={remove} compact />
+              <div className="flex flex-col gap-3">
+                {appointments.map((a) => (
+                  <AppointmentCard key={a.id} appt={a}
+                    onStatus={(s) => updateStatus.mutate({ id: a.id, status: s })}
+                    onDelete={() => remove.mutate(a.id)}
+                  />
                 ))}
               </div>
             )}
-
-            {/* Pending notice */}
-            {pendingCount > 0 && (
-              <div
-                className="mt-4 flex items-center gap-3 p-4 rounded-2xl cursor-pointer"
-                style={{ background: "rgba(196,114,127,0.08)", border: "1.5px solid rgba(196,114,127,0.2)" }}
-                onClick={() => setTab("termine")}
-              >
-                <AlertCircle size={18} style={{ color: "var(--rose-deep)" }} />
-                <div className="flex-1">
-                  <div className="text-[13px] font-medium">{pendingCount} ausstehende Termine</div>
-                  <div className="text-[11px]" style={{ color: "var(--txt3)" }}>Bitte best\u00e4tigen oder absagen</div>
-                </div>
-                <ChevronRight size={16} style={{ color: "var(--txt3)" }} />
-              </div>
-            )}
           </div>
         )}
 
-        {/* ── TERMINE ── */}
-        {tab === "termine" && (
-          <div className="animate-fade-in">
-            <TermineTab appointments={appointments} onStatus={updateStatus} onDelete={remove} onClearAll={clearAll} />
-          </div>
-        )}
+        {tab === "services" && <ServicesTab />}
+        {tab === "notifications" && <NotificationsTab settings={notifSettings} onSave={saveNotif.mutate} appointments={appointments} />}
 
-        {/* ── SERVICES ── */}
-        {tab === "services" && <div className="animate-fade-in"><ServicesTab /></div>}
-
-        {/* ── SETTINGS ── */}
-        {tab === "einstellungen" && <div className="animate-fade-in"><SettingsTab /></div>}
-      </div>
-    </div>
-  );
-}
-
-/* ── Appointment Card ── */
-function AppointmentCard({
-  appt, onStatus, onDelete, compact = false
-}: {
-  appt: Appointment;
-  onStatus: (id: string, s: AppointmentStatus) => void;
-  onDelete: (id: string) => void;
-  compact?: boolean;
-}) {
-  const [open, setOpen] = useState(false);
-  const cfg = STATUS_CONFIG[appt.status];
-
-  return (
-    <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: "var(--shadow-sm)" }}>
-      <div className="p-4 cursor-pointer" onClick={() => setOpen((o) => !o)}>
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-0.5">
-              <div className="text-sm font-semibold truncate">{appt.clientName}</div>
-              <span
-                className="text-[10px] font-medium px-2 py-0.5 rounded-full flex-shrink-0"
-                style={{ color: cfg.color, background: cfg.bg }}
-              >
-                {cfg.label}
-              </span>
-            </div>
-            <div className="text-[12px]" style={{ color: "var(--txt2)" }}>{appt.service}</div>
-            <div className="flex items-center gap-3 mt-1.5 text-[11px]" style={{ color: "var(--txt3)" }}>
-              <span>🌸 {appt.artist === "victoria" ? "Victoria" : "✨ Cindy"}</span>
-              <span>🕐 {appt.time}</span>
-              <span>💰 {appt.price}</span>
-            </div>
-          </div>
-          <ChevronRight size={16} style={{ color: "var(--txt3)", transform: open ? "rotate(90deg)" : "rotate(0)", transition: "transform 0.2s" }} />
-        </div>
-      </div>
-
-      {open && (
-        <div className="px-4 pb-4 border-t" style={{ borderColor: "var(--cream2)" }}>
-          <div className="pt-3 flex flex-col gap-2">
-            <div className="flex items-center gap-2 text-[12px]" style={{ color: "var(--txt2)" }}>
-              <Phone size={13} /> {appt.clientPhone}
-            </div>
-            {appt.notes && (
-              <div className="flex items-start gap-2 text-[12px]" style={{ color: "var(--txt2)" }}>
-                <MessageSquare size={13} className="mt-0.5 flex-shrink-0" /> {appt.notes}
+        {tab === "settings" && (
+          <div>
+            <div className="section-label">Studio Info</div>
+            <div className="beauty-card p-5 mb-4">
+              <div className="text-[13px]" style={{ color: "var(--txt3)" }}>
+                <div className="mb-1">\ud83d\udccd Wien, \u00d6sterreich</div>
+                <div className="mb-1">\ud83c\udf10 beautyv.lovable.app</div>
               </div>
-            )}
-            <div className="flex gap-2 mt-2 flex-wrap">
-              {appt.status !== "confirmed" && (
-                <button
-                  onClick={() => onStatus(appt.id, "confirmed")}
-                  className="flex items-center gap-1 text-[11px] font-medium px-3 py-1.5 rounded-full border-none cursor-pointer"
-                  style={{ background: "rgba(45,138,78,0.12)", color: "#2d8a4e", fontFamily: "var(--font-body)" }}
-                >
-                  <Check size={12} /> Best\u00e4tigen
-                </button>
-              )}
-              {appt.status !== "completed" && (
-                <button
-                  onClick={() => onStatus(appt.id, "completed")}
-                  className="flex items-center gap-1 text-[11px] font-medium px-3 py-1.5 rounded-full border-none cursor-pointer"
-                  style={{ background: "rgba(201,169,110,0.12)", color: "#a07820", fontFamily: "var(--font-body)" }}
-                >
-                  <Check size={12} /> Abgeschlossen
-                </button>
-              )}
-              {appt.status !== "cancelled" && (
-                <button
-                  onClick={() => onStatus(appt.id, "cancelled")}
-                  className="flex items-center gap-1 text-[11px] font-medium px-3 py-1.5 rounded-full border-none cursor-pointer"
-                  style={{ background: "rgba(0,0,0,0.06)", color: "#999", fontFamily: "var(--font-body)" }}
-                >
-                  <X size={12} /> Absagen
-                </button>
-              )}
-              <button
-                onClick={() => onDelete(appt.id)}
-                className="flex items-center gap-1 text-[11px] font-medium px-3 py-1.5 rounded-full border-none cursor-pointer ml-auto"
-                style={{ background: "rgba(196,114,127,0.1)", color: "var(--rose-deep)", fontFamily: "var(--font-body)" }}
-              >
-                <Trash2 size={12} /> L\u00f6schen
+            </div>
+            <div className="section-label mt-4">Danger Zone</div>
+            <div className="beauty-card p-5 border-[1.5px]" style={{ borderColor: "rgba(196,114,127,0.3)" }}>
+              <div className="flex items-start gap-3 mb-4">
+                <AlertCircle size={18} style={{ color: "#C4727F", flexShrink: 0, marginTop: 2 }} />
+                <p className="text-[12px]" style={{ color: "var(--txt2)" }}>Alle Termine l\u00f6schen. Diese Aktion kann nicht r\u00fckg\u00e4ngig gemacht werden.</p>
+              </div>
+              <button onClick={() => { if (confirm("Wirklich ALLE Termine l\u00f6schen?")) resetAll.mutate(); }}
+                className="btn-rose w-full" style={{ background: "#C4727F" }}>
+                \ud83d\uddd1 Alle Termine l\u00f6schen
               </button>
             </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ── Termine Tab ── */
-function TermineTab({
-  appointments, onStatus, onDelete, onClearAll
-}: {
-  appointments: Appointment[];
-  onStatus: (id: string, s: AppointmentStatus) => void;
-  onDelete: (id: string) => void;
-  onClearAll: () => void;
-}) {
-  const [filter, setFilter] = useState<"all" | AppointmentStatus>("all");
-  const [artistFilter, setArtistFilter] = useState<"all" | "victoria" | "cindy">("all");
-  const [deleteStep, setDeleteStep] = useState(0); // 0=hidden, 1=first, 2=second, 3=type confirm
-  const [deleteInput, setDeleteInput] = useState("");
-
-  const filtered = appointments.filter((a) => {
-    if (filter !== "all" && a.status !== filter) return false;
-    if (artistFilter !== "all" && a.artist !== artistFilter) return false;
-    return true;
-  }).sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
-
-  const counts: Record<string, number> = { all: appointments.length };
-  appointments.forEach((a) => { counts[a.status] = (counts[a.status] || 0) + 1; });
-
-  const handleConfirmDelete = () => {
-    if (deleteInput === "Delete") {
-      onClearAll();
-      setDeleteStep(0);
-      setDeleteInput("");
-    }
-  };
-
-  return (
-    <div>
-      {/* Delete all confirmation overlay */}
-      {deleteStep > 0 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => { setDeleteStep(0); setDeleteInput(""); }} />
-          <div className="relative w-full max-w-[340px] bg-white rounded-2xl p-6 text-center" style={{ boxShadow: "var(--shadow-lg)" }}>
-            {deleteStep === 1 && (
-              <>
-                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(196,114,127,0.1)" }}>
-                  <AlertCircle size={28} style={{ color: "var(--rose-deep)" }} />
-                </div>
-                <h3 className="font-display text-lg font-semibold mb-2">Alle Termine löschen?</h3>
-                <p className="text-[13px] mb-5" style={{ color: "var(--txt3)" }}>
-                  Damit werden alle {appointments.length} Termine unwiderruflich gelöscht.
-                </p>
-                <div className="flex gap-2">
-                  <button onClick={() => { setDeleteStep(0); }} className="flex-1 py-2.5 rounded-xl text-[13px] font-medium border-[1.5px] bg-transparent cursor-pointer" style={{ borderColor: "var(--cream2)", color: "var(--txt2)", fontFamily: "var(--font-body)" }}>
-                    Abbrechen
-                  </button>
-                  <button onClick={() => setDeleteStep(2)} className="flex-1 py-2.5 rounded-xl text-[13px] font-medium border-none cursor-pointer text-white" style={{ background: "var(--rose-deep)", fontFamily: "var(--font-body)" }}>
-                    Ja, weiter
-                  </button>
-                </div>
-              </>
-            )}
-            {deleteStep === 2 && (
-              <>
-                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(229,62,62,0.1)" }}>
-                  <Trash2 size={28} style={{ color: "#e53e3e" }} />
-                </div>
-                <h3 className="font-display text-lg font-semibold mb-2">Bist du wirklich sicher?</h3>
-                <p className="text-[13px] mb-5" style={{ color: "var(--txt3)" }}>
-                  Diese Aktion kann nicht rückgängig gemacht werden!
-                </p>
-                <div className="flex gap-2">
-                  <button onClick={() => { setDeleteStep(0); }} className="flex-1 py-2.5 rounded-xl text-[13px] font-medium border-[1.5px] bg-transparent cursor-pointer" style={{ borderColor: "var(--cream2)", color: "var(--txt2)", fontFamily: "var(--font-body)" }}>
-                    Abbrechen
-                  </button>
-                  <button onClick={() => setDeleteStep(3)} className="flex-1 py-2.5 rounded-xl text-[13px] font-medium border-none cursor-pointer text-white" style={{ background: "#e53e3e", fontFamily: "var(--font-body)" }}>
-                    Ja, löschen
-                  </button>
-                </div>
-              </>
-            )}
-            {deleteStep === 3 && (
-              <>
-                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(229,62,62,0.15)" }}>
-                  <Trash2 size={28} style={{ color: "#e53e3e" }} />
-                </div>
-                <h3 className="font-display text-lg font-semibold mb-2">Letzte Bestätigung</h3>
-                <p className="text-[13px] mb-4" style={{ color: "var(--txt3)" }}>
-                  Tippe <strong style={{ color: "#e53e3e" }}>Delete</strong> ein, um zu bestätigen.
-                </p>
-                <input
-                  className="beauty-input text-center mb-4"
-                  placeholder="Delete"
-                  value={deleteInput}
-                  onChange={(e) => setDeleteInput(e.target.value)}
-                  autoFocus
-                />
-                <div className="flex gap-2">
-                  <button onClick={() => { setDeleteStep(0); setDeleteInput(""); }} className="flex-1 py-2.5 rounded-xl text-[13px] font-medium border-[1.5px] bg-transparent cursor-pointer" style={{ borderColor: "var(--cream2)", color: "var(--txt2)", fontFamily: "var(--font-body)" }}>
-                    Abbrechen
-                  </button>
-                  <button
-                    onClick={handleConfirmDelete}
-                    disabled={deleteInput !== "Delete"}
-                    className="flex-1 py-2.5 rounded-xl text-[13px] font-medium border-none cursor-pointer text-white transition-opacity"
-                    style={{ background: "#e53e3e", fontFamily: "var(--font-body)", opacity: deleteInput === "Delete" ? 1 : 0.4 }}
-                  >
-                    Endgültig löschen
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Header with delete all icon */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="text-[13px] font-semibold" style={{ color: "var(--txt2)" }}>
-          {appointments.length} Termine
-        </div>
-        {appointments.length > 0 && (
-          <button
-            onClick={() => setDeleteStep(1)}
-            className="flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-full border-none cursor-pointer"
-            style={{ background: "rgba(229,62,62,0.08)", color: "#e53e3e", fontFamily: "var(--font-body)" }}
-          >
-            <Trash2 size={13} /> Alle löschen
-          </button>
         )}
       </div>
+    </div>
+  );
+}
 
-      {/* Artist filter */}
-      <div className="flex gap-2 mb-3 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-        {(["all", "victoria", "cindy"] as const).map((a) => (
-          <button
-            key={a}
-            onClick={() => setArtistFilter(a)}
-            className="px-3 py-1.5 rounded-full text-[11px] font-medium border-[1.5px] whitespace-nowrap cursor-pointer"
-            style={{
-              fontFamily: "var(--font-body)",
-              background: artistFilter === a ? "var(--txt)" : "white",
-              color: artistFilter === a ? "white" : "var(--txt3)",
-              borderColor: artistFilter === a ? "var(--txt)" : "var(--cream2)",
-            }}
-          >
-            {a === "all" ? "Alle" : a === "victoria" ? "🌸 Victoria" : "✨ Cindy"}
-          </button>
-        ))}
-      </div>
-      {/* Status filter */}
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-        {(["all", "pending", "confirmed", "completed", "cancelled"] as const).map((s) => (
-          <button
-            key={s}
-            onClick={() => setFilter(s)}
-            className="px-3 py-1.5 rounded-full text-[11px] font-medium border-[1.5px] whitespace-nowrap cursor-pointer"
-            style={{
-              fontFamily: "var(--font-body)",
-              background: filter === s ? (s === "all" ? "var(--rose-deep)" : STATUS_CONFIG[s]?.color || "var(--rose-deep)") : "white",
-              color: filter === s ? "white" : "var(--txt3)",
-              borderColor: filter === s ? "transparent" : "var(--cream2)",
-            }}
-          >
-            {s === "all" ? `Alle (${counts.all || 0})` : `${STATUS_CONFIG[s].label} (${counts[s] || 0})`}
-          </button>
-        ))}
-      </div>
+function AppointmentCard({ appt, onStatus, onDelete }: {
+  appt: Appointment;
+  onStatus: (s: AppointmentStatus) => void;
+  onDelete: () => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [sending, setSending] = useState<string | null>(null);
+  const cfg = STATUS_CONFIG[appt.status as AppointmentStatus] || STATUS_CONFIG.pending;
 
-      {filtered.length === 0 ? (
-        <div className="text-center py-10" style={{ color: "var(--txt3)" }}>
-          <CalendarDays size={32} className="mx-auto mb-2 opacity-30" />
-          <p className="text-sm">Keine Termine gefunden</p>
+  const handleSend = async (type: "confirmation" | "reminder_24h" | "reminder_2h") => {
+    setSending(type);
+    const result = await sendReminderNow(appt, type);
+    setSending(null);
+    alert(result);
+  };
+
+  return (
+    <div className="beauty-card p-4">
+      <div className="flex items-start justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+        <div className="flex-1 min-w-0">
+          <div className="font-medium text-sm truncate">{appt.client_name}</div>
+          <div className="text-[11px] truncate" style={{ color: "var(--txt3)" }}>{appt.service} \u00b7 {appt.artist_name}</div>
+          <div className="text-[11px] mt-0.5" style={{ color: "var(--rose-deep)" }}>
+            {new Date(appt.appointment_date).toLocaleDateString("de-AT", { day: "numeric", month: "short" })} \u00b7 {appt.appointment_time}
+          </div>
         </div>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {filtered.map((a) => (
-            <div key={a.id}>
-              <div className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 mt-3 first:mt-0" style={{ color: "var(--txt3)" }}>
-                {new Date(a.date).toLocaleDateString("de-AT", { weekday: "long", day: "numeric", month: "long" })}
-              </div>
-              <AppointmentCard appt={a} onStatus={onStatus} onDelete={onDelete} />
+        <div className="flex flex-col items-end gap-1.5 flex-shrink-0 ml-2">
+          <span className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+            style={{ color: cfg.color, background: cfg.bg }}>{cfg.label}</span>
+          <div className="flex gap-1">
+            {appt.confirmation_sent && <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(45,138,78,0.12)", color: "#2d8a4e" }}>\u2713 Best</span>}
+            {appt.reminder_24h_sent && <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(201,169,110,0.15)", color: "#a07040" }}>\u2713 24h</span>}
+            {appt.reminder_2h_sent  && <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(232,149,74,0.15)", color: "#c06020" }}>\u2713 2h</span>}
+          </div>
+        </div>
+      </div>
+      {expanded && (
+        <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--cream2)" }}>
+          {(appt.client_email || appt.client_phone) && (
+            <div className="flex flex-col gap-1.5 mb-4">
+              {appt.client_email && <div className="flex items-center gap-2 text-[12px]" style={{ color: "var(--txt2)" }}><Mail size={12} /> {appt.client_email}</div>}
+              {appt.client_phone && <div className="flex items-center gap-2 text-[12px]" style={{ color: "var(--txt2)" }}><Phone size={12} /> {appt.client_phone}</div>}
             </div>
-          ))}
+          )}
+          {appt.notes && <div className="text-[12px] px-3 py-2 rounded-xl mb-4" style={{ background: "var(--cream2)", color: "var(--txt2)" }}>\ud83d\udcdd {appt.notes}</div>}
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {(["pending", "confirmed", "completed", "cancelled"] as AppointmentStatus[]).map((s) => (
+              <button key={s} onClick={() => onStatus(s)}
+                className="text-[11px] px-2.5 py-1 rounded-full border cursor-pointer bg-transparent"
+                style={{
+                  borderColor: appt.status === s ? STATUS_CONFIG[s].color : "var(--cream2)",
+                  color: appt.status === s ? STATUS_CONFIG[s].color : "var(--txt3)",
+                  fontFamily: "var(--font-body)", fontWeight: appt.status === s ? 600 : 400,
+                }}>{STATUS_CONFIG[s].label}</button>
+            ))}
+          </div>
+          {appt.client_email && (
+            <div className="flex flex-col gap-2 mb-4">
+              <div className="text-[11px] font-medium mb-1" style={{ color: "var(--txt3)" }}>E-Mail senden:</div>
+              {[
+                { type: "confirmation" as const, label: "Best\u00e4tigung",   icon: "\ud83d\udc8c" },
+                { type: "reminder_24h" as const, label: "Erinnerung 24h", icon: "\ud83d\udcc5" },
+                { type: "reminder_2h"  as const, label: "Erinnerung 2h",  icon: "\u23f0" },
+              ].map(({ type, label, icon }) => (
+                <button key={type} onClick={() => handleSend(type)} disabled={!!sending}
+                  className="flex items-center gap-2 text-[12px] px-3 py-2 rounded-xl border cursor-pointer bg-transparent"
+                  style={{ borderColor: "var(--cream2)", color: "var(--txt2)", fontFamily: "var(--font-body)" }}>
+                  {sending === type ? <RefreshCw size={12} /> : <Send size={12} />} {icon} {label}
+                </button>
+              ))}
+            </div>
+          )}
+          <button onClick={() => { if (confirm("Termin l\u00f6schen?")) onDelete(); }}
+            className="flex items-center gap-1.5 text-[12px] cursor-pointer bg-transparent border-none"
+            style={{ color: "#C4727F", fontFamily: "var(--font-body)" }}>
+            <Trash2 size={13} /> Termin l\u00f6schen
+          </button>
         </div>
       )}
     </div>
   );
 }
 
-/* ── Services Tab ── */
 function ServicesTab() {
-  type EditMap = Record<string, string>;
-  const [edits, setEdits] = useState<EditMap>({});
-  const [saved, setSaved] = useState<EditMap>(() => {
+  const [prices, setPrices] = useState<Record<string, string>>(() => {
     try { return JSON.parse(localStorage.getItem("admin_prices") || "{}"); } catch { return {}; }
   });
-
-  const getPrice = (artistId: string, ci: number, ii: number) => {
-    const key = `${artistId}-${ci}-${ii}`;
-    return saved[key] ?? SERVICES[artistId]?.[ci]?.items[ii]?.price ?? "";
-  };
-
-  const handleSave = (artistId: string, ci: number, ii: number) => {
-    const key = `${artistId}-${ci}-${ii}`;
-    if (!edits[key]) return;
-    const next = { ...saved, [key]: edits[key] };
-    setSaved(next);
+  const [editing, setEditing] = useState<string | null>(null);
+  const save = (key: string, val: string) => {
+    const next = { ...prices, [key]: val };
+    setPrices(next);
     localStorage.setItem("admin_prices", JSON.stringify(next));
-    setEdits((e) => { const n = { ...e }; delete n[key]; return n; });
+    setEditing(null);
   };
-
   return (
     <div>
-      {(["victoria", "cindy"] as const).map((artistId) => (
+      {Object.entries(SERVICES).map(([artistId, cats]) => (
         <div key={artistId} className="mb-6">
-          <div className="section-label">{artistId === "victoria" ? "🌸 Victoria" : "✨ Cindy"}</div>
-          {SERVICES[artistId].map((cat, ci) => (
+          <div className="section-label">{artistId === "victoria" ? "\ud83c\udf38 Victoria" : "\u2728 Cindy"}</div>
+          {cats.map((cat, ci) => (
             <div key={ci} className="mb-4">
-              <div className="text-[12px] font-semibold mb-2 flex items-center gap-2" style={{ color: "var(--txt2)" }}>
-                {cat.emoji} {cat.category}
-              </div>
+              <div className="text-[12px] font-medium px-1 mb-2" style={{ color: "var(--txt3)" }}>{cat.emoji} {cat.category}</div>
               <div className="flex flex-col gap-2">
                 {cat.items.map((item, ii) => {
                   const key = `${artistId}-${ci}-${ii}`;
-                  const editing = key in edits;
-                  const currentPrice = getPrice(artistId, ci, ii);
+                  const price = prices[key] ?? item.price;
                   return (
-                    <div key={ii} className="bg-white rounded-2xl p-3 flex items-center gap-3" style={{ boxShadow: "var(--shadow-sm)" }}>
+                    <div key={ii} className="beauty-card p-3.5 flex items-center gap-3">
                       <span className="text-lg flex-shrink-0">{item.icon}</span>
                       <div className="flex-1 min-w-0">
                         <div className="text-[13px] font-medium truncate">{item.name}</div>
                         <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{item.duration}</div>
                       </div>
-                      {editing ? (
+                      {editing === key ? (
                         <div className="flex items-center gap-1.5">
-                          <input
-                            className="beauty-input text-[12px] py-1.5 px-2.5 w-24"
-                            value={edits[key]}
-                            onChange={(e) => setEdits((prev) => ({ ...prev, [key]: e.target.value }))}
-                            onKeyDown={(e) => e.key === "Enter" && handleSave(artistId, ci, ii)}
-                            autoFocus
-                          />
-                          <button
-                            onClick={() => handleSave(artistId, ci, ii)}
-                            className="w-8 h-8 rounded-xl flex items-center justify-center border-none cursor-pointer"
-                            style={{ background: "rgba(45,138,78,0.12)", color: "#2d8a4e" }}
-                          >
-                            <Save size={14} />
+                          <input defaultValue={price} onKeyDown={(e) => { if (e.key === "Enter") save(key, (e.target as HTMLInputElement).value); }}
+                            autoFocus className="beauty-input text-right w-24 py-1 px-2 text-sm" style={{ height: "auto" }} id={`inp-${key}`} />
+                          <button onClick={() => save(key, (document.getElementById(`inp-${key}`) as HTMLInputElement)?.value || price)}
+                            className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer border-none"
+                            style={{ background: "var(--rose-deep)", color: "white" }}>
+                            <Check size={12} />
                           </button>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <span className="text-[13px] font-semibold" style={{ color: "var(--rose-deep)" }}>{currentPrice}</span>
-                          <button
-                            onClick={() => setEdits((prev) => ({ ...prev, [key]: currentPrice }))}
-                            className="w-7 h-7 rounded-xl flex items-center justify-center border-none cursor-pointer"
-                            style={{ background: "var(--cream2)", color: "var(--txt2)" }}
-                          >
-                            <Edit3 size={12} />
-                          </button>
+                          <span className="font-display font-semibold text-sm" style={{ color: "var(--rose-deep)" }}>{price}</span>
+                          <button onClick={() => setEditing(key)}
+                            className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer border-none"
+                            style={{ background: "var(--blush)", color: "var(--rose-deep)" }}>\u270f\ufe0f</button>
                         </div>
                       )}
                     </div>
@@ -616,71 +401,138 @@ function ServicesTab() {
   );
 }
 
-/* ── Settings Tab ── */
-function SettingsTab() {
-  const [settings, setSettings] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("admin_settings") || "{}"); } catch { return {}; }
-  });
-  const [saved, setSaved] = useState(false);
+function NotificationsTab({ settings, onSave, appointments }: {
+  settings?: NotificationSettings;
+  onSave: (s: Partial<NotificationSettings>) => void;
+  appointments: Appointment[];
+}) {
+  const [form, setForm] = useState<Partial<NotificationSettings>>({});
+  const [showKey, setShowKey] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState("");
 
-  const update = (key: string, val: string) => setSettings((s: Record<string,string>) => ({ ...s, [key]: val }));
+  useEffect(() => { if (settings) setForm(settings); }, [settings]);
 
-  const handleSave = () => {
-    localStorage.setItem("admin_settings", JSON.stringify(settings));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const merged = { ...settings, ...form } as NotificationSettings;
+  const set = (k: keyof NotificationSettings, v: string | boolean) => setForm((f) => ({ ...f, [k]: v }));
+
+  const handleTest = async () => {
+    if (!merged.studio_email) { setTestResult("Bitte Studio-E-Mail eingeben"); return; }
+    setTesting(true);
+    const { error } = await supabase.functions.invoke("send-email", {
+      body: {
+        to: merged.studio_email,
+        subject: "\u2705 Vego Beauty \u2014 Resend Verbindungstest",
+        html: `<div style="font-family:Arial;padding:32px;background:#fdf5f2;border-radius:16px;max-width:480px;margin:auto;"><h2 style="color:#C97A7A;font-weight:400;margin:0 0 16px;">Verbindungstest \u2713</h2><p style="color:#5c4a46;">Resend ist korrekt konfiguriert! E-Mail-Benachrichtigungen sind aktiv.</p></div>`,
+      },
+    });
+    setTesting(false);
+    setTestResult(error ? `Fehler: ${error.message}` : "\u2713 Test-E-Mail gesendet!");
   };
 
-  const fields = [
-    { key: "studioName",  label: "Studio Name",        placeholder: "Vego Beauty Wien" },
-    { key: "phone1",      label: "WhatsApp Victoria",   placeholder: "+43 660 123 4567" },
-    { key: "phone2",      label: "WhatsApp Cindy",      placeholder: "+43 664 987 6543" },
-    { key: "address",     label: "Adresse",             placeholder: "Wien, \u00d6sterreich" },
-    { key: "hours",       label: "\u00d6ffnungszeiten", placeholder: "Mo-Sa 09:00-18:00" },
-    { key: "instagram1",  label: "Instagram Victoria",  placeholder: "@dr.permanent_v" },
-    { key: "instagram2",  label: "Instagram Cindy",     placeholder: "@cbeautyvienna" },
-  ];
+  const total = appointments.length;
+  const c24h = appointments.filter((a) => a.reminder_24h_sent).length;
+  const c2h  = appointments.filter((a) => a.reminder_2h_sent).length;
+  const cConf = appointments.filter((a) => a.confirmation_sent).length;
 
   return (
     <div>
-      <div className="flex flex-col gap-4">
-        {fields.map(({ key, label, placeholder }) => (
-          <div key={key}>
-            <label className="block text-[11px] font-semibold tracking-wide uppercase mb-1.5" style={{ color: "var(--txt3)" }}>
-              {label}
-            </label>
-            <input
-              className="beauty-input"
-              placeholder={placeholder}
-              value={settings[key] || ""}
-              onChange={(e) => update(key, e.target.value)}
-            />
+      <div className="section-label">Statistik</div>
+      <div className="grid grid-cols-3 gap-2 mb-6">
+        {[
+          { label: "Best\u00e4tigung", value: cConf, icon: "\ud83d\udc8c", color: "var(--rose-deep)" },
+          { label: "24h Reminder",  value: c24h,  icon: "\ud83d\udcc5",   color: "var(--gold)" },
+          { label: "2h Reminder",   value: c2h,   icon: "\u23f0",         color: "#E8954A" },
+        ].map(({ label, value, icon, color }) => (
+          <div key={label} className="beauty-card p-3 text-center">
+            <div className="text-xl mb-1">{icon}</div>
+            <div className="font-display text-2xl font-medium" style={{ color }}>{value}/{total}</div>
+            <div className="text-[10px]" style={{ color: "var(--txt3)" }}>{label}</div>
           </div>
         ))}
       </div>
 
-      <button
-        className="btn-rose mt-6 w-full flex items-center justify-center gap-2"
-        onClick={handleSave}
-        style={{ background: saved ? "linear-gradient(135deg, #2d8a4e, #1a5c30)" : undefined }}
-      >
-        {saved ? <><Check size={18} /> Gespeichert!</> : <><Save size={18} /> Einstellungen speichern</>}
-      </button>
+      <div className="section-label">Resend Konfiguration</div>
+      <div className="beauty-card p-5 mb-5">
+        <div className="mb-4">
+          <label className="text-[12px] font-medium block mb-1.5" style={{ color: "var(--txt2)" }}>Resend API Key</label>
+          <div className="flex gap-2">
+            <input type={showKey ? "text" : "password"} value={merged.resend_api_key || ""}
+              onChange={(e) => set("resend_api_key", e.target.value)}
+              placeholder="re_xxxxxxxxxxxxxxxx" className="beauty-input flex-1 text-sm" />
+            <button onClick={() => setShowKey(!showKey)} className="w-10 h-10 rounded-xl border flex items-center justify-center cursor-pointer bg-transparent"
+              style={{ borderColor: "var(--cream2)", color: "var(--txt3)" }}>
+              {showKey ? <EyeOff size={15} /> : <Eye size={15} />}
+            </button>
+          </div>
+          <p className="text-[11px] mt-1.5" style={{ color: "var(--txt3)" }}>
+            Von <a href="https://resend.com" target="_blank" rel="noreferrer" style={{ color: "var(--rose-deep)" }}>resend.com</a> \u2014 kostenlos bis 3.000 E-Mails/Monat
+          </p>
+        </div>
+        <div className="mb-4">
+          <label className="text-[12px] font-medium block mb-1.5" style={{ color: "var(--txt2)" }}>Studio E-Mail</label>
+          <input type="email" value={merged.studio_email || ""} onChange={(e) => set("studio_email", e.target.value)}
+            placeholder="studio@vegobeauty.at" className="beauty-input w-full text-sm" />
+        </div>
+        <div className="mb-4">
+          <label className="text-[12px] font-medium block mb-1.5" style={{ color: "var(--txt2)" }}>Victoria\u2019s E-Mail</label>
+          <input type="email" value={merged.artist_victoria_email || ""} onChange={(e) => set("artist_victoria_email", e.target.value)}
+            placeholder="victoria@vegobeauty.at" className="beauty-input w-full text-sm" />
+        </div>
+        <div className="mb-5">
+          <label className="text-[12px] font-medium block mb-1.5" style={{ color: "var(--txt2)" }}>Cindy\u2019s E-Mail</label>
+          <input type="email" value={merged.artist_cindy_email || ""} onChange={(e) => set("artist_cindy_email", e.target.value)}
+            placeholder="cindy@vegobeauty.at" className="beauty-input w-full text-sm" />
+        </div>
 
-      <div className="mt-6 pt-6" style={{ borderTop: "1px solid var(--cream2)" }}>
-        <div className="section-label">Danger Zone</div>
-        <button
-          className="w-full py-3 rounded-2xl text-[13px] font-medium border-[1.5px] cursor-pointer"
-          style={{ borderColor: "rgba(196,114,127,0.3)", color: "var(--rose-deep)", background: "rgba(196,114,127,0.05)", fontFamily: "var(--font-body)" }}
-          onClick={() => {
-            if (confirm("Alle Termine l\u00f6schen?")) {
-              localStorage.removeItem("admin_appointments");
-              window.location.reload();
-            }
-          }}
-        >
-          Alle Termine zur\u00fccksetzen
-        </button>
+        <div className="section-label mb-3">Automatische Benachrichtigungen</div>
+        {[
+          { key: "email_confirmation_enabled" as const, label: "Buchungsbest\u00e4tigung", desc: "Sofort nach Terminanfrage", icon: "\ud83d\udc8c" },
+          { key: "email_24h_enabled"           as const, label: "Erinnerung 24h vorher",   desc: "Automatisch via pg_cron",   icon: "\ud83d\udcc5" },
+          { key: "email_2h_enabled"            as const, label: "Erinnerung 2h vorher",    desc: "Automatisch via pg_cron",   icon: "\u23f0" },
+        ].map(({ key, label, desc, icon }) => (
+          <div key={key} className="flex items-center justify-between py-3" style={{ borderBottom: "1px solid var(--cream2)" }}>
+            <div className="flex items-center gap-2.5">
+              <span className="text-lg">{icon}</span>
+              <div>
+                <div className="text-[13px] font-medium">{label}</div>
+                <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{desc}</div>
+              </div>
+            </div>
+            <button onClick={() => set(key, !merged[key])}
+              className="relative w-11 h-6 rounded-full transition-all duration-300 cursor-pointer border-none flex-shrink-0"
+              style={{ background: merged[key] ? "var(--rose-deep)" : "var(--cream2)" }}>
+              <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all duration-300"
+                style={{ left: merged[key] ? "calc(100% - 22px)" : "2px" }} />
+            </button>
+          </div>
+        ))}
+
+        <div className="flex gap-2 mt-5">
+          <button onClick={() => onSave(form)} className="btn-rose flex-1 flex items-center justify-center gap-1.5">
+            <Save size={14} /> Speichern
+          </button>
+          <button onClick={handleTest} disabled={testing}
+            className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-2xl border cursor-pointer bg-transparent text-sm font-medium"
+            style={{ borderColor: "var(--cream2)", color: "var(--txt2)", fontFamily: "var(--font-body)" }}>
+            {testing ? <RefreshCw size={14} /> : <Send size={14} />} Test E-Mail
+          </button>
+        </div>
+        {testResult && (
+          <div className="mt-3 text-center text-[12px] py-2 rounded-xl"
+            style={{ background: testResult.startsWith("\u2713") ? "rgba(45,138,78,0.1)" : "rgba(196,114,127,0.1)", color: testResult.startsWith("\u2713") ? "#2d8a4e" : "#C4727F" }}>
+            {testResult}
+          </div>
+        )}
+      </div>
+
+      <div className="beauty-card p-4" style={{ background: "rgba(201,169,110,0.08)" }}>
+        <div className="text-[12px] font-medium mb-2" style={{ color: "var(--gold)" }}>\u2699\ufe0f Automatische Erinnerungen</div>
+        <p className="text-[11px] leading-relaxed" style={{ color: "var(--txt2)" }}>
+          F\u00fcr automatische 24h/2h-Reminder, aktiviere pg_cron in deinem Supabase-Dashboard:<br/>
+          <strong>Database \u2192 Extensions \u2192 pg_cron \u2192 Enable</strong><br/>
+          Dann f\u00fchre den SQL-Befehl aus der Migration-Datei aus.
+        </p>
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 
 const STEPS = [
-  { emoji: "📲", title: "Online buchen",  desc: "Wähle Service, Datum & Uhrzeit direkt in der App" },
-  { emoji: "💬", title: "Beratung",        desc: "Kurzes Erstgespräch — wir verstehen deinen Wunschlook" },
-  { emoji: "✨",       title: "Dein Ergebnis",   desc: "Strahle mit einem professionellen, langlebigen Ergebnis" },
+  { emoji: "\ud83d\udcf2", title: "Online buchen",  desc: "W\u00e4hle Service, Datum & Uhrzeit direkt in der App" },
+  { emoji: "\ud83d\udcac", title: "Beratung",        desc: "Kurzes Erstgespr\u00e4ch \u2014 wir verstehen deinen Wunschlook" },
+  { emoji: "\u2728",       title: "Dein Ergebnis",   desc: "Strahle mit einem professionellen, langlebigen Ergebnis" },
 ];
 
 export default function HowItWorks() {

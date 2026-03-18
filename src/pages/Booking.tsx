@@ -110,9 +110,9 @@ export default function Booking() {
   };
 
   const handleWhatsApp = async () => {
-    // Save booking to database
+    setSaving(true);
+    // Save booking to database (authenticated users)
     if (user) {
-      setSaving(true);
       await supabase.from("bookings").insert({
         user_id: user.id,
         artist_id: currentArtist?.id || "",
@@ -125,8 +125,33 @@ export default function Booking() {
         notes: form.notes,
         status: "pending",
       });
-      setSaving(false);
     }
+
+    // Save to appointments table (anon, for notification system)
+    const serviceNames = services.map((s: any) => s.name).join(", ");
+    const servicePrices = services.map((s: any) => s.price).join(", ");
+    const { data: appt } = await supabase.from("appointments").insert({
+      client_name: form.name,
+      client_email: form.email || "",
+      client_phone: form.phone,
+      artist_id: currentArtist?.id || "unknown",
+      artist_name: currentArtist?.name || "Vego Beauty",
+      service: serviceNames,
+      service_price: servicePrices,
+      appointment_date: date?.toISOString().split("T")[0] || "",
+      appointment_time: time,
+      status: "pending",
+      notes: form.notes,
+    }).select().single();
+
+    // Send confirmation email if email provided
+    if (form.email && appt) {
+      supabase.functions.invoke("send-email", {
+        body: { type: "confirmation", appointment_id: appt.id },
+      }).catch(() => {});
+    }
+
+    setSaving(false);
 
     const url = buildWhatsAppUrl({
       artist: currentArtist || null,

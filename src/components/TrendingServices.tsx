@@ -34,17 +34,16 @@ export default function TrendingServices() {
   return (
     <div className="pb-6">
       <div className="section-label px-5">Trending Services</div>
-      <div className="flex gap-3.5 overflow-x-auto px-5 pb-3 pt-1" style={{ scrollSnapType: "x mandatory", scrollbarWidth: "none" }}>
+      <div className="flex gap-3 overflow-x-auto px-5 pb-2" style={{ scrollSnapType: "x mandatory", scrollbarWidth: "none" }}>
         {items.map(({ artist, service }, i) => (
           <div
             key={i}
-            className="flex-shrink-0 rounded-2xl p-5 pb-5 cursor-pointer transition-transform hover:-translate-y-1 flex flex-col justify-between"
+            className="flex-shrink-0 rounded-2xl p-4 cursor-pointer transition-transform hover:-translate-y-1"
             style={{
-              width: 175,
-              minHeight: 190,
+              width: 160,
               background: GRADIENTS[i % GRADIENTS.length],
               scrollSnapAlign: "start",
-              boxShadow: "0 4px 16px -4px rgba(0,0,0,0.1)",
+              boxShadow: "var(--shadow-md)",
             }}
             onClick={() => {
               booking.setArtist(artist);
@@ -52,13 +51,11 @@ export default function TrendingServices() {
               navigate(`/book/${artist.id}`);
             }}
           >
-            <div>
-              <div className="text-4xl mb-4">{service.icon}</div>
-              <div className="text-[15px] font-semibold text-white leading-tight mb-1">{service.name}</div>
-              <div className="text-xs text-white opacity-80 mb-3">{artist.name}</div>
-            </div>
+            <div className="text-3xl mb-3">{service.icon}</div>
+            <div className="text-sm font-semibold text-white leading-tight mb-1">{service.name}</div>
+            <div className="text-[11px] text-white opacity-80 mb-2">{artist.name}</div>
             <div
-              className="inline-block text-[11px] font-bold px-3 py-1 rounded-full self-start"
+              className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full"
               style={{ background: "rgba(255,255,255,0.3)", color: "white" }}
             >
               {service.price}
