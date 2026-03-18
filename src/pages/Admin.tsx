@@ -15,7 +15,7 @@ import type { Appointment, AppointmentStatus, NotificationSettings } from "@/dat
 
 const ADMIN_EMAIL = "creationation.at@gmail.com";
 
-type AdminTab = "dashboard" | "termine" | "services" | "notifications" | "settings";
+type AdminTab = "dashboard" | "termine" | "services" | "notifications" | "settings" | "team";
 
 const STATUS_CONFIG: Record<AppointmentStatus, { label: string; color: string; bg: string }> = {
   pending:   { label: "Ausstehend",    color: "#C4727F", bg: "rgba(196,114,127,0.1)" },
