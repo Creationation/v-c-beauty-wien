@@ -4,9 +4,19 @@ import "./index.css";
 
 createRoot(document.getElementById("root")!).render(<App />);
 
-// Register service worker for PWA
+const isProductionBuild = import.meta.env.PROD;
+
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  window.addEventListener("load", async () => {
+    if (isProductionBuild) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+      return;
+    }
+
+    const registrations = await navigator.serviceWorker.getRegistrations().catch(() => []);
+    await Promise.all(registrations.map((registration) => registration.unregister()));
+
+    const cacheKeys = await caches.keys().catch(() => []);
+    await Promise.all(cacheKeys.map((key) => caches.delete(key)));
   });
 }
