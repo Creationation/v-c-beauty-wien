@@ -37,7 +37,8 @@ function useAppointments() {
   const updateStatus = (id: string, status: AppointmentStatus) =>
     save(data.map((a) => (a.id === id ? { ...a, status } : a)));
   const remove = (id: string) => save(data.filter((a) => a.id !== id));
-  return { data, updateStatus, remove };
+  const clearAll = () => { setData([]); localStorage.removeItem("admin_appointments"); };
+  return { data, updateStatus, remove, clearAll };
 }
 
 export default function Admin() {
