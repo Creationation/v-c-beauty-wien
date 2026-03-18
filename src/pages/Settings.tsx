@@ -92,7 +92,6 @@ function SettingsMenu({
         />
       </div>
 
-      <BottomNav />
     </div>
   );
 }
