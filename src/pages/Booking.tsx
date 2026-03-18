@@ -5,6 +5,7 @@ import { useBooking } from "@/hooks/useBooking";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { ARTISTS } from "@/data/artists";
+import { useTeamMembers } from "@/hooks/useTeamMembers";
 import { SERVICES } from "@/data/services";
 import {
   MONTHS,
