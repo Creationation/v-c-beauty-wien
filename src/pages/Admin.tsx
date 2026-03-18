@@ -91,14 +91,14 @@ export default function Admin() {
     <div className="app-shell">
       {/* Burger Menu Overlay */}
       {menuOpen && (
-        <div className="fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-50 flex" style={{ animation: "fadeIn 0.2s ease-out" }}>
           <div
-            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm transition-opacity duration-200"
             onClick={() => setMenuOpen(false)}
           />
           <div
-            className="relative w-[280px] h-full flex flex-col py-6 px-5 anim-fade-up"
-            style={{ background: "var(--cream)", boxShadow: "var(--shadow-lg)" }}
+            className="relative w-[280px] h-full flex flex-col py-6 px-5"
+            style={{ background: "var(--cream)", boxShadow: "var(--shadow-lg)", animation: "slideInLeft 0.3s cubic-bezier(0.16,1,0.3,1)" }}
           >
             <div className="flex items-center justify-between mb-6">
               <span className="font-display text-lg font-semibold">Admin Menü</span>
