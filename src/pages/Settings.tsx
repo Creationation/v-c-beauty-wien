@@ -7,7 +7,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import BottomNav from "@/components/BottomNav";
 
-const ADMIN_EMAIL_DOMAIN = "creationation.at";
+const ADMIN_EMAIL = "creationation.at@gmail.com";
 
 export default function Settings() {
   const navigate = useNavigate();
