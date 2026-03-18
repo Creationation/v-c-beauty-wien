@@ -225,6 +225,26 @@ export default function Home() {
         <MapPin size={12} /> Wien, Österreich
       </div>
 
+      {/* Sticky Booking CTA */}
+      {showSticky && (
+        <div
+          className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 anim-fade-up"
+          style={{ animation: "fadeIn 0.3s ease-out" }}
+        >
+          <button
+            onClick={() => navigate("/book")}
+            className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white border-none cursor-pointer transition-transform hover:scale-105"
+            style={{
+              background: "linear-gradient(135deg, var(--rose-deep), #e07090)",
+              boxShadow: "0 8px 24px rgba(196, 114, 127, 0.4)",
+              fontFamily: "var(--font-body)",
+            }}
+          >
+            📅 Jetzt Termin buchen
+          </button>
+        </div>
+      )}
+
       {/* Bottom Nav */}
       <BottomNav />
     </div>
