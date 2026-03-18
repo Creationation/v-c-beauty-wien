@@ -389,7 +389,7 @@ function TermineTab({
               borderColor: artistFilter === a ? "var(--txt)" : "var(--cream2)",
             }}
           >
-            {a === "all" ? "Alle" : a === "victoria" ? "\ud83c\udf38 Victoria" : "\u2728 Cindy"}
+            {a === "all" ? "Alle" : a === "victoria" ? "🌸 Victoria" : "✨ Cindy"}
           </button>
         ))}
       </div>
