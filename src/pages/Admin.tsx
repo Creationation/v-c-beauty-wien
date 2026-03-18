@@ -168,10 +168,10 @@ export default function Admin() {
             <div className="section-label">Heute, {new Date().toLocaleDateString("de-AT", { day: "numeric", month: "long" })}</div>
             <div className="grid grid-cols-2 gap-3 mb-6">
               {[
-                { label: "Heute",       value: todayAppts.length,  icon: "\ud83d\udcc5", color: "var(--rose-deep)" },
-                { label: "Ausstehend",  value: pendingCount,       icon: "\u23f3",       color: "#C4727F" },
-                { label: "Diese Woche", value: weekAppts.length,   icon: "\ud83d\udcca", color: "var(--gold)" },
-                { label: "Best\u00e4tigt",   value: confirmedCount,     icon: "\u2705",       color: "#2d8a4e" },
+                { label: "Heute",       value: todayAppts.length,  icon: "📅", color: "var(--rose-deep)" },
+                { label: "Ausstehend",  value: pendingCount,       icon: "⏳",       color: "#C4727F" },
+                { label: "Diese Woche", value: weekAppts.length,   icon: "📊", color: "var(--gold)" },
+                { label: "Bestätigt",   value: confirmedCount,     icon: "✅",       color: "#2d8a4e" },
               ].map(({ label, value, icon, color }) => (
                 <div key={label} className="beauty-card p-4 anim-fade-up">
                   <div className="text-2xl mb-2">{icon}</div>
