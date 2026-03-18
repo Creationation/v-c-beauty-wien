@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Star, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ARTISTS } from "@/data/artists";
+import { useTeamMembers } from "@/hooks/useTeamMembers";
 import { REVIEWS } from "@/data/reviews";
 import { openGutscheinWhatsApp } from "@/utils/whatsapp";
 
@@ -14,6 +15,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [showInstaDialog, setShowInstaDialog] = useState(false);
   const [showSticky, setShowSticky] = useState(false);
+  const { activeArtists, loading: teamLoading } = useTeamMembers();
 
   useEffect(() => {
     const onScroll = () => setShowSticky(window.scrollY > 200);
@@ -121,7 +123,7 @@ export default function Home() {
       <div className="px-5 pb-6">
         <div className="section-label anim-fade-up delay-3">Unsere Expertinnen</div>
         <div className="flex gap-3">
-          {ARTISTS.map((artist, i) => (
+          {(activeArtists.length > 0 ? activeArtists : ARTISTS).map((artist, i) => (
             <div
               key={artist.id}
               className={`beauty-card flex-1 p-5 pt-0 relative overflow-hidden anim-fade-up delay-${i + 4}`}

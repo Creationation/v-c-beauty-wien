@@ -5,6 +5,7 @@ import { useBooking } from "@/hooks/useBooking";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { ARTISTS } from "@/data/artists";
+import { useTeamMembers } from "@/hooks/useTeamMembers";
 import { SERVICES } from "@/data/services";
 import {
   MONTHS,
@@ -67,9 +68,11 @@ export default function Booking() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [expandedCats, setExpandedCats] = useState<Record<number, boolean>>({ 0: true });
   const [saving, setSaving] = useState(false);
+  const { activeArtists } = useTeamMembers();
+  const displayArtists = activeArtists.length > 0 ? activeArtists : ARTISTS;
   const today = new Date();
   const { artist, services, date, time, form } = booking;
-  const currentArtist = artist || (artistId ? ARTISTS.find((a) => a.id === artistId) : null);
+  const currentArtist = artist || (artistId ? displayArtists.find((a) => a.id === artistId) : null);
   const dateStr = date ? date.toISOString().split("T")[0] : null;
   const bookedSlots = useBookedSlots(currentArtist?.id, dateStr);
   const vacationDates = useVacationDates(currentArtist?.id);
@@ -280,7 +283,7 @@ export default function Booking() {
           <div className="anim-fade-up delay-2">
             <div className="section-label">🌸 Wähle deine Expertin</div>
             <div className="flex flex-col gap-3">
-              {ARTISTS.map((a, i) => (
+              {displayArtists.map((a, i) => (
                 <div
                   key={a.id}
                   className="beauty-card p-5 cursor-pointer anim-fade-up"

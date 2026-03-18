@@ -182,6 +182,66 @@ export type Database = {
         }
         Relationships: []
       }
+      team_members: {
+        Row: {
+          bio: string
+          created_at: string
+          emoji: string
+          experience: string
+          handle: string
+          id: string
+          instagram: string
+          is_active: boolean
+          is_fixed: boolean
+          languages: string[]
+          name: string
+          rating: number
+          reviews: number
+          role: string
+          sort_order: number
+          specialties: string[]
+          whatsapp: string
+        }
+        Insert: {
+          bio?: string
+          created_at?: string
+          emoji?: string
+          experience?: string
+          handle?: string
+          id: string
+          instagram?: string
+          is_active?: boolean
+          is_fixed?: boolean
+          languages?: string[]
+          name: string
+          rating?: number
+          reviews?: number
+          role?: string
+          sort_order?: number
+          specialties?: string[]
+          whatsapp?: string
+        }
+        Update: {
+          bio?: string
+          created_at?: string
+          emoji?: string
+          experience?: string
+          handle?: string
+          id?: string
+          instagram?: string
+          is_active?: boolean
+          is_fixed?: boolean
+          languages?: string[]
+          name?: string
+          rating?: number
+          reviews?: number
+          role?: string
+          sort_order?: number
+          specialties?: string[]
+          whatsapp?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
