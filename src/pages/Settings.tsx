@@ -5,7 +5,7 @@ import {
   ChevronRight, CalendarDays
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import BottomNav from "@/components/BottomNav";
+
 
 const ADMIN_EMAIL = "creationation.at@gmail.com";
 

@@ -246,8 +246,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Bottom Nav */}
-      <BottomNav />
     </div>
   );
 }
