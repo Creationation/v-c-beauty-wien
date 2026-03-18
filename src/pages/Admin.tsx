@@ -63,7 +63,7 @@ function useNotificationSettings() {
   });
   const save = useMutation({
     mutationFn: async (settings: Partial<NotificationSettings>) => {
-      await supabase.from("notification_settings").update(settings).eq("id", 1);
+      await supabase.from("notification_settings" as any).update(settings as any).eq("id", 1 as any);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["notification_settings"] }),
   });

@@ -1,6 +1,6 @@
 
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, CalendarDays, Sparkles, Star } from "lucide-react";
+import { Home, CalendarDays, Settings } from "lucide-react";
 
 const TABS = [
   { label: "Home",         icon: Home,         path: "/" },
