@@ -206,7 +206,7 @@ export default function Admin() {
               </>
             ) : (
               <div className="text-center py-10" style={{ color: "var(--txt3)" }}>
-                <div className="text-4xl mb-3">\ud83c\udf19</div>
+                <div className="text-4xl mb-3">🌙</div>
                 <p className="text-sm">Keine Termine heute</p>
               </div>
             )}
