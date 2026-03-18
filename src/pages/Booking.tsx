@@ -69,6 +69,10 @@ export default function Booking() {
   const [saving, setSaving] = useState(false);
   const today = new Date();
   const { artist, services, date, time, form } = booking;
+  const currentArtist = artist || (artistId ? ARTISTS.find((a) => a.id === artistId) : null);
+  const dateStr = date ? date.toISOString().split("T")[0] : null;
+  const bookedSlots = useBookedSlots(currentArtist?.id, dateStr);
+  const vacationDates = useVacationDates(currentArtist?.id);
 
   // Pre-fill form with user data when available
   useEffect(() => {
