@@ -71,7 +71,7 @@ export default function Booking() {
   const displayArtists = activeArtists.length > 0 ? activeArtists : ARTISTS;
   const today = new Date();
   const { artist, services, date, time, form } = booking;
-  const currentArtist = artist || (artistId ? ARTISTS.find((a) => a.id === artistId) : null);
+  const currentArtist = artist || (artistId ? displayArtists.find((a) => a.id === artistId) : null);
   const dateStr = date ? date.toISOString().split("T")[0] : null;
   const bookedSlots = useBookedSlots(currentArtist?.id, dateStr);
   const vacationDates = useVacationDates(currentArtist?.id);
