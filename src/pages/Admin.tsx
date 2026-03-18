@@ -26,12 +26,12 @@ function useAppointments() {
     queryKey: ["appointments"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("appointments")
+        .from("appointments" as any)
         .select("*")
         .order("appointment_date", { ascending: true })
         .order("appointment_time", { ascending: true });
       if (error) throw error;
-      return data as Appointment[];
+      return (data as unknown) as Appointment[];
     },
   });
   const updateStatus = useMutation({
