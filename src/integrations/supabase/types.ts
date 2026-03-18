@@ -77,6 +77,30 @@ export type Database = {
         }
         Relationships: []
       }
+      artist_vacations: {
+        Row: {
+          artist_id: string
+          created_at: string
+          id: string
+          reason: string | null
+          vacation_date: string
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          vacation_date: string
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          vacation_date?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           artist_id: string
