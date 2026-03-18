@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Eye, EyeOff, LogOut, Shield, User, Pencil,
-  ChevronRight, CalendarDays, Check
+  ChevronRight, CalendarDays, Check, ChevronDown, Clock
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
