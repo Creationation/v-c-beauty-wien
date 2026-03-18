@@ -67,6 +67,8 @@ export default function Booking() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [expandedCats, setExpandedCats] = useState<Record<number, boolean>>({ 0: true });
   const [saving, setSaving] = useState(false);
+  const { activeArtists } = useTeamMembers();
+  const displayArtists = activeArtists.length > 0 ? activeArtists : ARTISTS;
   const today = new Date();
   const { artist, services, date, time, form } = booking;
   const currentArtist = artist || (artistId ? ARTISTS.find((a) => a.id === artistId) : null);
