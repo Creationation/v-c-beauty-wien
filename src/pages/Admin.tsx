@@ -56,9 +56,9 @@ function useNotificationSettings() {
   const { data, isLoading } = useQuery<NotificationSettings>({
     queryKey: ["notification_settings"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("notification_settings").select("*").eq("id", 1).single();
+      const { data, error } = await supabase.from("notification_settings" as any).select("*").eq("id", 1 as any).single();
       if (error) throw error;
-      return data as NotificationSettings;
+      return (data as unknown) as NotificationSettings;
     },
   });
   const save = useMutation({
