@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard, CalendarDays, Sparkles, Settings, Bell,
   LogOut, Check, Phone, Mail, Trash2, Send,
-  Eye, EyeOff, Save, RefreshCw, AlertCircle
+  Eye, EyeOff, Save, RefreshCw, AlertCircle, Menu, ArrowLeft
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
