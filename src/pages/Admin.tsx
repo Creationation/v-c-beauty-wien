@@ -101,7 +101,7 @@ export default function Admin() {
             style={{ background: "var(--cream)", boxShadow: "var(--shadow-lg)" }}
           >
             <div className="flex items-center justify-between mb-6">
-              <span className="font-display text-lg font-semibold">Menü</span>
+              <span className="font-display text-lg font-semibold">Admin Menü</span>
               <button
                 onClick={() => setMenuOpen(false)}
                 className="bg-transparent border-none cursor-pointer"
@@ -112,32 +112,41 @@ export default function Admin() {
             </div>
 
             <nav className="flex flex-col gap-1 flex-1">
-              {[
-                { icon: Home, label: "Startseite", action: () => navigate("/") },
-                { icon: CalendarDays, label: "Buchungen", action: () => navigate("/book") },
-                { icon: Users, label: "Team", action: () => navigate("/team") },
-                { icon: Settings, label: "Einstellungen", action: () => navigate("/settings") },
-              ].map(({ icon: Icon, label, action }) => (
+              {TABS.map(({ id, label, icon: Icon }) => (
                 <button
-                  key={label}
-                  onClick={() => { action(); setMenuOpen(false); }}
-                  className="flex items-center gap-3 px-3 py-3 rounded-xl bg-transparent border-none cursor-pointer text-left transition-colors hover:opacity-80"
-                  style={{ color: "var(--txt)", fontFamily: "var(--font-body)" }}
+                  key={id}
+                  onClick={() => { setTab(id); setMenuOpen(false); }}
+                  className="flex items-center gap-3 px-3 py-3 rounded-xl border-none cursor-pointer text-left transition-colors"
+                  style={{
+                    background: tab === id ? "rgba(196,114,127,0.1)" : "transparent",
+                    color: tab === id ? "var(--rose-deep)" : "var(--txt)",
+                    fontFamily: "var(--font-body)",
+                  }}
                 >
-                  <Icon size={18} style={{ color: "var(--rose-deep)" }} />
+                  <Icon size={18} style={{ color: tab === id ? "var(--rose-deep)" : "var(--txt3)" }} />
                   <span className="text-[14px] font-medium">{label}</span>
                 </button>
               ))}
             </nav>
 
-            <button
-              onClick={() => { logout(); setMenuOpen(false); }}
-              className="flex items-center gap-3 px-3 py-3 rounded-xl bg-transparent border-none cursor-pointer"
-              style={{ color: "var(--destructive, #e53e3e)", fontFamily: "var(--font-body)" }}
-            >
-              <LogOut size={18} />
-              <span className="text-[14px] font-medium">Abmelden</span>
-            </button>
+            <div className="flex flex-col gap-2 pt-4" style={{ borderTop: "1px solid var(--cream2)" }}>
+              <button
+                onClick={() => { navigate("/"); setMenuOpen(false); }}
+                className="flex items-center gap-3 px-3 py-3 rounded-xl bg-transparent border-none cursor-pointer"
+                style={{ color: "var(--txt2)", fontFamily: "var(--font-body)" }}
+              >
+                <ArrowLeft size={18} />
+                <span className="text-[14px] font-medium">Zurück zur App</span>
+              </button>
+              <button
+                onClick={() => { logout(); setMenuOpen(false); }}
+                className="flex items-center gap-3 px-3 py-3 rounded-xl bg-transparent border-none cursor-pointer"
+                style={{ color: "var(--destructive, #e53e3e)", fontFamily: "var(--font-body)" }}
+              >
+                <LogOut size={18} />
+                <span className="text-[14px] font-medium">Abmelden</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
