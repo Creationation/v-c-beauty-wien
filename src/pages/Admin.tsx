@@ -18,7 +18,7 @@ type AdminTab = "dashboard" | "termine" | "services" | "notifications" | "settin
 
 const STATUS_CONFIG: Record<AppointmentStatus, { label: string; color: string; bg: string }> = {
   pending:   { label: "Ausstehend",    color: "#C4727F", bg: "rgba(196,114,127,0.1)" },
-  confirmed: { label: "Best\u00e4tigt",     color: "#2d8a4e", bg: "rgba(45,138,78,0.1)" },
+  confirmed: { label: "Bestätigt",     color: "#2d8a4e", bg: "rgba(45,138,78,0.1)" },
   completed: { label: "Abgeschlossen", color: "#C9A96E", bg: "rgba(201,169,110,0.1)" },
   cancelled: { label: "Abgesagt",      color: "#999",    bg: "rgba(0,0,0,0.06)" },
 };
