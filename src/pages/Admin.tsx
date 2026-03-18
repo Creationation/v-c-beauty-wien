@@ -369,9 +369,14 @@ function AppointmentCard({ appt, onStatus, onDelete }: {
             {new Date(appt.appointment_date).toLocaleDateString("de-AT", { day: "numeric", month: "short" })} · {appt.appointment_time}
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1.5 flex-shrink-0 ml-2">
+        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
           <span className="text-[10px] px-2 py-0.5 rounded-full font-medium"
             style={{ color: cfg.color, background: cfg.bg }}>{cfg.label}</span>
+          <button onClick={(e) => { e.stopPropagation(); if (confirm("Termin löschen?")) onDelete(); }}
+            className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer border-none"
+            style={{ background: "rgba(196,114,127,0.1)", color: "#C4727F" }}>
+            <Trash2 size={12} />
+          </button>
         </div>
       </div>
 
