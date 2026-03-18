@@ -93,15 +93,26 @@ async function sendReminderNow(appt: Appointment, type: "confirmation" | "remind
 
 export default function Admin() {
   const navigate = useNavigate();
+  const { user, loading, signOut } = useAuth();
   const [tab, setTab] = useState<AdminTab>("dashboard");
   const { data: appointments, isLoading, refetch, updateStatus, remove, resetAll } = useAppointments();
   const { data: notifSettings, save: saveNotif } = useNotificationSettings();
 
   useEffect(() => {
-    if (!localStorage.getItem("admin_auth")) navigate("/admin/login");
-  }, []);
+    if (!loading && (!user || user.email !== ADMIN_EMAIL)) {
+      navigate("/");
+    }
+  }, [user, loading]);
 
-  const logout = () => { localStorage.removeItem("admin_auth"); navigate("/admin/login"); };
+  if (loading || !user || user.email !== ADMIN_EMAIL) {
+    return (
+      <div className="app-shell flex items-center justify-center min-h-screen">
+        <div className="text-sm" style={{ color: "var(--txt3)" }}>Laden...</div>
+      </div>
+    );
+  }
+
+  const logout = async () => { await signOut(); navigate("/"); };
 
   const today = new Date().toISOString().slice(0, 10);
   const todayAppts = appointments.filter((a) => a.appointment_date === today);
