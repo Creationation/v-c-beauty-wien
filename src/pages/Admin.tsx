@@ -489,9 +489,16 @@ function ServicesTab() {
                       ) : (
                         <div className="flex items-center gap-2">
                           <span className="font-display font-semibold text-sm" style={{ color: "var(--rose-deep)" }}>{price}</span>
-                          <button onClick={() => setEditing(key)}
-                            className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer border-none"
-                            style={{ background: "var(--blush)", color: "var(--rose-deep)" }}>\u270f\ufe0f</button>
+                          <button
+                            type="button"
+                            onClick={() => setEditing(key)}
+                            aria-label={`Preis für ${item.name} bearbeiten`}
+                            title="Preis bearbeiten"
+                            className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer border"
+                            style={{ background: "var(--cream)", color: "var(--rose-deep)", borderColor: "var(--cream2)" }}
+                          >
+                            <Pencil size={13} />
+                          </button>
                         </div>
                       )}
                     </div>
