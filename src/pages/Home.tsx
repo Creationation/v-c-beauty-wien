@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Star, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ARTISTS } from "@/data/artists";
+import { useTeamMembers } from "@/hooks/useTeamMembers";
 import { REVIEWS } from "@/data/reviews";
 import { openGutscheinWhatsApp } from "@/utils/whatsapp";
 
