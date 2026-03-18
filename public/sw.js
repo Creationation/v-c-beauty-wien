@@ -1,5 +1,5 @@
 // Vego Beauty Service Worker
-const CACHE_NAME = 'vego-beauty-v1';
+const CACHE_NAME = 'vego-beauty-v2';
 const OFFLINE_URL = '/';
 
 const PRECACHE = [
