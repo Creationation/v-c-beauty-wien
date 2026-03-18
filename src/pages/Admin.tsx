@@ -290,9 +290,9 @@ function AppointmentCard({
             </div>
             <div className="text-[12px]" style={{ color: "var(--txt2)" }}>{appt.service}</div>
             <div className="flex items-center gap-3 mt-1.5 text-[11px]" style={{ color: "var(--txt3)" }}>
-              <span>{appt.artist === "victoria" ? "\ud83c\udf38 Victoria" : "\u2728 Cindy"}</span>
-              <span>\ud83d\udd50 {appt.time}</span>
-              <span>\ud83d\udcb0 {appt.price}</span>
+              <span>🌸 {appt.artist === "victoria" ? "Victoria" : "✨ Cindy"}</span>
+              <span>🕐 {appt.time}</span>
+              <span>💰 {appt.price}</span>
             </div>
           </div>
           <ChevronRight size={16} style={{ color: "var(--txt3)", transform: open ? "rotate(90deg)" : "rotate(0)", transition: "transform 0.2s" }} />
