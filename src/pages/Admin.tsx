@@ -41,7 +41,7 @@ function useAppointments() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["appointments"] }),
   });
   const remove = useMutation({
-    mutationFn: async (id: string) => { await supabase.from("appointments").delete().eq("id", id); },
+    mutationFn: async (id: string) => { await supabase.from("appointments" as any).delete().eq("id", id); },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["appointments"] }),
   });
   const resetAll = useMutation({
