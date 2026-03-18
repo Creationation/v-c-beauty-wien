@@ -6,9 +6,12 @@ import {
   LogOut, Check, X, Clock, ChevronRight, Phone, MessageSquare,
   Edit3, Save, Trash2, AlertCircle, TrendingUp, Users, Euro
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { MOCK_APPOINTMENTS, type Appointment, type AppointmentStatus } from "@/data/appointments";
 import { SERVICES } from "@/data/services";
 import type { ServiceItem } from "@/data/services";
+
+const ADMIN_EMAIL = "creationation.at@gmail.com";
 
 type AdminTab = "dashboard" | "termine" | "services" | "einstellungen";
 
