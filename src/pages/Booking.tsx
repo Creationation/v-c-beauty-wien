@@ -282,7 +282,7 @@ export default function Booking() {
           <div className="anim-fade-up delay-2">
             <div className="section-label">🌸 Wähle deine Expertin</div>
             <div className="flex flex-col gap-3">
-              {ARTISTS.map((a, i) => (
+              {displayArtists.map((a, i) => (
                 <div
                   key={a.id}
                   className="beauty-card p-5 cursor-pointer anim-fade-up"

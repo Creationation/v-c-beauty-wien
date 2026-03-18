@@ -123,7 +123,7 @@ export default function Home() {
       <div className="px-5 pb-6">
         <div className="section-label anim-fade-up delay-3">Unsere Expertinnen</div>
         <div className="flex gap-3">
-          {ARTISTS.map((artist, i) => (
+          {(activeArtists.length > 0 ? activeArtists : ARTISTS).map((artist, i) => (
             <div
               key={artist.id}
               className={`beauty-card flex-1 p-5 pt-0 relative overflow-hidden anim-fade-up delay-${i + 4}`}
