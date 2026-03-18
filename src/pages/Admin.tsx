@@ -131,6 +131,7 @@ export default function Admin() {
   const TABS: { id: AdminTab; label: string; icon: typeof LayoutDashboard }[] = [
     { id: "dashboard",     label: "Dashboard",   icon: LayoutDashboard },
     { id: "termine",       label: "Termine",      icon: CalendarDays },
+    { id: "team",          label: "Team",         icon: Users },
     { id: "services",      label: "Services",     icon: Sparkles },
     { id: "notifications", label: "Emails",       icon: Bell },
     { id: "settings",      label: "Settings",     icon: Settings },
