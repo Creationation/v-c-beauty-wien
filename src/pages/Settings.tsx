@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, Eye, EyeOff, LogOut, Shield, User,
-  ChevronRight, CalendarDays
+  ArrowLeft, Eye, EyeOff, LogOut, Shield, User, Pencil,
+  ChevronRight, CalendarDays, Check
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
 
@@ -34,11 +35,26 @@ function SettingsMenu({
   signOut,
   navigate,
 }: {
-  user: { email?: string; id: string };
+  user: any;
   signOut: () => Promise<void>;
   navigate: ReturnType<typeof useNavigate>;
 }) {
   const isAdmin = user.email === ADMIN_EMAIL;
+  const [editMode, setEditMode] = useState(false);
+  const [name, setName] = useState(user.user_metadata?.full_name || "");
+  const [phone, setPhone] = useState(user.user_metadata?.phone || "");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    await supabase.auth.updateUser({
+      data: { full_name: name, phone },
+    });
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => { setSaved(false); setEditMode(false); }, 1200);
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -60,10 +76,60 @@ function SettingsMenu({
             <User size={20} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium truncate">{user.email}</div>
-            <div className="text-[11px]" style={{ color: "var(--txt3)" }}>Angemeldet</div>
+            <div className="text-sm font-medium truncate">{name || user.email}</div>
+            <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{user.email}</div>
           </div>
+          <button
+            onClick={() => setEditMode(!editMode)}
+            className="w-8 h-8 rounded-full flex items-center justify-center border-none cursor-pointer transition-colors"
+            style={{ background: "var(--blush)", color: "var(--rose-deep)" }}
+          >
+            <Pencil size={14} />
+          </button>
         </div>
+
+        {/* Edit Profile */}
+        {editMode && (
+          <div className="mt-4 pt-4 flex flex-col gap-3" style={{ borderTop: "1px solid var(--cream2)" }}>
+            <div>
+              <label className="block text-[11px] font-semibold tracking-wide uppercase mb-1.5" style={{ color: "var(--txt3)" }}>Name</label>
+              <input
+                className="beauty-input"
+                placeholder="Vor- und Nachname"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold tracking-wide uppercase mb-1.5" style={{ color: "var(--txt3)" }}>Telefon</label>
+              <input
+                className="beauty-input"
+                type="tel"
+                placeholder="+43..."
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold tracking-wide uppercase mb-1.5" style={{ color: "var(--txt3)" }}>E-Mail</label>
+              <input
+                className="beauty-input"
+                type="email"
+                value={user.email || ""}
+                disabled
+                style={{ opacity: 0.5, cursor: "not-allowed" }}
+              />
+            </div>
+            <button
+              className="btn-rose flex items-center justify-center gap-2"
+              onClick={handleSave}
+              disabled={saving}
+              style={{ opacity: saving ? 0.6 : 1 }}
+            >
+              {saved ? <><Check size={16} /> Gespeichert!</> : saving ? "Speichern..." : "Profil speichern"}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Menu items */}
