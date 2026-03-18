@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ARTISTS } from "@/data/artists";
 import { REVIEWS } from "@/data/reviews";
 import { openGutscheinWhatsApp } from "@/utils/whatsapp";
-import BottomNav from "@/components/BottomNav";
+
 import StatsBar from "@/components/StatsBar";
 import HowItWorks from "@/components/HowItWorks";
 import BeforeAfterGallery from "@/components/BeforeAfterGallery";
