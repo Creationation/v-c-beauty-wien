@@ -41,7 +41,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="app-shell">
+    <div className="app-shell pb-20">
       <div className="flex items-center gap-2 px-5 pt-4 pb-2">
         <button
           onClick={() => navigate(-1)}
