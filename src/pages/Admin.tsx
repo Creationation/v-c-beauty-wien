@@ -184,7 +184,7 @@ export default function Admin() {
 
         {/* ── DASHBOARD ── */}
         {tab === "dashboard" && (
-          <div>
+          <div className="animate-fade-in">
             {/* Stats */}
             <div className="grid grid-cols-2 gap-3 mb-5">
               {[
