@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, CalendarDays, Sparkles, Settings,
   LogOut, Check, X, Clock, ChevronRight, Phone, MessageSquare,
-  Edit3, Save, Trash2, AlertCircle, TrendingUp, Users, Euro
+  Edit3, Save, Trash2, AlertCircle, TrendingUp, Users, Euro,
+  Menu, Home, ArrowLeft
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { MOCK_APPOINTMENTS, type Appointment, type AppointmentStatus } from "@/data/appointments";
