@@ -226,19 +226,23 @@ export default function Admin() {
             <div className="section-label">Studio Info</div>
             <div className="beauty-card p-5 mb-4">
               <div className="text-[13px]" style={{ color: "var(--txt3)" }}>
-                <div className="mb-1">\ud83d\udccd Wien, \u00d6sterreich</div>
-                <div className="mb-1">\ud83c\udf10 beautyv.lovable.app</div>
+                <div className="mb-1">📍 Wien, Österreich</div>
+                <div className="mb-1">🌐 beautyv.lovable.app</div>
               </div>
             </div>
+
+            {/* Vacation Management */}
+            <VacationManager />
+
             <div className="section-label mt-4">Danger Zone</div>
             <div className="beauty-card p-5 border-[1.5px]" style={{ borderColor: "rgba(196,114,127,0.3)" }}>
               <div className="flex items-start gap-3 mb-4">
                 <AlertCircle size={18} style={{ color: "#C4727F", flexShrink: 0, marginTop: 2 }} />
-                <p className="text-[12px]" style={{ color: "var(--txt2)" }}>Alle Termine l\u00f6schen. Diese Aktion kann nicht r\u00fckg\u00e4ngig gemacht werden.</p>
+                <p className="text-[12px]" style={{ color: "var(--txt2)" }}>Alle Termine löschen. Diese Aktion kann nicht rückgängig gemacht werden.</p>
               </div>
-              <button onClick={() => { if (confirm("Wirklich ALLE Termine l\u00f6schen?")) resetAll.mutate(); }}
+              <button onClick={() => { if (confirm("Wirklich ALLE Termine löschen?")) resetAll.mutate(); }}
                 className="btn-rose w-full" style={{ background: "#C4727F" }}>
-                \ud83d\uddd1 Alle Termine l\u00f6schen
+                🗑 Alle Termine löschen
               </button>
             </div>
           </div>
