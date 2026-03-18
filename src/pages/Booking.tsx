@@ -109,7 +109,7 @@ export default function Booking() {
     }
   };
 
-  const handleWhatsApp = async () => {
+  const handleSubmit = async () => {
     setSaving(true);
     // Save booking to database (authenticated users)
     if (user) {
@@ -127,7 +127,7 @@ export default function Booking() {
       });
     }
 
-    // Save to appointments table (anon, for notification system)
+    // Save to appointments table (for notification system)
     const serviceNames = services.map((s: any) => s.name).join(", ");
     const servicePrices = services.map((s: any) => s.price).join(", ");
     const { data: appt } = await supabase.from("appointments" as any).insert({
@@ -152,18 +152,6 @@ export default function Booking() {
     }
 
     setSaving(false);
-
-    const url = buildWhatsAppUrl({
-      artist: currentArtist || null,
-      services,
-      date,
-      time,
-      name: form.name,
-      phone: form.phone,
-      email: form.email,
-      notes: form.notes,
-    });
-    window.open(url, "_blank");
     navigate("/confirm");
   };
 
