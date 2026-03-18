@@ -134,33 +134,64 @@ export default function Admin() {
     { id: "settings",      label: "Settings",     icon: Settings },
   ];
 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const currentTab = TABS.find((t) => t.id === tab);
+
   return (
     <div className="app-shell">
       <div className="flex items-center justify-between px-5 pt-4 pb-4 sticky top-0 z-30"
         style={{ background: "var(--cream)", borderBottom: "1px solid var(--cream2)" }}>
-        <div>
-          <div className="font-display text-xl font-semibold">Admin Panel</div>
-          <div className="text-[11px]" style={{ color: "var(--txt3)" }}>Vego Beauty Wien</div>
-        </div>
+        <button onClick={() => setMenuOpen(!menuOpen)}
+          className="flex items-center gap-2 cursor-pointer bg-transparent border-none p-0"
+          style={{ fontFamily: "var(--font-body)" }}>
+          <Menu size={20} style={{ color: "var(--txt1)" }} />
+          <div>
+            <div className="font-display text-xl font-semibold">Admin Panel</div>
+            <div className="text-[11px]" style={{ color: "var(--txt3)" }}>
+              {currentTab && <span style={{ color: "var(--rose-deep)" }}>{currentTab.label}</span>}
+            </div>
+          </div>
+        </button>
         <button onClick={logout} className="flex items-center gap-1.5 text-[13px] px-3 py-1.5 rounded-full border cursor-pointer bg-transparent"
           style={{ borderColor: "var(--cream2)", color: "var(--txt3)", fontFamily: "var(--font-body)" }}>
-          <LogOut size={14} /> Logout
+          <LogOut size={14} />
         </button>
       </div>
 
-      <div className="flex border-b overflow-x-auto scrollbar-none" style={{ borderColor: "var(--cream2)", background: "var(--cream)" }}>
-        {TABS.map(({ id, label, icon: Icon }) => (
-          <button key={id} onClick={() => setTab(id)}
-            className="flex items-center gap-1.5 px-4 py-3 text-[11px] font-medium whitespace-nowrap cursor-pointer bg-transparent"
-            style={{
-              borderBottom: tab === id ? "2px solid var(--rose-deep)" : "2px solid transparent",
-              color: tab === id ? "var(--rose-deep)" : "var(--txt3)",
-              fontFamily: "var(--font-body)",
-            }}>
-            <Icon size={13} /> {label}
-          </button>
-        ))}
-      </div>
+      {/* Burger menu overlay */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)}>
+          <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.3)" }} />
+          <div className="absolute left-0 top-0 bottom-0 w-64 flex flex-col py-6 px-4 shadow-xl"
+            style={{ background: "var(--cream)" }}
+            onClick={(e) => e.stopPropagation()}>
+            <div className="font-display text-lg font-semibold mb-1 px-2">Admin Panel</div>
+            <div className="text-[11px] mb-6 px-2" style={{ color: "var(--txt3)" }}>Vego Beauty Wien</div>
+
+            <div className="flex flex-col gap-1 flex-1">
+              {TABS.map(({ id, label, icon: Icon }) => (
+                <button key={id} onClick={() => { setTab(id); setMenuOpen(false); }}
+                  className="flex items-center gap-3 px-3 py-3 rounded-xl text-[13px] font-medium cursor-pointer bg-transparent border-none text-left"
+                  style={{
+                    background: tab === id ? "rgba(196,114,127,0.08)" : "transparent",
+                    color: tab === id ? "var(--rose-deep)" : "var(--txt2)",
+                    fontFamily: "var(--font-body)",
+                  }}>
+                  <Icon size={16} /> {label}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ borderTop: "1px solid var(--cream2)", paddingTop: "16px", marginTop: "16px" }}>
+              <button onClick={() => { setMenuOpen(false); navigate("/"); }}
+                className="flex items-center gap-3 px-3 py-3 rounded-xl text-[13px] font-medium cursor-pointer bg-transparent border-none text-left w-full"
+                style={{ color: "var(--txt2)", fontFamily: "var(--font-body)" }}>
+                <ArrowLeft size={16} /> Zurück zur App
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="px-5 py-5 pb-24">
         {tab === "dashboard" && (
