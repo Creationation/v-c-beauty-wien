@@ -15,6 +15,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [showInstaDialog, setShowInstaDialog] = useState(false);
   const [showSticky, setShowSticky] = useState(false);
+  const { activeArtists, loading: teamLoading } = useTeamMembers();
 
   useEffect(() => {
     const onScroll = () => setShowSticky(window.scrollY > 200);
