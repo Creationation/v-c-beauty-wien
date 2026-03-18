@@ -14,7 +14,7 @@ import {
   firstDayOfMonth,
   formatDateLong,
 } from "@/utils/dates";
-import { buildWhatsAppUrl } from "@/utils/whatsapp";
+
 
 type Step = "artist" | "service" | "date" | "time" | "form";
 const POPULAR_TIMES = ["10:00", "14:00", "16:00"];
