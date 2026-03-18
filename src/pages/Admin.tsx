@@ -248,6 +248,65 @@ export default function Admin() {
   );
 }
 
+function TermineTab({ appointments, isLoading, refetch, updateStatus, remove }: {
+  appointments: Appointment[];
+  isLoading: boolean;
+  refetch: () => void;
+  updateStatus: any;
+  remove: any;
+}) {
+  const [artistFilter, setArtistFilter] = useState<string>("all");
+  const filtered = artistFilter === "all" ? appointments : appointments.filter((a) => a.artist_id === artistFilter);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="section-label mb-0">Termine ({filtered.length})</div>
+        <button onClick={() => refetch()} className="flex items-center gap-1 text-[11px] px-3 py-1.5 rounded-full border cursor-pointer bg-transparent"
+          style={{ borderColor: "var(--cream2)", color: "var(--txt3)", fontFamily: "var(--font-body)" }}>
+          <RefreshCw size={11} /> Sync
+        </button>
+      </div>
+
+      {/* Artist filter */}
+      <div className="flex gap-2 mb-4">
+        {[
+          { id: "all", label: "Alle" },
+          { id: "victoria", label: "🌸 Victoria" },
+          { id: "cindy", label: "✨ Cindy" },
+        ].map(({ id, label }) => (
+          <button key={id} onClick={() => setArtistFilter(id)}
+            className="text-[11px] px-3 py-1.5 rounded-full border cursor-pointer bg-transparent"
+            style={{
+              borderColor: artistFilter === id ? "var(--rose-deep)" : "var(--cream2)",
+              color: artistFilter === id ? "var(--rose-deep)" : "var(--txt3)",
+              fontFamily: "var(--font-body)",
+              fontWeight: artistFilter === id ? 600 : 400,
+            }}>{label}</button>
+        ))}
+      </div>
+
+      {isLoading ? (
+        <div className="text-center py-10" style={{ color: "var(--txt3)" }}>Laden…</div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-10" style={{ color: "var(--txt3)" }}>
+          <div className="text-4xl mb-3">📭</div>
+          <p className="text-sm">Keine Termine</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {filtered.map((a) => (
+            <AppointmentCard key={a.id} appt={a}
+              onStatus={(s) => updateStatus.mutate({ id: a.id, status: s })}
+              onDelete={() => remove.mutate(a.id)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AppointmentCard({ appt, onStatus, onDelete }: {
   appt: Appointment;
   onStatus: (s: AppointmentStatus) => void;
@@ -256,6 +315,7 @@ function AppointmentCard({ appt, onStatus, onDelete }: {
   const [expanded, setExpanded] = useState(false);
   const [sending, setSending] = useState<string | null>(null);
   const cfg = STATUS_CONFIG[appt.status as AppointmentStatus] || STATUS_CONFIG.pending;
+  const isPending = appt.status === "pending";
 
   const handleSend = async (type: "confirmation" | "reminder_24h" | "reminder_2h") => {
     setSending(type);
@@ -269,21 +329,33 @@ function AppointmentCard({ appt, onStatus, onDelete }: {
       <div className="flex items-start justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
         <div className="flex-1 min-w-0">
           <div className="font-medium text-sm truncate">{appt.client_name}</div>
-          <div className="text-[11px] truncate" style={{ color: "var(--txt3)" }}>{appt.service} \u00b7 {appt.artist_name}</div>
+          <div className="text-[11px] truncate" style={{ color: "var(--txt3)" }}>{appt.service} · {appt.artist_name}</div>
           <div className="text-[11px] mt-0.5" style={{ color: "var(--rose-deep)" }}>
-            {new Date(appt.appointment_date).toLocaleDateString("de-AT", { day: "numeric", month: "short" })} \u00b7 {appt.appointment_time}
+            {new Date(appt.appointment_date).toLocaleDateString("de-AT", { day: "numeric", month: "short" })} · {appt.appointment_time}
           </div>
         </div>
         <div className="flex flex-col items-end gap-1.5 flex-shrink-0 ml-2">
           <span className="text-[10px] px-2 py-0.5 rounded-full font-medium"
             style={{ color: cfg.color, background: cfg.bg }}>{cfg.label}</span>
-          <div className="flex gap-1">
-            {appt.confirmation_sent && <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(45,138,78,0.12)", color: "#2d8a4e" }}>\u2713 Best</span>}
-            {appt.reminder_24h_sent && <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(201,169,110,0.15)", color: "#a07040" }}>\u2713 24h</span>}
-            {appt.reminder_2h_sent  && <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(232,149,74,0.15)", color: "#c06020" }}>\u2713 2h</span>}
-          </div>
         </div>
       </div>
+
+      {/* Quick accept/reject for pending */}
+      {isPending && !expanded && (
+        <div className="flex gap-2 mt-3">
+          <button onClick={(e) => { e.stopPropagation(); onStatus("confirmed"); }}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[12px] font-medium cursor-pointer border-none text-white"
+            style={{ background: "#2d8a4e" }}>
+            <Check size={13} /> Annehmen
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); onStatus("cancelled"); }}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[12px] font-medium cursor-pointer border-[1.5px] bg-transparent"
+            style={{ borderColor: "#C4727F", color: "#C4727F" }}>
+            ✕ Ablehnen
+          </button>
+        </div>
+      )}
+
       {expanded && (
         <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--cream2)" }}>
           {(appt.client_email || appt.client_phone) && (
@@ -292,7 +364,7 @@ function AppointmentCard({ appt, onStatus, onDelete }: {
               {appt.client_phone && <div className="flex items-center gap-2 text-[12px]" style={{ color: "var(--txt2)" }}><Phone size={12} /> {appt.client_phone}</div>}
             </div>
           )}
-          {appt.notes && <div className="text-[12px] px-3 py-2 rounded-xl mb-4" style={{ background: "var(--cream2)", color: "var(--txt2)" }}>\ud83d\udcdd {appt.notes}</div>}
+          {appt.notes && <div className="text-[12px] px-3 py-2 rounded-xl mb-4" style={{ background: "var(--cream2)", color: "var(--txt2)" }}>📝 {appt.notes}</div>}
           <div className="flex flex-wrap gap-1.5 mb-4">
             {(["pending", "confirmed", "completed", "cancelled"] as AppointmentStatus[]).map((s) => (
               <button key={s} onClick={() => onStatus(s)}
@@ -308,9 +380,9 @@ function AppointmentCard({ appt, onStatus, onDelete }: {
             <div className="flex flex-col gap-2 mb-4">
               <div className="text-[11px] font-medium mb-1" style={{ color: "var(--txt3)" }}>E-Mail senden:</div>
               {[
-                { type: "confirmation" as const, label: "Best\u00e4tigung",   icon: "\ud83d\udc8c" },
-                { type: "reminder_24h" as const, label: "Erinnerung 24h", icon: "\ud83d\udcc5" },
-                { type: "reminder_2h"  as const, label: "Erinnerung 2h",  icon: "\u23f0" },
+                { type: "confirmation" as const, label: "Bestätigung", icon: "💌" },
+                { type: "reminder_24h" as const, label: "Erinnerung 24h", icon: "📅" },
+                { type: "reminder_2h"  as const, label: "Erinnerung 2h",  icon: "⏰" },
               ].map(({ type, label, icon }) => (
                 <button key={type} onClick={() => handleSend(type)} disabled={!!sending}
                   className="flex items-center gap-2 text-[12px] px-3 py-2 rounded-xl border cursor-pointer bg-transparent"
@@ -320,10 +392,10 @@ function AppointmentCard({ appt, onStatus, onDelete }: {
               ))}
             </div>
           )}
-          <button onClick={() => { if (confirm("Termin l\u00f6schen?")) onDelete(); }}
+          <button onClick={() => { if (confirm("Termin löschen?")) onDelete(); }}
             className="flex items-center gap-1.5 text-[12px] cursor-pointer bg-transparent border-none"
             style={{ color: "#C4727F", fontFamily: "var(--font-body)" }}>
-            <Trash2 size={13} /> Termin l\u00f6schen
+            <Trash2 size={13} /> Termin löschen
           </button>
         </div>
       )}
