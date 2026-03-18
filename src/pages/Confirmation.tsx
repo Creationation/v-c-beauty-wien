@@ -29,7 +29,7 @@ export default function Confirmation() {
   };
 
   return (
-    <div className="app-shell">
+    <div className="app-shell pb-20">
       <div className="text-center px-6 pt-12 pb-8">
         <div className="confirm-icon anim-bounce-in">
           <Check size={28} />
