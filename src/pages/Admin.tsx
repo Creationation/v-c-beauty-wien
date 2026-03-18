@@ -18,7 +18,7 @@ type AdminTab = "dashboard" | "termine" | "services" | "notifications" | "settin
 
 const STATUS_CONFIG: Record<AppointmentStatus, { label: string; color: string; bg: string }> = {
   pending:   { label: "Ausstehend",    color: "#C4727F", bg: "rgba(196,114,127,0.1)" },
-  confirmed: { label: "Best\u00e4tigt",     color: "#2d8a4e", bg: "rgba(45,138,78,0.1)" },
+  confirmed: { label: "Bestätigt",     color: "#2d8a4e", bg: "rgba(45,138,78,0.1)" },
   completed: { label: "Abgeschlossen", color: "#C9A96E", bg: "rgba(201,169,110,0.1)" },
   cancelled: { label: "Abgesagt",      color: "#999",    bg: "rgba(0,0,0,0.06)" },
 };
@@ -168,10 +168,10 @@ export default function Admin() {
             <div className="section-label">Heute, {new Date().toLocaleDateString("de-AT", { day: "numeric", month: "long" })}</div>
             <div className="grid grid-cols-2 gap-3 mb-6">
               {[
-                { label: "Heute",       value: todayAppts.length,  icon: "\ud83d\udcc5", color: "var(--rose-deep)" },
-                { label: "Ausstehend",  value: pendingCount,       icon: "\u23f3",       color: "#C4727F" },
-                { label: "Diese Woche", value: weekAppts.length,   icon: "\ud83d\udcca", color: "var(--gold)" },
-                { label: "Best\u00e4tigt",   value: confirmedCount,     icon: "\u2705",       color: "#2d8a4e" },
+                { label: "Heute",       value: todayAppts.length,  icon: "📅", color: "var(--rose-deep)" },
+                { label: "Ausstehend",  value: pendingCount,       icon: "⏳",       color: "#C4727F" },
+                { label: "Diese Woche", value: weekAppts.length,   icon: "📊", color: "var(--gold)" },
+                { label: "Bestätigt",   value: confirmedCount,     icon: "✅",       color: "#2d8a4e" },
               ].map(({ label, value, icon, color }) => (
                 <div key={label} className="beauty-card p-4 anim-fade-up">
                   <div className="text-2xl mb-2">{icon}</div>
@@ -182,14 +182,14 @@ export default function Admin() {
             </div>
             {todayAppts.length > 0 ? (
               <>
-                <div className="section-label">Heute\u2019s Termine</div>
+                <div className="section-label">Heutige Termine</div>
                 <div className="flex flex-col gap-3">
                   {todayAppts.map((a) => (
                     <div key={a.id} className="beauty-card p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div>
                           <div className="font-medium text-sm">{a.client_name}</div>
-                          <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{a.service} \u00b7 {a.artist_name}</div>
+                          <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{a.service} · {a.artist_name}</div>
                         </div>
                         <div className="text-right">
                           <div className="font-display font-medium text-sm" style={{ color: "var(--rose-deep)" }}>{a.appointment_time}</div>
@@ -206,7 +206,7 @@ export default function Admin() {
               </>
             ) : (
               <div className="text-center py-10" style={{ color: "var(--txt3)" }}>
-                <div className="text-4xl mb-3">\ud83c\udf19</div>
+                <div className="text-4xl mb-3">🌙</div>
                 <p className="text-sm">Keine Termine heute</p>
               </div>
             )}
@@ -214,32 +214,8 @@ export default function Admin() {
         )}
 
         {tab === "termine" && (
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="section-label mb-0">Alle Termine ({appointments.length})</div>
-              <button onClick={() => refetch()} className="flex items-center gap-1 text-[11px] px-3 py-1.5 rounded-full border cursor-pointer bg-transparent"
-                style={{ borderColor: "var(--cream2)", color: "var(--txt3)", fontFamily: "var(--font-body)" }}>
-                <RefreshCw size={11} /> Sync
-              </button>
-            </div>
-            {isLoading ? (
-              <div className="text-center py-10" style={{ color: "var(--txt3)" }}>Laden\u2026</div>
-            ) : appointments.length === 0 ? (
-              <div className="text-center py-10" style={{ color: "var(--txt3)" }}>
-                <div className="text-4xl mb-3">\ud83d\udceb</div>
-                <p className="text-sm">Noch keine Termine</p>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {appointments.map((a) => (
-                  <AppointmentCard key={a.id} appt={a}
-                    onStatus={(s) => updateStatus.mutate({ id: a.id, status: s })}
-                    onDelete={() => remove.mutate(a.id)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          <TermineTab appointments={appointments} isLoading={isLoading} refetch={refetch}
+            updateStatus={updateStatus} remove={remove} />
         )}
 
         {tab === "services" && <ServicesTab />}
@@ -250,24 +226,87 @@ export default function Admin() {
             <div className="section-label">Studio Info</div>
             <div className="beauty-card p-5 mb-4">
               <div className="text-[13px]" style={{ color: "var(--txt3)" }}>
-                <div className="mb-1">\ud83d\udccd Wien, \u00d6sterreich</div>
-                <div className="mb-1">\ud83c\udf10 beautyv.lovable.app</div>
+                <div className="mb-1">📍 Wien, Österreich</div>
+                <div className="mb-1">🌐 beautyv.lovable.app</div>
               </div>
             </div>
+
+            {/* Vacation Management */}
+            <VacationManager />
+
             <div className="section-label mt-4">Danger Zone</div>
             <div className="beauty-card p-5 border-[1.5px]" style={{ borderColor: "rgba(196,114,127,0.3)" }}>
               <div className="flex items-start gap-3 mb-4">
                 <AlertCircle size={18} style={{ color: "#C4727F", flexShrink: 0, marginTop: 2 }} />
-                <p className="text-[12px]" style={{ color: "var(--txt2)" }}>Alle Termine l\u00f6schen. Diese Aktion kann nicht r\u00fckg\u00e4ngig gemacht werden.</p>
+                <p className="text-[12px]" style={{ color: "var(--txt2)" }}>Alle Termine löschen. Diese Aktion kann nicht rückgängig gemacht werden.</p>
               </div>
-              <button onClick={() => { if (confirm("Wirklich ALLE Termine l\u00f6schen?")) resetAll.mutate(); }}
+              <button onClick={() => { if (confirm("Wirklich ALLE Termine löschen?")) resetAll.mutate(); }}
                 className="btn-rose w-full" style={{ background: "#C4727F" }}>
-                \ud83d\uddd1 Alle Termine l\u00f6schen
+                🗑 Alle Termine löschen
               </button>
             </div>
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function TermineTab({ appointments, isLoading, refetch, updateStatus, remove }: {
+  appointments: Appointment[];
+  isLoading: boolean;
+  refetch: () => void;
+  updateStatus: any;
+  remove: any;
+}) {
+  const [artistFilter, setArtistFilter] = useState<string>("all");
+  const filtered = artistFilter === "all" ? appointments : appointments.filter((a) => a.artist_id === artistFilter);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="section-label mb-0">Termine ({filtered.length})</div>
+        <button onClick={() => refetch()} className="flex items-center gap-1 text-[11px] px-3 py-1.5 rounded-full border cursor-pointer bg-transparent"
+          style={{ borderColor: "var(--cream2)", color: "var(--txt3)", fontFamily: "var(--font-body)" }}>
+          <RefreshCw size={11} /> Sync
+        </button>
+      </div>
+
+      {/* Artist filter */}
+      <div className="flex gap-2 mb-4">
+        {[
+          { id: "all", label: "Alle" },
+          { id: "victoria", label: "🌸 Victoria" },
+          { id: "cindy", label: "✨ Cindy" },
+        ].map(({ id, label }) => (
+          <button key={id} onClick={() => setArtistFilter(id)}
+            className="text-[11px] px-3 py-1.5 rounded-full border cursor-pointer bg-transparent"
+            style={{
+              borderColor: artistFilter === id ? "var(--rose-deep)" : "var(--cream2)",
+              color: artistFilter === id ? "var(--rose-deep)" : "var(--txt3)",
+              fontFamily: "var(--font-body)",
+              fontWeight: artistFilter === id ? 600 : 400,
+            }}>{label}</button>
+        ))}
+      </div>
+
+      {isLoading ? (
+        <div className="text-center py-10" style={{ color: "var(--txt3)" }}>Laden…</div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-10" style={{ color: "var(--txt3)" }}>
+          <div className="text-4xl mb-3">📭</div>
+          <p className="text-sm">Keine Termine</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {filtered.map((a) => (
+            <AppointmentCard key={a.id} appt={a}
+              onStatus={(s) => updateStatus.mutate({ id: a.id, status: s })}
+              onDelete={() => remove.mutate(a.id)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -280,6 +319,7 @@ function AppointmentCard({ appt, onStatus, onDelete }: {
   const [expanded, setExpanded] = useState(false);
   const [sending, setSending] = useState<string | null>(null);
   const cfg = STATUS_CONFIG[appt.status as AppointmentStatus] || STATUS_CONFIG.pending;
+  const isPending = appt.status === "pending";
 
   const handleSend = async (type: "confirmation" | "reminder_24h" | "reminder_2h") => {
     setSending(type);
@@ -293,21 +333,33 @@ function AppointmentCard({ appt, onStatus, onDelete }: {
       <div className="flex items-start justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
         <div className="flex-1 min-w-0">
           <div className="font-medium text-sm truncate">{appt.client_name}</div>
-          <div className="text-[11px] truncate" style={{ color: "var(--txt3)" }}>{appt.service} \u00b7 {appt.artist_name}</div>
+          <div className="text-[11px] truncate" style={{ color: "var(--txt3)" }}>{appt.service} · {appt.artist_name}</div>
           <div className="text-[11px] mt-0.5" style={{ color: "var(--rose-deep)" }}>
-            {new Date(appt.appointment_date).toLocaleDateString("de-AT", { day: "numeric", month: "short" })} \u00b7 {appt.appointment_time}
+            {new Date(appt.appointment_date).toLocaleDateString("de-AT", { day: "numeric", month: "short" })} · {appt.appointment_time}
           </div>
         </div>
         <div className="flex flex-col items-end gap-1.5 flex-shrink-0 ml-2">
           <span className="text-[10px] px-2 py-0.5 rounded-full font-medium"
             style={{ color: cfg.color, background: cfg.bg }}>{cfg.label}</span>
-          <div className="flex gap-1">
-            {appt.confirmation_sent && <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(45,138,78,0.12)", color: "#2d8a4e" }}>\u2713 Best</span>}
-            {appt.reminder_24h_sent && <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(201,169,110,0.15)", color: "#a07040" }}>\u2713 24h</span>}
-            {appt.reminder_2h_sent  && <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(232,149,74,0.15)", color: "#c06020" }}>\u2713 2h</span>}
-          </div>
         </div>
       </div>
+
+      {/* Quick accept/reject for pending */}
+      {isPending && !expanded && (
+        <div className="flex gap-2 mt-3">
+          <button onClick={(e) => { e.stopPropagation(); onStatus("confirmed"); }}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[12px] font-medium cursor-pointer border-none text-white"
+            style={{ background: "#2d8a4e" }}>
+            <Check size={13} /> Annehmen
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); onStatus("cancelled"); }}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[12px] font-medium cursor-pointer border-[1.5px] bg-transparent"
+            style={{ borderColor: "#C4727F", color: "#C4727F" }}>
+            ✕ Ablehnen
+          </button>
+        </div>
+      )}
+
       {expanded && (
         <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--cream2)" }}>
           {(appt.client_email || appt.client_phone) && (
@@ -316,7 +368,7 @@ function AppointmentCard({ appt, onStatus, onDelete }: {
               {appt.client_phone && <div className="flex items-center gap-2 text-[12px]" style={{ color: "var(--txt2)" }}><Phone size={12} /> {appt.client_phone}</div>}
             </div>
           )}
-          {appt.notes && <div className="text-[12px] px-3 py-2 rounded-xl mb-4" style={{ background: "var(--cream2)", color: "var(--txt2)" }}>\ud83d\udcdd {appt.notes}</div>}
+          {appt.notes && <div className="text-[12px] px-3 py-2 rounded-xl mb-4" style={{ background: "var(--cream2)", color: "var(--txt2)" }}>📝 {appt.notes}</div>}
           <div className="flex flex-wrap gap-1.5 mb-4">
             {(["pending", "confirmed", "completed", "cancelled"] as AppointmentStatus[]).map((s) => (
               <button key={s} onClick={() => onStatus(s)}
@@ -332,9 +384,9 @@ function AppointmentCard({ appt, onStatus, onDelete }: {
             <div className="flex flex-col gap-2 mb-4">
               <div className="text-[11px] font-medium mb-1" style={{ color: "var(--txt3)" }}>E-Mail senden:</div>
               {[
-                { type: "confirmation" as const, label: "Best\u00e4tigung",   icon: "\ud83d\udc8c" },
-                { type: "reminder_24h" as const, label: "Erinnerung 24h", icon: "\ud83d\udcc5" },
-                { type: "reminder_2h"  as const, label: "Erinnerung 2h",  icon: "\u23f0" },
+                { type: "confirmation" as const, label: "Bestätigung", icon: "💌" },
+                { type: "reminder_24h" as const, label: "Erinnerung 24h", icon: "📅" },
+                { type: "reminder_2h"  as const, label: "Erinnerung 2h",  icon: "⏰" },
               ].map(({ type, label, icon }) => (
                 <button key={type} onClick={() => handleSend(type)} disabled={!!sending}
                   className="flex items-center gap-2 text-[12px] px-3 py-2 rounded-xl border cursor-pointer bg-transparent"
@@ -344,10 +396,10 @@ function AppointmentCard({ appt, onStatus, onDelete }: {
               ))}
             </div>
           )}
-          <button onClick={() => { if (confirm("Termin l\u00f6schen?")) onDelete(); }}
+          <button onClick={() => { if (confirm("Termin löschen?")) onDelete(); }}
             className="flex items-center gap-1.5 text-[12px] cursor-pointer bg-transparent border-none"
             style={{ color: "#C4727F", fontFamily: "var(--font-body)" }}>
-            <Trash2 size={13} /> Termin l\u00f6schen
+            <Trash2 size={13} /> Termin löschen
           </button>
         </div>
       )}
@@ -548,6 +600,102 @@ function NotificationsTab({ settings, onSave, appointments }: {
           Dann f\u00fchre den SQL-Befehl aus der Migration-Datei aus.
         </p>
       </div>
+    </div>
+  );
+}
+
+function VacationManager() {
+  const [artistId, setArtistId] = useState("victoria");
+  const [vacations, setVacations] = useState<{ id: string; vacation_date: string; reason: string }[]>([]);
+  const [newDate, setNewDate] = useState("");
+  const [newReason, setNewReason] = useState("");
+
+  const loadVacations = () => {
+    supabase
+      .from("artist_vacations" as any)
+      .select("*")
+      .eq("artist_id", artistId)
+      .order("vacation_date", { ascending: true })
+      .then(({ data }) => setVacations((data as any) || []));
+  };
+
+  useEffect(() => { loadVacations(); }, [artistId]);
+
+  const addVacation = async () => {
+    if (!newDate) return;
+    await supabase.from("artist_vacations" as any).insert({
+      artist_id: artistId,
+      vacation_date: newDate,
+      reason: newReason,
+    } as any);
+    setNewDate("");
+    setNewReason("");
+    loadVacations();
+  };
+
+  const removeVacation = async (id: string) => {
+    await supabase.from("artist_vacations" as any).delete().eq("id", id);
+    loadVacations();
+  };
+
+  return (
+    <div>
+      <div className="section-label">🏖 Urlaub / Congés</div>
+      <div className="flex gap-2 mb-4">
+        {[
+          { id: "victoria", label: "🌸 Victoria" },
+          { id: "cindy", label: "✨ Cindy" },
+        ].map(({ id, label }) => (
+          <button key={id} onClick={() => setArtistId(id)}
+            className="text-[11px] px-3 py-1.5 rounded-full border cursor-pointer bg-transparent"
+            style={{
+              borderColor: artistId === id ? "var(--rose-deep)" : "var(--cream2)",
+              color: artistId === id ? "var(--rose-deep)" : "var(--txt3)",
+              fontFamily: "var(--font-body)",
+              fontWeight: artistId === id ? 600 : 400,
+            }}>{label}</button>
+        ))}
+      </div>
+
+      {/* Add vacation */}
+      <div className="beauty-card p-4 mb-4">
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)}
+              className="beauty-input flex-1 text-sm" style={{ height: "auto", padding: "8px 12px" }} />
+          </div>
+          <input value={newReason} onChange={(e) => setNewReason(e.target.value)}
+            placeholder="Grund (optional)" className="beauty-input text-sm" style={{ height: "auto", padding: "8px 12px" }} />
+          <button onClick={addVacation} className="btn-rose text-[12px] py-2">
+            + Urlaub hinzufügen
+          </button>
+        </div>
+      </div>
+
+      {/* Vacation list */}
+      {vacations.length === 0 ? (
+        <div className="text-center py-6" style={{ color: "var(--txt3)" }}>
+          <p className="text-[12px]">Keine Urlaubstage eingetragen</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2 mb-6">
+          {vacations.map((v) => (
+            <div key={v.id} className="beauty-card p-3 flex items-center justify-between">
+              <div>
+                <div className="text-[13px] font-medium">
+                  {new Date(v.vacation_date + "T00:00:00").toLocaleDateString("de-AT", { weekday: "short", day: "numeric", month: "long" })}
+                </div>
+                {v.reason && <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{v.reason}</div>}
+              </div>
+              <button onClick={() => removeVacation(v.id)}
+                className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer border-none"
+                style={{ background: "rgba(196,114,127,0.1)", color: "#C4727F" }}>
+                <Trash2 size={12} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

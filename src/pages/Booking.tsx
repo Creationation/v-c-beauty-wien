@@ -18,6 +18,38 @@ import {
 
 type Step = "artist" | "service" | "date" | "time" | "form";
 const POPULAR_TIMES = ["10:00", "14:00", "16:00"];
+
+function useBookedSlots(artistId: string | undefined, dateStr: string | null) {
+  const [booked, setBooked] = useState<string[]>([]);
+  useEffect(() => {
+    if (!artistId || !dateStr) { setBooked([]); return; }
+    supabase
+      .from("appointments" as any)
+      .select("appointment_time")
+      .eq("artist_id", artistId)
+      .eq("appointment_date", dateStr)
+      .neq("status", "cancelled")
+      .then(({ data }) => {
+        setBooked((data || []).map((d: any) => d.appointment_time).filter(Boolean));
+      });
+  }, [artistId, dateStr]);
+  return booked;
+}
+
+function useVacationDates(artistId: string | undefined) {
+  const [dates, setDates] = useState<string[]>([]);
+  useEffect(() => {
+    if (!artistId) { setDates([]); return; }
+    supabase
+      .from("artist_vacations" as any)
+      .select("vacation_date")
+      .eq("artist_id", artistId)
+      .then(({ data }) => {
+        setDates((data || []).map((d: any) => d.vacation_date));
+      });
+  }, [artistId]);
+  return dates;
+}
 const STEP_LABELS: Record<Step, string> = {
   artist: "Expertin",
   service: "Service",
@@ -37,6 +69,10 @@ export default function Booking() {
   const [saving, setSaving] = useState(false);
   const today = new Date();
   const { artist, services, date, time, form } = booking;
+  const currentArtist = artist || (artistId ? ARTISTS.find((a) => a.id === artistId) : null);
+  const dateStr = date ? date.toISOString().split("T")[0] : null;
+  const bookedSlots = useBookedSlots(currentArtist?.id, dateStr);
+  const vacationDates = useVacationDates(currentArtist?.id);
 
   // Pre-fill form with user data when available
   useEffect(() => {
@@ -87,7 +123,7 @@ export default function Booking() {
   }, [artistId]);
 
   const currentIdx = steps.indexOf(step);
-  const currentArtist = artist || (artistId ? ARTISTS.find((a) => a.id === artistId) : null);
+  
   const artistServices = SERVICES[currentArtist?.id || ""] || [];
   const dim = daysInMonth(year, month);
   const fd = firstDayOfMonth(year, month);
@@ -478,23 +514,27 @@ export default function Booking() {
               {Array.from({ length: fd }).map((_, i) => (
                 <div key={`e${i}`} className="cal-day cal-empty" />
               ))}
-              {Array.from({ length: dim }).map((_, i) => {
+                {Array.from({ length: dim }).map((_, i) => {
                 const day = i + 1;
                 const d = new Date(year, month, day);
+                const dStr = d.toISOString().split("T")[0];
                 const past = d < new Date(today.getFullYear(), today.getMonth(), today.getDate());
                 const sun = d.getDay() === 0;
+                const isVacation = vacationDates.includes(dStr);
                 const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
                 const selected = date && day === date.getDate() && month === date.getMonth() && year === date.getFullYear();
+                const disabled = past || sun || isVacation;
                 return (
                   <div
                     key={day}
-                    className={`cal-day ${past || sun ? "cal-off" : ""} ${selected ? "cal-selected" : ""} ${isToday && !selected ? "cal-today" : ""}`}
+                    className={`cal-day ${disabled ? "cal-off" : ""} ${selected ? "cal-selected" : ""} ${isToday && !selected ? "cal-today" : ""}`}
                     onClick={() => {
-                      if (!past && !sun) {
+                      if (!disabled) {
                         booking.setDate(new Date(year, month, day));
                         goNext();
                       }
                     }}
+                    title={isVacation ? "Urlaub" : undefined}
                   >
                     {day}
                   </div>
@@ -514,21 +554,27 @@ export default function Booking() {
               </p>
             )}
             <div className="grid grid-cols-4 gap-2 mb-4">
-              {TIMES.map((t) => (
-                <div
-                  key={t}
-                  className={`time-slot relative ${time === t ? "time-selected" : ""}`}
-                  onClick={() => { booking.setTime(t); goNext(); }}
-                >
-                  {t}
-                  {POPULAR_TIMES.includes(t) && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full" style={{ background: "var(--rose-deep)" }} />
-                  )}
-                </div>
-              ))}
+              {TIMES.map((t) => {
+                const isBooked = bookedSlots.includes(t);
+                return (
+                  <div
+                    key={t}
+                    className={`time-slot relative ${time === t ? "time-selected" : ""} ${isBooked ? "cal-off" : ""}`}
+                    onClick={() => { if (!isBooked) { booking.setTime(t); goNext(); } }}
+                    style={isBooked ? { opacity: 0.4, textDecoration: "line-through", cursor: "not-allowed" } : {}}
+                    title={isBooked ? "Bereits gebucht" : undefined}
+                  >
+                    {t}
+                    {!isBooked && POPULAR_TIMES.includes(t) && (
+                      <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full" style={{ background: "var(--rose-deep)" }} />
+                    )}
+                  </div>
+                );
+              })}
             </div>
             <p className="text-[11px] flex items-center gap-1.5" style={{ color: "var(--txt3)" }}>
               <span className="w-2 h-2 rounded-full inline-block" style={{ background: "var(--rose-deep)" }} /> Beliebt
+              <span className="ml-3" style={{ textDecoration: "line-through" }}>00:00</span> = Belegt
             </p>
           </div>
         )}
