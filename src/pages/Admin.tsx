@@ -178,25 +178,7 @@ export default function Admin() {
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex overflow-x-auto px-5 gap-2 pb-4 pt-2" style={{ scrollbarWidth: "none" }}>
-        {TABS.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => setTab(id)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-[12px] font-medium whitespace-nowrap border-[1.5px] cursor-pointer transition-all"
-            style={{
-              fontFamily: "var(--font-body)",
-              background: tab === id ? "var(--rose-deep)" : "white",
-              color: tab === id ? "white" : "var(--txt2)",
-              borderColor: tab === id ? "var(--rose-deep)" : "var(--cream2)",
-              boxShadow: tab === id ? "var(--shadow-sm)" : "none",
-            }}
-          >
-            <Icon size={14} /> {label}
-          </button>
-        ))}
-      </div>
+
 
       <div className="px-5 pb-24">
 
