@@ -133,12 +133,7 @@ function SettingsMenu({
       </div>
 
       {/* Menu items */}
-      <div className="mx-5 rounded-2xl overflow-hidden" style={{ background: "var(--cream)", boxShadow: "var(--shadow-sm)" }}>
-        <MenuItem
-          icon={<CalendarDays size={18} />}
-          label="Meine Termine"
-          onClick={() => navigate("/book")}
-        />
+      <MeineTermine userEmail={user.email} />
 
         {isAdmin && (
           <MenuItem
