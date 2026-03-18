@@ -8,8 +8,11 @@ import {
   Eye, EyeOff, Save, RefreshCw, AlertCircle
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { SERVICES } from "@/data/services";
 import type { Appointment, AppointmentStatus, NotificationSettings } from "@/data/appointments";
+
+const ADMIN_EMAIL = "creationation.at@gmail.com";
 
 type AdminTab = "dashboard" | "termine" | "services" | "notifications" | "settings";
 
