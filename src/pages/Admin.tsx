@@ -603,3 +603,99 @@ function NotificationsTab({ settings, onSave, appointments }: {
     </div>
   );
 }
+
+function VacationManager() {
+  const [artistId, setArtistId] = useState("victoria");
+  const [vacations, setVacations] = useState<{ id: string; vacation_date: string; reason: string }[]>([]);
+  const [newDate, setNewDate] = useState("");
+  const [newReason, setNewReason] = useState("");
+
+  const loadVacations = () => {
+    supabase
+      .from("artist_vacations" as any)
+      .select("*")
+      .eq("artist_id", artistId)
+      .order("vacation_date", { ascending: true })
+      .then(({ data }) => setVacations((data as any) || []));
+  };
+
+  useEffect(() => { loadVacations(); }, [artistId]);
+
+  const addVacation = async () => {
+    if (!newDate) return;
+    await supabase.from("artist_vacations" as any).insert({
+      artist_id: artistId,
+      vacation_date: newDate,
+      reason: newReason,
+    } as any);
+    setNewDate("");
+    setNewReason("");
+    loadVacations();
+  };
+
+  const removeVacation = async (id: string) => {
+    await supabase.from("artist_vacations" as any).delete().eq("id", id);
+    loadVacations();
+  };
+
+  return (
+    <div>
+      <div className="section-label">🏖 Urlaub / Congés</div>
+      <div className="flex gap-2 mb-4">
+        {[
+          { id: "victoria", label: "🌸 Victoria" },
+          { id: "cindy", label: "✨ Cindy" },
+        ].map(({ id, label }) => (
+          <button key={id} onClick={() => setArtistId(id)}
+            className="text-[11px] px-3 py-1.5 rounded-full border cursor-pointer bg-transparent"
+            style={{
+              borderColor: artistId === id ? "var(--rose-deep)" : "var(--cream2)",
+              color: artistId === id ? "var(--rose-deep)" : "var(--txt3)",
+              fontFamily: "var(--font-body)",
+              fontWeight: artistId === id ? 600 : 400,
+            }}>{label}</button>
+        ))}
+      </div>
+
+      {/* Add vacation */}
+      <div className="beauty-card p-4 mb-4">
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)}
+              className="beauty-input flex-1 text-sm" style={{ height: "auto", padding: "8px 12px" }} />
+          </div>
+          <input value={newReason} onChange={(e) => setNewReason(e.target.value)}
+            placeholder="Grund (optional)" className="beauty-input text-sm" style={{ height: "auto", padding: "8px 12px" }} />
+          <button onClick={addVacation} className="btn-rose text-[12px] py-2">
+            + Urlaub hinzufügen
+          </button>
+        </div>
+      </div>
+
+      {/* Vacation list */}
+      {vacations.length === 0 ? (
+        <div className="text-center py-6" style={{ color: "var(--txt3)" }}>
+          <p className="text-[12px]">Keine Urlaubstage eingetragen</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2 mb-6">
+          {vacations.map((v) => (
+            <div key={v.id} className="beauty-card p-3 flex items-center justify-between">
+              <div>
+                <div className="text-[13px] font-medium">
+                  {new Date(v.vacation_date + "T00:00:00").toLocaleDateString("de-AT", { weekday: "short", day: "numeric", month: "long" })}
+                </div>
+                {v.reason && <div className="text-[11px]" style={{ color: "var(--txt3)" }}>{v.reason}</div>}
+              </div>
+              <button onClick={() => removeVacation(v.id)}
+                className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer border-none"
+                style={{ background: "rgba(196,114,127,0.1)", color: "#C4727F" }}>
+                <Trash2 size={12} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
