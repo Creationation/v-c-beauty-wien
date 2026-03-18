@@ -214,32 +214,8 @@ export default function Admin() {
         )}
 
         {tab === "termine" && (
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="section-label mb-0">Alle Termine ({appointments.length})</div>
-              <button onClick={() => refetch()} className="flex items-center gap-1 text-[11px] px-3 py-1.5 rounded-full border cursor-pointer bg-transparent"
-                style={{ borderColor: "var(--cream2)", color: "var(--txt3)", fontFamily: "var(--font-body)" }}>
-                <RefreshCw size={11} /> Sync
-              </button>
-            </div>
-            {isLoading ? (
-              <div className="text-center py-10" style={{ color: "var(--txt3)" }}>Laden\u2026</div>
-            ) : appointments.length === 0 ? (
-              <div className="text-center py-10" style={{ color: "var(--txt3)" }}>
-                <div className="text-4xl mb-3">\ud83d\udceb</div>
-                <p className="text-sm">Noch keine Termine</p>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {appointments.map((a) => (
-                  <AppointmentCard key={a.id} appt={a}
-                    onStatus={(s) => updateStatus.mutate({ id: a.id, status: s })}
-                    onDelete={() => remove.mutate(a.id)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          <TermineTab appointments={appointments} isLoading={isLoading} refetch={refetch}
+            updateStatus={updateStatus} remove={remove} />
         )}
 
         {tab === "services" && <ServicesTab />}
