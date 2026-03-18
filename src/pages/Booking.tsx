@@ -18,6 +18,38 @@ import {
 
 type Step = "artist" | "service" | "date" | "time" | "form";
 const POPULAR_TIMES = ["10:00", "14:00", "16:00"];
+
+function useBookedSlots(artistId: string | undefined, dateStr: string | null) {
+  const [booked, setBooked] = useState<string[]>([]);
+  useEffect(() => {
+    if (!artistId || !dateStr) { setBooked([]); return; }
+    supabase
+      .from("appointments" as any)
+      .select("appointment_time")
+      .eq("artist_id", artistId)
+      .eq("appointment_date", dateStr)
+      .neq("status", "cancelled")
+      .then(({ data }) => {
+        setBooked((data || []).map((d: any) => d.appointment_time).filter(Boolean));
+      });
+  }, [artistId, dateStr]);
+  return booked;
+}
+
+function useVacationDates(artistId: string | undefined) {
+  const [dates, setDates] = useState<string[]>([]);
+  useEffect(() => {
+    if (!artistId) { setDates([]); return; }
+    supabase
+      .from("artist_vacations" as any)
+      .select("vacation_date")
+      .eq("artist_id", artistId)
+      .then(({ data }) => {
+        setDates((data || []).map((d: any) => d.vacation_date));
+      });
+  }, [artistId]);
+  return dates;
+}
 const STEP_LABELS: Record<Step, string> = {
   artist: "Expertin",
   service: "Service",
